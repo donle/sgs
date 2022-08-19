@@ -69,8 +69,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'liubing_description',
-    target:
-      '<b>锁定技</b>，当你于一回合内首次声明使用有花色的【杀】后，此【杀】的花色视为方片。',
+    target: '<b>锁定技</b>，当你于一回合内首次声明使用有花色的【杀】后，此【杀】的花色视为方片。',
   },
 
   {

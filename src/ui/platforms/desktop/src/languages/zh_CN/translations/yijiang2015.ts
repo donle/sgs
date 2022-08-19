@@ -104,7 +104,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'qiaoshi_description',
-    target: '其他角色的结束阶段开始时，若其手牌数与你相等，你可以与其各摸一张牌，然后若以此法摸的两张牌花色相同，你可重复此流程。',
+    target:
+      '其他角色的结束阶段开始时，若其手牌数与你相等，你可以与其各摸一张牌，然后若以此法摸的两张牌花色相同，你可重复此流程。',
   },
   {
     source: 'yanyu_description',

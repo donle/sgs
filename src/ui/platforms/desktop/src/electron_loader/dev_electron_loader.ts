@@ -22,10 +22,10 @@ export class DevElectronLoader extends ElectronLoader {
       if (data) {
         return JSON.parse(data);
       } else {
-        return data as unknown as T;
+        return (data as unknown) as T;
       }
     } catch {
-      return data as unknown as T;
+      return (data as unknown) as T;
     }
   }
 

@@ -110,8 +110,9 @@ export class PveClassicGu extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(event.triggeredOnEvent);
     switch (identifier) {
       case GameEventIdentifiers.PhaseStageChangeEvent:
-        const phaseStageChangeEvent =
-          event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
+        const phaseStageChangeEvent = event.triggeredOnEvent as ServerEventFinder<
+          GameEventIdentifiers.PhaseStageChangeEvent
+        >;
         if (this.getMarkNumber(owner) > 3 && phaseStageChangeEvent.toStage === PlayerPhaseStages.PhaseFinishEnd) {
           this.useMark(room, owner, 4);
           await room.changeMaxHp(event.fromId, 1);

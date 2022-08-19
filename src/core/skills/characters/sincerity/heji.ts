@@ -126,7 +126,9 @@ export class HeJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = event;
-    const cards = room.findCardsByMatcherFrom(new CardMatcher({ type: [CardType.Basic, CardType.Trick, CardType.Equip] }));
+    const cards = room.findCardsByMatcherFrom(
+      new CardMatcher({ type: [CardType.Basic, CardType.Trick, CardType.Equip] }),
+    );
 
     if (cards.length > 0) {
       await room.moveCards({

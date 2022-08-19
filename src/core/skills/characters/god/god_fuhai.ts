@@ -19,17 +19,15 @@ export class GodFuHai extends TriggerSkill {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage: AllStage) {
-    return (
-      stage === CardUseStage.CardUsing ||
-      stage === AimStage.OnAim ||
-      stage === PlayerDiedStage.PlayerDied
-    );
+    return stage === CardUseStage.CardUsing || stage === AimStage.OnAim || stage === PlayerDiedStage.PlayerDied;
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.AimEvent | GameEventIdentifiers.PlayerDiedEvent>,
+    content: ServerEventFinder<
+      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.AimEvent | GameEventIdentifiers.PlayerDiedEvent
+    >,
   ) {
     const identifer = EventPacker.getIdentifier(content);
     if (identifer === GameEventIdentifiers.CardUseEvent) {
@@ -42,7 +40,11 @@ export class GodFuHai extends TriggerSkill {
       );
     } else if (identifer === GameEventIdentifiers.AimEvent) {
       const aimEvent = content as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-      return aimEvent.fromId === owner.Id && room.getMark(aimEvent.toId, MarkEnum.PingDing) > 0 && (owner.getFlag<number>(this.Name) || 0) < 2;
+      return (
+        aimEvent.fromId === owner.Id &&
+        room.getMark(aimEvent.toId, MarkEnum.PingDing) > 0 &&
+        (owner.getFlag<number>(this.Name) || 0) < 2
+      );
     } else if (identifer === GameEventIdentifiers.PlayerDiedEvent) {
       const toId = (content as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>).playerId;
       return toId !== owner.Id && room.getPlayerById(toId).getMark(MarkEnum.PingDing) > 0;

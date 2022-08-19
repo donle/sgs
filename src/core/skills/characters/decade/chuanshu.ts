@@ -13,7 +13,7 @@ import { ChuanYun } from './chuanyun';
 @LimitSkill({ name: 'chuanshu', description: 'chuanshu_description' })
 export class ChuanShu extends TriggerSkill {
   public get RelatedSkills(): string[] {
-    return ['std_longdan', 'congjian', 'chuanyun']
+    return ['std_longdan', 'congjian', 'chuanyun'];
   }
 
   public isTriggerable(

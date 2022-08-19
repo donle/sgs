@@ -58,7 +58,8 @@
     justify-content: center;
 }
 
-.characterHp.small, .characterHp.tiny {
+.characterHp.small,
+.characterHp.tiny {
     max-width: calc(gridLine * 10);
     flex-wrap: wrap;
 }

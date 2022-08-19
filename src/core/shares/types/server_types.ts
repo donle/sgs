@@ -56,5 +56,5 @@ interface LobbyEventList extends LobbyEventUtilities {
   };
   [LobbySocketEvent.EnterWaitingRoom]: {
     roomInfo: TemporaryRoomCreationInfo;
-  }
+  };
 }

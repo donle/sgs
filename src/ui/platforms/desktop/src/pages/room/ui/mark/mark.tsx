@@ -10,6 +10,8 @@ import danlieIcon from './images/danlie.png';
 import danxueIcon from './images/danxue.png';
 import dawuIcon from './images/dawu.png';
 import fuIcon from './images/fu.png';
+import gouchenIcon from './images/gouchen.png';
+import houtuIcon from './images/houtu.png';
 import jianIcon from './images/jian.png';
 import junlveIcon from './images/junlve.png';
 import kuangfengIcon from './images/kuangfeng.png';
@@ -29,25 +31,23 @@ import taomieIcon from './images/taomie.png';
 import weiIcon from './images/wei.png';
 import xueyiIcon from './images/xueyi.png';
 import yingIcon from './images/ying.png';
+import yuqingIcon from './images/yuqing.png';
 import zhongIcon from './images/zhong.png';
 import ziweiIcon from './images/ziwei.png';
-import houtuIcon from './images/houtu.png';
-import yuqingIcon from './images/yuqing.png';
-import gouchenIcon from './images/gouchen.png';
 
 import pveClassicGuIcon from './images/pve_classic_gu.png';
 import pveClassicHeIcon from './images/pve_classic_he.png';
-import pveClassicJianIcon from './images/pve_classic_jian.png';
 import pveClassicJiIcon from './images/pve_classic_ji.png';
+import pveClassicJianIcon from './images/pve_classic_jian.png';
 import pveClassicXiIcon from './images/pve_classic_xi.png';
 import pveClassicYingIcon from './images/pve_classic_ying.png';
 import pveClassicYuIcon from './images/pve_classic_yu.png';
 import pveClassicZhiIcon from './images/pve_classic_zhi.png';
 
+import pveClassicPoJun from './images/pve_pojun.png';
 import pveClassicTanLang from './images/pve_tanlang.png';
 import pveClassicWenQu from './images/pve_wenqu.png';
 import pveClassicWuQu from './images/pve_wuqu.png';
-import pveClassicPoJun from './images/pve_pojun.png';
 
 const markIconMaps: {
   [K in MarkEnum]: string;

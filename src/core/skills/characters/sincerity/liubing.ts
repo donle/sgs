@@ -11,7 +11,7 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 @CompulsorySkill({ name: 'liubing', description: 'liubing_description' })
 export class LiuBing extends TriggerSkill {
   public audioIndex(): number {
-    return 0
+    return 0;
   }
 
   public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase): boolean {

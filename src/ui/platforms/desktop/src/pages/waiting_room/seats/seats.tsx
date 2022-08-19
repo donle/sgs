@@ -146,7 +146,11 @@ export class Seats extends React.Component<SeatsProps> {
       seatComponents.push(
         <span className={styles.seatComponent} key={seat.seatId}>
           {hostControl && (seat as any).playerId && (
-            <Button variant="primary" onClick={this.transferHost((seat as any).playerId)} className={styles.giveHostButton}>
+            <Button
+              variant="primary"
+              onClick={this.transferHost((seat as any).playerId)}
+              className={styles.giveHostButton}
+            >
               {this.props.translator.tr(Messages.transferHost())}
             </Button>
           )}

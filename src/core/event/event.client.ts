@@ -262,5 +262,5 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.ChangeHost]: {
     prevHostPlayerId: PlayerId;
     newHostPlayerId: PlayerId;
-  }
+  };
 }

@@ -2,12 +2,7 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { WuXieKeJi } from 'core/cards/standard/wuxiekeji';
-import {
-  CardMoveReason,
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { AllStage, TurnOverStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';

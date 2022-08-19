@@ -34,7 +34,7 @@ export class FakeConnectionService extends ConnectionService {
     createWaitingRoom(
       gameInfo: TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateWaitingRoomListenerResponse) => void,
-    // tslint:disable-next-line: no-empty
+      // tslint:disable-next-line: no-empty
     ): void {},
     /**
      * @deprecated game won't be created from lobby anymore.

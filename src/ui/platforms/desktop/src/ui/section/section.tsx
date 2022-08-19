@@ -1,16 +1,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
+import { Spacing } from 'ui/layout/spacing';
 import styles from './section.module.css';
-
-export const enum SectionSpacing {
-  Spacing_8 = 8,
-  Spacing_16 = 16,
-  Spacing_24 = 24,
-  Spacing_32 = 32,
-  Spacing_40 = 40,
-  Spacing_48 = 48,
-  Spacing_96 = 96,
-}
 
 export const enum SectionVariant {
   FULL_WIDTH = 'fullWidth',
@@ -20,8 +11,8 @@ export const enum SectionVariant {
 export type SectionProps = {
   className?: string;
   variant?: SectionVariant;
-  topSpacing?: SectionSpacing;
-  bottomSpacing?: SectionSpacing;
+  topSpacing?: Spacing;
+  bottomSpacing?: Spacing;
   children?: React.ReactNode;
 };
 

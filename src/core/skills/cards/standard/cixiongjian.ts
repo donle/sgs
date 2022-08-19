@@ -1,12 +1,7 @@
 import { CiXiongJianSkillTrigger } from 'core/ai/skills/cards/cixiongjian';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
-import {
-  CardMoveReason,
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';

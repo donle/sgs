@@ -294,8 +294,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'chuanyun_description',
-    target:
-      '当你使用【杀】指定目标后，你可令其随机弃置其装备区里的一张牌。',
+    target: '当你使用【杀】指定目标后，你可令其随机弃置其装备区里的一张牌。',
   },
 
   {

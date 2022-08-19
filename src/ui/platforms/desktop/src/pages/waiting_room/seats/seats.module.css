@@ -3,75 +3,75 @@
 @value godColor from '../../../ui/metrics/metrics.css';
 
 .conainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(gridLine * 2);
-  position: relative;
-  flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(gridLine * 2);
+    position: relative;
+    flex-wrap: wrap;
 }
 
 .seatComponent {
-  display: flex;
-  justify-content: center;
-  width: 25%;
-  position: relative;
-  padding-top: calc(gridLine * 4);
+    display: flex;
+    justify-content: center;
+    width: 25%;
+    position: relative;
+    padding-top: calc(gridLine * 4);
 }
 
 .giveHostButton {
-  position: absolute;
-  top: gridLine;
+    position: absolute;
+    top: gridLine;
 }
 
 .seat {
-  display: block;
-  position: relative;
+    display: block;
+    position: relative;
 }
 .seat.clickable {
-  cursor: pointer;
+    cursor: pointer;
 }
 .playerName {
-  position: absolute;
-  width: 100%;
-  top: gridLine;
-  text-align: center;
-  z-index: 1;
-  font-family: SanguoshaFont;
-  color: godColor;
+    position: absolute;
+    width: 100%;
+    top: gridLine;
+    text-align: center;
+    z-index: 1;
+    font-family: SanguoshaFont;
+    color: godColor;
 
-  text-shadow: 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255);
-  font-weight: 700;
-  font-size: 14px;
-  height: calc(gridLine * 3);
-  line-height: calc(gridLine * 3);
-  color: rgb(130, 54, 0);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+    text-shadow: 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255);
+    font-weight: 700;
+    font-size: 14px;
+    height: calc(gridLine * 3);
+    line-height: calc(gridLine * 3);
+    color: rgb(130, 54, 0);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .seatClosed {
-  filter: grayscale(1);
+    filter: grayscale(1);
 }
 
 .seatImage {
-  min-width: calc(gridLine * 15);
-  height: calc(gridLine * 18.75);
-  position: relative;
+    min-width: calc(gridLine * 15);
+    height: calc(gridLine * 18.75);
+    position: relative;
 }
 .userGetReady {
-  position: absolute;
-  bottom: gridLine;
-  right: calc(gridLine * 2);
-  z-index: 0;
-  box-shadow: 1px 1px 4px 0px rgb(0 0 0);
-  text-shadow: 1px 1px rgb(0 0 0 / 50%);
+    position: absolute;
+    bottom: gridLine;
+    right: calc(gridLine * 2);
+    z-index: 0;
+    box-shadow: 1px 1px 4px 0px rgb(0 0 0);
+    text-shadow: 1px 1px rgb(0 0 0 / 50%);
 }
 
 .startButton {
-  position: absolute;
-  bottom: calc(gridLine * 2);
-  right: calc(gridLine * 2);
-  z-index: 1;
+    position: absolute;
+    bottom: calc(gridLine * 2);
+    right: calc(gridLine * 2);
+    z-index: 1;
 }

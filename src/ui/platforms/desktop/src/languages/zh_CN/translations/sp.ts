@@ -514,8 +514,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'tunjiang_description',
-    target:
-      '结束阶段开始时，若你于本回合的出牌阶段内未使用牌指定过其他角色为目标，你可以摸X张牌（X为存活势力数）。',
+    target: '结束阶段开始时，若你于本回合的出牌阶段内未使用牌指定过其他角色为目标，你可以摸X张牌（X为存活势力数）。',
   },
 
   {
