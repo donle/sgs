@@ -66,12 +66,11 @@ export class CheZheng extends TriggerSkill {
       [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
     };
 
-    const chooseCardEvent =
-      {
-        fromId,
-        toId,
-        options,
-      };
+    const chooseCardEvent = {
+      fromId,
+      toId,
+      options,
+    };
 
     const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
     if (!response) {

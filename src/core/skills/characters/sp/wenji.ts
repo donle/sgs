@@ -1,5 +1,6 @@
 import { CardType, VirtualCard } from 'core/cards/card';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,

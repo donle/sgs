@@ -18,6 +18,7 @@ import { Button } from 'ui/button/button';
 import { CharacterCard } from 'ui/character/character';
 import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
+import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
 
@@ -31,14 +32,28 @@ export type CharactersListProps = PagePropsWithConfig<{
 
 @mobxReact.observer
 export class CharactersList extends React.Component<CharactersListProps> {
-  private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage().src!;
-  private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage().src!;
+  private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage();
+  private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage();
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   @mobx.observable.ref
   private focusedCharacterId: CharacterId;
   @mobx.observable.ref
   private focusedSkinName: string;
+
+  @mobx.observable.deep
+  private characterExtensionOptions = Sanguosha.getGameCharacterExtensions().map(ext => ({
+    label: this.props.translator.tr(ext),
+    checked: true,
+    id: ext,
+  }));
+
+  @mobx.observable.deep
+  private nationalityOptions = Sanguosha.getNationalitiesList().map(nationality => ({
+    label: this.props.translator.tr(Functional.getPlayerNationalityText(nationality)),
+    checked: true,
+    id: nationality,
+  }));
 
   private readonly backToLobby = () => {
     this.props.history.push('/lobby');
@@ -52,11 +67,25 @@ export class CharactersList extends React.Component<CharactersListProps> {
   @mobx.action
   private readonly onCheckExtension = (exts: GameCharacterExtensions[]) => {
     this.checkedExtensions = exts;
+    for (const option of this.characterExtensionOptions) {
+      if (exts.find(ext => ext === option.id)) {
+        option.checked = true;
+      } else {
+        option.checked = false;
+      }
+    }
   };
 
   @mobx.action
   private readonly onCheckNationality = (nationalities: CharacterNationality[]) => {
     this.selectedNationalities = nationalities;
+    for (const option of this.nationalityOptions) {
+      if (nationalities.find(nationality => nationality === option.id) != null) {
+        option.checked = true;
+      } else {
+        option.checked = false;
+      }
+    }
   };
 
   @mobx.computed
@@ -78,7 +107,7 @@ export class CharactersList extends React.Component<CharactersListProps> {
   render() {
     return (
       <div className={styles.charactersList}>
-        <img src={this.backgroundImage} alt="" className={styles.background} />
+        <Picture image={this.backgroundImage} className={styles.background} />
         <div className={styles.board}>
           <div className={styles.functionBoard}>
             <Button variant="primary" className={styles.button} onClick={this.backToLobby}>
@@ -86,25 +115,17 @@ export class CharactersList extends React.Component<CharactersListProps> {
             </Button>
           </div>
           <div className={styles.innerList}>
-            <img src={this.roomListBackgroundImage} alt="" className={styles.roomListBackground} />
+            <Picture image={this.roomListBackgroundImage} className={styles.roomListBackground} />
             <div className={styles.checkboxGroups}>
               <CheckBoxGroup
                 className={styles.packagesGroup}
-                options={Sanguosha.getGameCharacterExtensions().map(ext => ({
-                  label: this.props.translator.tr(ext),
-                  checked: true,
-                  id: ext,
-                }))}
+                options={this.characterExtensionOptions}
                 onChecked={this.onCheckExtension}
                 itemsPerLine={6}
               />
               <CheckBoxGroup
                 className={styles.nationalitiesGroup}
-                options={Sanguosha.getNationalitiesList().map(nationality => ({
-                  label: this.props.translator.tr(Functional.getPlayerNationalityText(nationality)),
-                  checked: true,
-                  id: nationality,
-                }))}
+                options={this.nationalityOptions}
                 onChecked={this.onCheckNationality}
                 itemsPerLine={6}
               />

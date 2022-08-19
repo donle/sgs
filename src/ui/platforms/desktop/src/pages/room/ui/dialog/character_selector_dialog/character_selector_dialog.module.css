@@ -1,5 +1,7 @@
 @value SanguoshaFont from '../../../../../ui/metrics/metrics.css';
 @value gridLine from '../../../../../ui/metrics/metrics.css';
+@value textGreen from '../../../../../ui/metrics/metrics.css';
+@value textHighlight from '../../../../../ui/metrics/metrics.css';
 
 .innerDialog {
     position: relative;
@@ -42,11 +44,11 @@
     min-width: calc(gridLine * 6);
     font-weight: 600;
     font-size: calc(gridLine * 2);
-    color: #dcad00;
+    color: textHighlight;
 }
 
 .relatedSkillTiltle {
-    color: rgb(127, 196, 25);
+    color: textGreen;
     font-size: calc(gridLine * 2);
     margin-bottom: calc(gridLine * 1.5);
     font-family: SanguoshaFont;
@@ -54,6 +56,6 @@
 }
 
 .relatedSkill {
-    color: rgb(127, 196, 25);
-    border-color: rgb(127, 196, 25);
+    color: textGreen;
+    border-color: textGreen;
 }

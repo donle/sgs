@@ -3,6 +3,13 @@
 @value SanguoshaFont from '../../../../ui/metrics/metrics.css';
 
 @value wuColor from '../../../../ui/metrics/metrics.css';
+@value textGrey from '../../../../ui/metrics/metrics.css';
+@value textWhite from '../../../../ui/metrics/metrics.css';
+@value textHighlight from '../../../../ui/metrics/metrics.css';
+@value textBlack from '../../../../ui/metrics/metrics.css';
+@value textUltraLightBlack from '../../../../ui/metrics/metrics.css';
+@value textWarning from '../../../../ui/metrics/metrics.css';
+@value textGreen from '../../../../ui/metrics/metrics.css';
 
 .player {
     display: flex;
@@ -27,7 +34,7 @@
     border-radius: calc(gridLine * 1.5);
 }
 .selected {
-    box-shadow: 0px 0px 10px 5px red;
+    box-shadow: 0px 0px 10px 5px textWarning;
 }
 .highlighted:not(.selected) {
     box-shadow: 0px 0px 10px 5px wuColor;
@@ -70,7 +77,7 @@
     position: absolute;
     bottom: calc(-3 * gridLine);
     margin: 0;
-    color: white;
+    color: textWhite;
     text-shadow: 0px 0px 3px rgba(50, 50, 50, 0.87), 0px 0px 5px rgba(50, 50, 50, 0.87),
         0px 0px 7px rgba(50, 50, 50, 0.87);
     z-index: -1;
@@ -89,7 +96,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    max-width: 24px;
+    max-width: calc(gridLine * 3);
     justify-self: flex-end;
 }
 .playerRole {
@@ -131,8 +138,8 @@
     position: absolute;
     width: 100%;
     text-align: center;
-    margin-top: 16px;
-    text-shadow: 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255);
+    margin-top: calc(gridLine * 2);
+    text-shadow: 0px 0px 2px textWhite, 0px 0px 2px textWhite, 0px 0px 2px textWhite;
     font-weight: 550;
     font-size: 14px;
     height: calc(gridLine * 3);
@@ -148,7 +155,7 @@
 }
 .playerEquips,
 .playerAbortedEquipSections {
-    height: calc(12 * 8px);
+    height: calc(12 * gridLine);
     display: flex;
     flex-direction: column;
     align-self: flex-end;
@@ -187,8 +194,8 @@
     position: absolute;
     font-size: 16px;
     font-weight: 550;
-    color: white;
-    text-shadow: 0px 0px 2px black, 0px 0px 2px black, 0px 0px 4px black, 0px 0px 4px black;
+    color: textWhite;
+    text-shadow: 0px 0px 2px textBlack, 0px 0px 2px textBlack, 0px 0px 4px textBlack, 0px 0px 4px textBlack;
 }
 .clickableHandcards {
     cursor: pointer;
@@ -230,11 +237,11 @@
     min-width: calc(gridLine * 6);
     font-weight: 600;
     font-size: calc(gridLine * 2);
-    color: #dcad00;
+    color: textHighlight;
 }
 
 .relatedSkillTiltle {
-    color: rgb(127, 196, 25);
+    color: textGreen;
     font-size: calc(gridLine * 2);
     margin-bottom: calc(gridLine * 1.5);
     font-family: SanguoshaFont;
@@ -243,17 +250,17 @@
 }
 
 .relatedSkill {
-    color: rgb(127, 196, 25);
-    border-color: rgb(127, 196, 25);
+    color: textGreen;
+    border-color: textGreen;
 }
 
 .playerTags {
     position: absolute;
     top: calc(gridLine * 5);
     left: calc(gridLine * 3);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
-    color: white;
+    color: textWhite;
 }
 
 .skillTags,
@@ -262,17 +269,17 @@
 }
 
 .skillTags {
-    margin-bottom: 4px;
+    margin-bottom: halfGridLine;
 }
 
 .skillTag {
-    background-color: grey;
-    margin: 0px 4px;
-    font-size: 13px;
+    background-color: textGrey;
+    margin: 0px halfGridLine;
+    font-size: 12px;
     font-weight: 500;
     background: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-    padding: 0 4px;
+    border-radius: halfGridLine;
+    padding: 0 halfGridLine;
 }
 .clickableSkillTag {
     cursor: pointer;
@@ -289,14 +296,14 @@
     bottom: 0;
     width: 100%;
     height: calc(100% - calc(gridLine * 2));
-    background-color: #cc1b0d;
+    background-color: textWarning;
     opacity: 0.3;
     z-index: -1;
 }
 
 .playBar {
     position: absolute;
-    bottom: calc(8px * -2.5);
+    bottom: calc(gridLine * -2.5);
     width: 100%;
 }
 
@@ -310,8 +317,8 @@
     position: absolute;
     right: 0;
     top: calc(gridLine * 8);
-    background-color: #424242;
-    color: white;
+    background-color: textUltraLightBlack;
+    color: textWhite;
     font-weight: 600;
 }
 

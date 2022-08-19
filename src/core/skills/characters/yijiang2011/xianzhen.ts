@@ -1,7 +1,8 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
@@ -213,7 +214,7 @@ export class XianZhenAddTarget extends TriggerSkill implements OnDefineReleaseTi
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     const { fromId, byCardId, isFirstTarget } = content;
-    if (byCardId === undefined || !isFirstTarget ) {
+    if (byCardId === undefined || !isFirstTarget) {
       return false;
     }
     const card = Sanguosha.getCardById(byCardId);

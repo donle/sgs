@@ -1,4 +1,5 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
+import { CharacterId } from 'core/characters/character';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
@@ -47,11 +48,31 @@ export type GameInfo = {
   roomName: string;
   passcode?: string;
   multiCharacters?: boolean;
-  enableObserver?: boolean;
+  excludedCharacters: CharacterId[];
+  playingTimeLimit?: number;
+  wuxiekejiTimeLimit?: number;
+  allowObserver?: boolean;
+  campaignMode: boolean;
   flavor: Flavor;
   gameMode: GameMode;
-  campaignMode: boolean;
   coreVersion: string;
+};
+
+export type TemporaryRoomCreationInfo = {
+  numberOfPlayers: number;
+  roomName: string;
+  gameMode: GameMode;
+  passcode?: string;
+  campaignMode?: boolean;
+  multiCharacters?: boolean;
+  excludedCharacters: CharacterId[];
+  playingTimeLimit?: number;
+  wuxiekejiTimeLimit?: number;
+  allowObserver?: boolean;
+  cardExtensions: GameCardExtensions[];
+  characterExtensions: GameCharacterExtensions[];
+  coreVersion: string;
+  hostPlayerId: PlayerId;
 };
 
 export type GameRunningInfo = {
@@ -86,3 +107,8 @@ export type GameCommonRuleObject = {
   additionalHold: number;
   additionalAttackDistance: number;
 };
+
+export type WaitingRoomGameSettings = Pick<
+  TemporaryRoomCreationInfo,
+  Exclude<keyof TemporaryRoomCreationInfo, 'roomName' | 'campaignMode' | 'coreVersion' | 'hostPlayerId'>
+> & { pveNumberOfPlayers: number };

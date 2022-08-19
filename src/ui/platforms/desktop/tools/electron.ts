@@ -23,6 +23,10 @@ export const DO_UPDATE = 'doUpdate';
 export const REQUEST_CORE_VERSION = 'requestCoreVersion';
 export const RESTART_CLIENT = 'restartClient';
 
+const ElectronData = {
+  Language: 'language',
+};
+
 app.setPath('userData', __dirname);
 
 type Flavor = 'dev' | 'prod';
@@ -65,7 +69,7 @@ class AppWindow {
   private windowInstance: BrowserWindow | undefined;
   private store = new Store('./savedata.json');
   private replay = new Replay();
-  private translation = getTranslations(this.store.get<Language>('language'));
+  private translation = getTranslations(this.store.get<Language>(ElectronData.Language));
 
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);

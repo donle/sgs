@@ -26,6 +26,7 @@ type ClientRoomInfo = {
   playerName: string;
   socket: ClientSocket;
   timestamp: number;
+  playerId: PlayerId;
 };
 
 export type DisplayCardProp = {

@@ -1,4 +1,5 @@
 @value gridLine from '../metrics/metrics.css';
+@value textUltraLightBlack from '../metrics/metrics.css';
 
 .slider {
     display: flex;
@@ -34,7 +35,7 @@
 }
 
 .dot {
-    border: 1px solid #404040;
+    border: 1px solid textUltraLightBlack;
     height: calc(gridLine * 2);
     width: calc(gridLine * 2);
     position: absolute;

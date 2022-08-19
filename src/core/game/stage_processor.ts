@@ -496,7 +496,7 @@ export class StageProcessor {
     if (specificStage === undefined) {
       return PlayerPhase.PhaseBegin;
     }
-    for (const [stage, stageList] of Object.entries(playerStagesList) as unknown as [string, PlayerPhaseStages[]][]) {
+    for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [string, PlayerPhaseStages[]][]) {
       if (stageList.includes(specificStage)) {
         return parseInt(stage, 10) as PlayerPhase;
       }

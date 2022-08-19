@@ -16,7 +16,7 @@ export type CharacterCardProps = {
   onClick?(character: Character): void;
   disabled?: boolean;
   className?: string;
-  size?: 'regular' | 'small';
+  size?: 'regular' | 'small' | 'tiny';
   selected?: boolean;
 };
 
@@ -42,12 +42,14 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
     this.characterImage = (await this.props.imageLoader.getCharacterImage(this.props.character.Name)).src;
   }
   render() {
-    const { character, translator, className, size, selected } = this.props;
+    const { character, translator, className, size, selected, onClick } = this.props;
     return (
       <div
         className={classNames(styles.characterCard, className, {
           [styles.small]: size === 'small',
+          [styles.tiny]: size === 'tiny',
           [styles.selected]: selected,
+          [styles.clickable]: !!onClick,
         })}
         onClick={this.onClick}
       >
@@ -58,10 +60,16 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
             </NationalityBadge>
             <CharacterHp
               character={character}
-              className={classNames(styles.characterHp, { [styles.small]: size === 'small' })}
+              className={classNames(styles.characterHp, {
+                [styles.small]: size === 'small',
+                [styles.tiny]: size === 'tiny',
+              })}
             />
             <img
-              className={classNames(styles.characterImage, { [styles.small]: size === 'small' })}
+              className={classNames(styles.characterImage, {
+                [styles.small]: size === 'small',
+                [styles.tiny]: size === 'tiny',
+              })}
               src={this.characterImage}
               alt=""
             />

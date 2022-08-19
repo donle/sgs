@@ -1,9 +1,12 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { ClientOfflineSocket } from 'core/network/socket.offline';
 import { PlayerInfo } from 'core/player/player_props';
+import { System } from 'core/shares/libs/system';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -50,24 +53,24 @@ export class ReplayRoomPage extends React.Component<
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
-  private defaultMainVolume = this.props.electronLoader.getData('mainVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
+  private defaultMainVolume = this.props.electronLoader.getData(ElectronData.MainVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.MainVolume), 10)
     : 50;
   @mobx.observable.ref
-  private defaultGameVolume = this.props.electronLoader.getData('gameVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
+  private defaultGameVolume = this.props.electronLoader.getData(ElectronData.GameVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.GameVolume), 10)
     : 50;
   @mobx.observable.ref
   private renderSideBoard = true;
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('gameVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.GameVolume, volume.toString());
       this.defaultGameVolume = volume;
       this.audioService.changeGameVolume();
     }),
     onMainVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('mainVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.MainVolume, volume.toString());
       this.defaultMainVolume = volume;
       this.audioService.changeBGMVolume();
     }),
@@ -125,9 +128,9 @@ export class ReplayRoomPage extends React.Component<
 
   private async stepDelay(identifier: GameEventIdentifiers) {
     if (ReplayRoomPage.nonDelayedEvents.includes(identifier)) {
-      await this.sleep(0);
+      await System.MainThread.sleep(0);
     } else {
-      await this.sleep(this.replayStepDelay);
+      await System.MainThread.sleep(this.replayStepDelay);
     }
   }
 
@@ -173,12 +176,6 @@ export class ReplayRoomPage extends React.Component<
     this.store.animationPosition.insertPlayer(replayData.viewerId);
 
     this.loadSteps(replayData.events);
-  }
-
-  private async sleep(ms: number) {
-    return new Promise<void>(r => {
-      setTimeout(() => r(), ms);
-    });
   }
 
   componentWillUnmount() {

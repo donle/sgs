@@ -53,14 +53,7 @@ export class ChengLve extends ActiveSkill {
 
     const dropNum = skillState ? 2 : 1;
 
-    const response = await room.askForCardDrop(
-      fromId,
-      dropNum,
-      [PlayerCardsArea.HandArea],
-      true,
-      undefined,
-      this.Name,
-    );
+    const response = await room.askForCardDrop(fromId, dropNum, [PlayerCardsArea.HandArea], true, undefined, this.Name);
     if (response.droppedCards.length === 0) {
       return false;
     }

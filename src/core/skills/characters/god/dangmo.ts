@@ -1,4 +1,5 @@
-import { EventPacker, EventProcessSteps, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventProcessSteps, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -71,9 +72,7 @@ export class DangMo extends TriggerSkill {
     ).extract();
   }
 
-  public getAnimationSteps(
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): EventProcessSteps {
+  public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): EventProcessSteps {
     return event.toIds ? [{ from: event.fromId, tos: event.toIds }] : [];
   }
 

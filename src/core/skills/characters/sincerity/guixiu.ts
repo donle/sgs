@@ -1,4 +1,5 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { AllStage, DamageEffectStage, TurnOverStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -43,7 +44,7 @@ export class GuiXiu extends TriggerSkill {
 
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.DamageEvent) {
-      room.getPlayerById(fromId).isFaceUp() || await room.turnOver(fromId);
+      room.getPlayerById(fromId).isFaceUp() || (await room.turnOver(fromId));
     } else {
       await room.drawCards(1, fromId, 'top', fromId, this.Name);
     }

@@ -1,0 +1,29 @@
+@value gridLine from '../../ui/metrics/metrics.css';
+@value textGrey from '../../ui/metrics/metrics.css';
+
+.waitingRoom {
+    display: block;
+    min-height: 100vh;
+}
+
+.mainContainer {
+    display: flex;
+    min-height: calc(100vh - calc(gridLine * 5));
+}
+
+.seats {
+    flex: auto;
+}
+
+.playersPanel {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+}
+
+.gameSettings {
+    width: calc(gridLine * 35);
+    border: 1px solid textGrey;
+    border-radius: 4px;
+    padding: gridLine;
+}

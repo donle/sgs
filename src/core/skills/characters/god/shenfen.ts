@@ -74,14 +74,7 @@ export class ShenFen extends ActiveSkill {
       if (handCardIds.length <= 4) {
         await room.dropCards(CardMoveReason.SelfDrop, handCardIds, to.Id, to.Id, this.GeneralName);
       } else {
-        const response = await room.askForCardDrop(
-          to.Id,
-          4,
-          [PlayerCardsArea.HandArea],
-          true,
-          undefined,
-          this.Name,
-        );
+        const response = await room.askForCardDrop(to.Id, 4, [PlayerCardsArea.HandArea], true, undefined, this.Name);
         response.droppedCards.length > 0 &&
           (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, to.Id, to.Id, this.GeneralName));
       }

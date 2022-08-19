@@ -1,0 +1,56 @@
+@value gridLine from '../metrics/metrics.css';
+
+.section {
+    display: flex;
+}
+
+.fullWidth {
+    width: 100vw;
+}
+
+.contained {
+    width: 100%;
+}
+
+.topSpacing8 {
+    margin-top: gridLine;
+}
+.topSpacing16 {
+    margin-top: calc(gridLine * 2);
+}
+.topSpacing24 {
+    margin-top: calc(gridLine * 3);
+}
+.topSpacing32 {
+    margin-top: calc(gridLine * 4);
+}
+.topSpacing40 {
+    margin-top: calc(gridLine * 5);
+}
+.topSpacing48 {
+    margin-top: calc(gridLine * 6);
+}
+.topSpacing96 {
+    margin-top: calc(gridLine * 12);
+}
+.bottomSpacing8 {
+    margin-bottom: gridLine;
+}
+.bottomSpacing16 {
+    margin-bottom: calc(gridLine * 2);
+}
+.bottomSpacing24 {
+    margin-bottom: calc(gridLine * 3);
+}
+.bottomSpacing32 {
+    margin-bottom: calc(gridLine * 4);
+}
+.bottomSpacing40 {
+    margin-bottom: calc(gridLine * 5);
+}
+.bottomSpacing48 {
+    margin-bottom: calc(gridLine * 6);
+}
+.bottomSpacing96 {
+    margin-bottom: calc(gridLine * 12);
+}

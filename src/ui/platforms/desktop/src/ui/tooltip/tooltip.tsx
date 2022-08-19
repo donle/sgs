@@ -8,7 +8,14 @@ export type TooltipProps = {
   closeAfter?: number;
   closeCallback?(): void;
   autoAnimation?: boolean;
-  position: ('left' | 'right' | 'top' | 'bottom' | 'center' | 'slightTop' | 'slightBottom')[];
+  position:
+    | ('left' | 'right' | 'top' | 'bottom' | 'center' | 'slightTop' | 'slightBottom')[]
+    | {
+        top?: number;
+        left?: number;
+        right?: number;
+        bottom?: number;
+      };
 };
 
 let timer: NodeJS.Timer | undefined;
@@ -28,12 +35,23 @@ export const Tooltip = (props: TooltipProps) => {
   });
 
   const divClassName: any = {};
-  for (const pos of position) {
-    divClassName[styles[pos]] = true;
+  const tooltipStyles: React.CSSProperties = {};
+  if (position instanceof Array) {
+    for (const pos of position) {
+      divClassName[styles[pos]] = true;
+    }
+  } else {
+    tooltipStyles.position = 'fixed';
+    for (const key of Object.keys(position)) {
+      tooltipStyles[key] = `${position[key]}px`;
+    }
   }
 
   return (
-    <div className={classNames(styles.tooltip, className, { ...divClassName, [styles.shining]: autoAnimation })}>
+    <div
+      style={tooltipStyles}
+      className={classNames(styles.tooltip, className, { ...divClassName, [styles.shining]: autoAnimation })}
+    >
       {children}
     </div>
   );

@@ -1,5 +1,6 @@
 import { CharacterNationality } from 'core/characters/character';
-import { CardDrawReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardDrawReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import {
   AllStage,
   DrawCardStage,

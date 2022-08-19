@@ -2,7 +2,8 @@ import { BaGuaZhenSkillTrigger } from 'core/ai/skills/cards/baguazhen';
 import { CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Jink } from 'core/cards/standard/jink';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -45,9 +46,8 @@ export class BaGuaZhenSkill extends TriggerSkill {
     return (
       owner.Id === content.toId &&
       CardMatcher.match(cardMatcher, jinkMatcher) &&
-      owner
-        .getSkills<FilterSkill>('filter')
-        .find(skill => !skill.canUseCard(jinkMatcher, room, owner.Id, content)) === undefined
+      owner.getSkills<FilterSkill>('filter').find(skill => !skill.canUseCard(jinkMatcher, room, owner.Id, content)) ===
+        undefined
     );
   }
 

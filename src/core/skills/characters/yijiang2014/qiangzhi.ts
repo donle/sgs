@@ -1,5 +1,6 @@
 import { CardType } from 'core/cards/card';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
@@ -166,10 +167,7 @@ export class QiangZhiShadow extends TriggerSkill implements OnDefineReleaseTimin
   }
 
   public getSkillLog(): PatchedTranslationObject {
-    return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to draw a card?',
-      this.Name,
-    ).extract();
+    return TranslationPack.translationJsonPatcher('{0}: do you want to draw a card?', this.Name).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

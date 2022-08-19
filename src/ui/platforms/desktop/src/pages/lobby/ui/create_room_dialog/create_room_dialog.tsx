@@ -1,218 +1,175 @@
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
-import { GameCharacterExtensions } from 'core/game/game_props';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { GameMode } from 'core/shares/types/room_props';
-import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
+import * as mobx from 'mobx';
+import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Dialog } from 'ui/dialog/dialog';
+import { Picture } from 'ui/picture/picture';
 import styles from './create_room_dialog.module.css';
+import { Messages } from './messages';
 
-function getGameModeOptions(translator: ClientTranslationModule) {
-  return [
+@observer
+export class CreateRoomDialog extends React.Component<{
+  playerName: string;
+  translator: ClientTranslationModule;
+  onSubmit(data: TemporaryRoomCreationInfo, roomName: string, passcode?: string): void;
+  onCancel(): void;
+  imageLoader: ImageLoader;
+  electronLoader: ElectronLoader;
+}> {
+  private username: string = this.props.electronLoader.getData(ElectronData.PlayerName);
+  @mobx.observable.ref
+  private numberOfPlayers = 2;
+  @mobx.observable.ref
+  private passcode = '';
+  @mobx.observable.ref
+  private roomName = this.username
+    ? this.props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", this.username).extract())
+    : '';
+
+  @mobx.observable.deep
+  private gameModeOptions = [
     {
-      label: translator.tr(GameMode.Standard),
+      label: this.props.translator.tr(Messages.multi()),
       id: GameMode.Standard,
       checked: false,
     },
     {
-      label: translator.tr(GameMode.OneVersusTwo),
-      id: GameMode.OneVersusTwo,
-      checked: false,
-    },
-    {
-      label: translator.tr(GameMode.TwoVersusTwo),
-      id: GameMode.TwoVersusTwo,
-      checked: false,
-    },
-    {
-      label: translator.tr(GameMode.Hegemony),
-      id: GameMode.Hegemony,
-      checked: false,
-      disabled: true,
-    },
-    {
-      label: translator.tr(GameMode.Pve),
+      label: this.props.translator.tr(Messages.campaign()),
       id: GameMode.Pve,
       checked: true,
-      disabled: false,
     },
   ];
-}
 
-function getGameCharacterExtensions(translator: ClientTranslationModule) {
-  return Sanguosha.getGameCharacterExtensions().map(extension => ({
-    id: extension,
-    label: translator.tr(extension),
-    checked: true,
-    disabled: extension === GameCharacterExtensions.Standard,
-  }));
-}
-
-export type TemporaryRoomCreationInfo = {
-  numberOfPlayers: number;
-  roomName: string;
-  gameMode: GameMode;
-  passcode?: string;
-  campaignMode?: boolean;
-  characterExtensions: GameCharacterExtensions[];
-  coreVersion: string;
-};
-
-export const CreateRoomDialog = (props: {
-  translator: ClientTranslationModule;
-  onSubmit(data: TemporaryRoomCreationInfo): void;
-  onCancel(): void;
-  imageLoader: ImageLoader;
-  electronLoader: ElectronLoader;
-}) => {
-  const username: string = props.electronLoader.getData('username');
-  const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
-  const [checkedGameMode, setcheckedGameMode] = React.useState<GameMode | undefined>(GameMode.Pve);
-  const [characterExtensions, setCharacterExtensions] = React.useState<GameCharacterExtensions[]>(
-    Sanguosha.getGameCharacterExtensions(),
-  );
-  const [playerSelectionDisabled, disablePlayerSelection] = React.useState<boolean>(false);
-  const [playerSelectionSwitch, switchPlayerSelection] = React.useState<boolean>(true);
-  const [passcode, setPasscode] = React.useState<string>();
-  const [roomName, setRoomName] = React.useState<string>(
-    username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
-  );
-
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  private readonly onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    /* const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2; */
-    props.onSubmit({
-      numberOfPlayers,
-      roomName,
-      gameMode: checkedGameMode!,
-      passcode,
-      characterExtensions,
-      campaignMode: false,
-      coreVersion: Sanguosha.Version,
-    });
+
+    const gameMode = this.gameModeOptions.find(o => o.checked)?.id!;
+    this.props.onSubmit(
+      {
+        hostPlayerId: this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
+        numberOfPlayers: gameMode === GameMode.Pve ? this.numberOfPlayers : 8,
+        roomName: this.roomName,
+        gameMode:
+          gameMode === GameMode.Pve
+            ? gameMode
+            : this.props.electronLoader.getData(ElectronData.RoomSettingsGameMode) || gameMode,
+        passcode: this.passcode,
+        characterExtensions:
+          this.props.electronLoader.getData(ElectronData.RoomSettingsCharacterExtensions) ||
+          Sanguosha.getGameCharacterExtensions(),
+        campaignMode: gameMode === GameMode.Pve,
+        coreVersion: Sanguosha.Version,
+        cardExtensions:
+          this.props.electronLoader.getData(ElectronData.RoomSettingsCardExtensions) ||
+          Sanguosha.getCardExtensionsFromGameMode(gameMode),
+        allowObserver: this.props.electronLoader.getData(ElectronData.RoomSettingsAllowObserver) || false,
+        playingTimeLimit: this.props.electronLoader.getData(ElectronData.RoomSettingsPlayTime) || 60,
+        wuxiekejiTimeLimit: this.props.electronLoader.getData(ElectronData.RoomSettingsWuxiekejiTime) || 15,
+        excludedCharacters: this.props.electronLoader.getData(ElectronData.RoomSettingsDisabledCharacters) || [],
+      },
+      this.roomName,
+      this.passcode,
+    );
   };
 
-  const onRoomNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRoomName(event.target.value);
+  @mobx.action
+  onRoomNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.roomName = event.target.value;
   };
-  const onPasscodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPasscode(event.target.value);
-  };
-  const onNumberOfPlayersChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setNumberOfPlayers(parseInt(event.target.value, 10));
+  @mobx.action
+  onPasscodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.passcode = event.target.value;
   };
 
-  const getPlayerOptions = () => {
-    const options: { content: string | PatchedTranslationObject; value: number }[] = [];
-    if (playerSelectionSwitch) {
-      options.push({ content: TranslationPack.translationJsonPatcher('one player').extract(), value: 2 });
-      options.push({ content: TranslationPack.translationJsonPatcher('two players').extract(), value: 3 });
-      options.push({ content: TranslationPack.translationJsonPatcher('pve classic one players').extract(), value: 4 });
-      options.push({ content: TranslationPack.translationJsonPatcher('pve classic two players').extract(), value: 5 });
-    } else {
-      for (let i = 2; i <= 8; i++) {
-        options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });
+  @mobx.action
+  onNumberOfPlayersChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    this.numberOfPlayers = parseInt(event.target.value, 10);
+  };
+
+  @mobx.action
+  private readonly onGameModeChecked = (gameModes: GameMode[]) => {
+    for (const option of this.gameModeOptions) {
+      if (gameModes.find(mode => mode === option.id)) {
+        option.checked = true;
+      } else {
+        option.checked = false;
       }
     }
-    return options;
   };
 
-  const onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  private readonly selectPlayerOptions = [
+    { content: 'one player', value: 2 },
+    { content: 'pve classic one players', value: 4 },
+  ];
+
+  private readonly onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
   };
 
-  const onGameModeChecked = (checkedIds: GameMode[]) => {
-    if (checkedIds.length === 0) {
-      setcheckedGameMode(undefined);
-    } else {
-      setcheckedGameMode(checkedIds[0]);
-    }
-    switchPlayerSelection(checkedIds[0] === GameMode.Pve);
-    disablePlayerSelection(checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo);
+  render() {
+    const { props } = this;
 
-    if (checkedIds[0] === GameMode.Standard) {
-      setNumberOfPlayers(2);
-    } else if (checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo) {
-      setNumberOfPlayers(checkedIds[0] === GameMode.OneVersusTwo ? 3 : 4);
-    } else if (checkedIds[0] === GameMode.Pve) {
-      setNumberOfPlayers(2);
-    }
-  };
-
-  const onCharacterExtensionsChecked = (checkedIds: GameCharacterExtensions[]) => {
-    if (checkedIds.length === 0) {
-      setCharacterExtensions([]);
-    } else {
-      setCharacterExtensions(checkedIds);
-    }
-  };
-
-  return (
-    <Dialog className={styles.createRoomDialog} onClose={props.onCancel}>
-      <img src={props.imageLoader.getDialogBackgroundImage().src} alt="bg" className={styles.background} />
-      <form onSubmit={onSubmit} className={styles.createRoomForm} onMouseDown={onAction}>
-        <div className={styles.layout}>
-          <div className={classNames(styles.verticalLayout, styles.basicInfo)}>
-            <div className={styles.inputField}>
-              <span className={styles.inputLabelText}>{props.translator.tr('please enter your room name')}</span>
-              <input className={styles.input} value={roomName} onChange={onRoomNameChange} />
+    return (
+      <Dialog className={styles.createRoomDialog} onClose={props.onCancel}>
+        <Picture image={props.imageLoader.getDialogBackgroundImage()} className={styles.background} />
+        <form onSubmit={this.onSubmit} className={styles.createRoomForm} onMouseDown={this.onAction}>
+          <div className={styles.layout}>
+            <div className={classNames(styles.verticalLayout, styles.basicInfo)}>
+              <div className={styles.inputField}>
+                <span className={styles.inputLabelText}>{props.translator.tr(Messages.enterRoomName())}</span>
+                <input className={styles.input} value={this.roomName} onChange={this.onRoomNameChange} />
+              </div>
+              <div className={styles.inputField}>
+                <span className={styles.inputLabelText}>{props.translator.tr(Messages.enterRoomPassword())}</span>
+                <input className={styles.input} value={this.passcode} onChange={this.onPasscodeChange} />
+              </div>
+              <div className={styles.inputField}>
+                <span className={styles.inputLabelText}>{props.translator.tr(Messages.enterPlayersNumber())}</span>
+                <select
+                  className={styles.input}
+                  value={this.numberOfPlayers}
+                  onChange={this.onNumberOfPlayersChange}
+                  disabled={this.gameModeOptions.find(o => o.checked)?.id !== GameMode.Pve}
+                >
+                  {this.selectPlayerOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {props.translator.tr(option.content)}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div className={styles.inputField}>
-              <span className={styles.inputLabelText}>{props.translator.tr('please enter your room passcode')}</span>
-              <input className={styles.input} value={passcode} onChange={onPasscodeChange} />
-            </div>
-            <div className={styles.inputField}>
-              <span className={styles.inputLabelText}>{props.translator.tr('please choose number of players')}</span>
-              <select
-                className={styles.input}
-                value={numberOfPlayers}
-                onChange={onNumberOfPlayersChange}
-                disabled={playerSelectionDisabled}
-              >
-                {getPlayerOptions().map(option => (
-                  <option key={option.value} value={option.value}>
-                    {props.translator.tr(option.content)}
-                  </option>
-                ))}
-              </select>
+            <div className={styles.verticalLayout}>
+              <div className={styles.inputField}>
+                <CheckBoxGroup
+                  head={props.translator.tr(Messages.selectGameMode())}
+                  options={this.gameModeOptions}
+                  onChecked={this.onGameModeChecked}
+                  excludeSelection={true}
+                />
+              </div>
             </div>
           </div>
-          <div className={styles.verticalLayout}>
-            <div className={styles.inputField}>
-              <span className={styles.inputLabelText}>{props.translator.tr('please select a game mode')}</span>
-              <CheckBoxGroup
-                options={getGameModeOptions(props.translator)}
-                excludeSelection={true}
-                onChecked={onGameModeChecked}
-              />
-            </div>
-            <div className={styles.inputField}>
-              <span className={styles.inputLabelText}>{props.translator.tr('please select character extensions')}</span>
-              <CheckBoxGroup
-                options={getGameCharacterExtensions(props.translator)}
-                onChecked={onCharacterExtensionsChecked}
-              />
-            </div>
+          <div className={styles.submitSection}>
+            <Button variant="primary" type="submit">
+              {props.translator.tr(Messages.confirm())}
+            </Button>
+            <Button variant="primary" type="button" onClick={props.onCancel}>
+              {props.translator.tr(Messages.cancel())}
+            </Button>
           </div>
-        </div>
-        <div className={styles.submitSection}>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={checkedGameMode === undefined || characterExtensions.length === 0}
-          >
-            {props.translator.tr('confirm')}
-          </Button>
-          <Button variant="primary" type="button" onClick={props.onCancel}>
-            {props.translator.tr('cancel')}
-          </Button>
-        </div>
-      </form>
-    </Dialog>
-  );
-};
+        </form>
+      </Dialog>
+    );
+  }
+}

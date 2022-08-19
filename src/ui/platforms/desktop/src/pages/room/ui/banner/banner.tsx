@@ -10,14 +10,15 @@ import styles from './banner.module.css';
 
 export type BannerProps = {
   roomName: string;
-  roomIndex: number;
+  roomIndex?: number;
   translator: ClientTranslationModule;
   connectionService: ConnectionService;
   className?: string;
   defaultPing?: number;
   onClickSettings(): void;
   onSwitchSideBoard?(): boolean;
-  host: ServerHostTag;
+  host?: ServerHostTag;
+  variant?: 'room' | 'waitingRoom';
 };
 
 const BreadCrumb = (props: { content: string[] }) => {
@@ -35,9 +36,9 @@ const BreadCrumb = (props: { content: string[] }) => {
 
 export const Banner = (props: BannerProps) => {
   const history = useHistory();
-  const { roomIndex, roomName, translator, host, defaultPing } = props;
+  const { roomIndex, roomName, translator, host, defaultPing, variant = 'room' } = props;
   const [isSideBarOpened, switchSideBar] = React.useState(true);
-  const breadcrumb = [roomName, `${translator.tr('room id')}: ${roomIndex}`];
+  const breadcrumb: string[] = roomIndex ? [roomName, `${translator.tr('room id')}: ${roomIndex}`] : [roomName];
 
   const onClick = () => {
     history.push('/lobby');
@@ -47,15 +48,17 @@ export const Banner = (props: BannerProps) => {
     <div className={classNames(styles.banner, props.className)}>
       <BreadCrumb content={breadcrumb} />
       <div className={styles.controlButtons}>
-        <Button
-          variant="primary"
-          onClick={() => {
-            props.onSwitchSideBoard && switchSideBar(props.onSwitchSideBoard());
-          }}
-          className={styles.settingsButton}
-        >
-          {translator.tr((isSideBarOpened ? 'close' : 'open') + ' sideboard')}
-        </Button>
+        {variant === 'room' && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              props.onSwitchSideBoard && switchSideBar(props.onSwitchSideBoard());
+            }}
+            className={styles.settingsButton}
+          >
+            {translator.tr((isSideBarOpened ? 'close' : 'open') + ' sideboard')}
+          </Button>
+        )}
         <Button variant="primary" onClick={props.onClickSettings} className={styles.settingsButton}>
           {translator.tr('settings')}
         </Button>
@@ -63,12 +66,14 @@ export const Banner = (props: BannerProps) => {
           {translator.tr('back to lobby')}
         </Button>
       </div>
-      <SignalBar
-        host={host}
-        defaultPing={defaultPing}
-        connectionService={props.connectionService}
-        className={styles.signalBar}
-      />
+      {host && (
+        <SignalBar
+          host={host}
+          defaultPing={defaultPing}
+          connectionService={props.connectionService}
+          className={styles.signalBar}
+        />
+      )}
     </div>
   );
 };

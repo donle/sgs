@@ -294,7 +294,10 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
         {relatedSkills.length > 0 &&
           relatedSkills.map(skill => (
             <div className={styles.skill} key={skill.Name}>
-              <span className={classNames(styles.skillName, styles.relatedSkill)} onClick={this.onPlaySkillAudio(skill.Name, this.props.skinName)}>
+              <span
+                className={classNames(styles.skillName, styles.relatedSkill)}
+                onClick={this.onPlaySkillAudio(skill.Name, this.props.skinName)}
+              >
                 {this.props.translator.tr(skill.Name)}
               </span>
               <span

@@ -50,7 +50,12 @@ export class QiaoMeng extends TriggerSkill {
       triggeredBySkills: [this.Name],
     };
 
-    const response = await room.askForChoosingPlayerCard(askForChooseCardEvent, askForChooseCardEvent.fromId, true, true);
+    const response = await room.askForChoosingPlayerCard(
+      askForChooseCardEvent,
+      askForChooseCardEvent.fromId,
+      true,
+      true,
+    );
 
     if (response && response.selectedCard !== undefined) {
       const card = Sanguosha.getCardById(response.selectedCard);

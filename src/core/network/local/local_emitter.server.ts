@@ -1,19 +1,19 @@
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   serverActiveListenerEvents,
   ServerEventFinder,
   serverResponsiveListenerEvents,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { EventEmitterProps } from './event_emitter_props';
-import { LocalServerEmitterInnterface } from './event_emitter_props';
+import { LocalServerEmitterInterface } from './event_emitter_props';
 
-export class LocalServerEmitter implements LocalServerEmitterInnterface {
+export class LocalServerEmitter implements LocalServerEmitterInterface {
   private room: ServerRoom | undefined;
   private playerId: string;
   private asyncResponseResolver: {
@@ -146,7 +146,6 @@ export class LocalServerEmitter implements LocalServerEmitterInnterface {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    room.getPlayerById(event.playerId).setOffline(true);
     const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
       playerId: event.playerId,
       quit: true,
@@ -161,10 +160,8 @@ export class LocalServerEmitter implements LocalServerEmitterInnterface {
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
     );
     room.getPlayerById(event.playerId).setOffline(true);
-    if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
-      room.close();
-      return;
-    }
+    room.close();
+    socket.disconnect();
   }
 
   public emit(room: ServerRoom) {

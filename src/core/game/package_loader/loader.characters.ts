@@ -31,33 +31,6 @@ export type CharacterPackage<Extension extends GameCharacterExtensions> = {
 };
 export type CharacterPackageLoader = (index: number) => Character[];
 
-const allCharacterLoaders: {
-  [P in GameCharacterExtensions]: CharacterPackageLoader;
-} = {
-  [GameCharacterExtensions.Standard]: StandardCharacterPackage,
-  [GameCharacterExtensions.Wind]: WindCharacterPackage,
-  [GameCharacterExtensions.Fire]: FireCharacterPackage,
-  [GameCharacterExtensions.Forest]: ForestCharacterPackage,
-  [GameCharacterExtensions.Mountain]: MountainCharacterPackage,
-  [GameCharacterExtensions.Shadow]: ShadowCharacterPackage,
-  [GameCharacterExtensions.Thunder]: ThunderCharacterPackage,
-  [GameCharacterExtensions.God]: GodCharacterPackage,
-  [GameCharacterExtensions.YiJiang2011]: YiJiang2011Package,
-  [GameCharacterExtensions.YiJiang2012]: YiJiang2012Package,
-  [GameCharacterExtensions.YiJiang2013]: YiJiang2013Package,
-  [GameCharacterExtensions.YiJiang2014]: YiJiang2014Package,
-  [GameCharacterExtensions.YiJiang2015]: YiJiang2015Package,
-  [GameCharacterExtensions.SP]: SPPackage,
-  [GameCharacterExtensions.Spark]: SparkPackage,
-  [GameCharacterExtensions.Decade]: DecadePackage,
-  [GameCharacterExtensions.Limited]: LimitedPackage,
-  [GameCharacterExtensions.Biographies]: BiographiesPackage,
-  [GameCharacterExtensions.Mobile]: MobilePackage,
-  [GameCharacterExtensions.Wisdom]: WisdomPackage,
-  [GameCharacterExtensions.Sincerity]: SincerityCharacterPackage,
-  [GameCharacterExtensions.Pve]: PvePackage,
-};
-
 export class CharacterLoader {
   private static instance: CharacterLoader;
   private characters: CharacterPackages = {} as any;
@@ -65,6 +38,33 @@ export class CharacterLoader {
   private constructor() {
     this.loadCharacters();
   }
+
+  private static readonly CharacterLoaders: {
+    [P in GameCharacterExtensions]: CharacterPackageLoader;
+  } = {
+    [GameCharacterExtensions.Standard]: StandardCharacterPackage,
+    [GameCharacterExtensions.Wind]: WindCharacterPackage,
+    [GameCharacterExtensions.Fire]: FireCharacterPackage,
+    [GameCharacterExtensions.Forest]: ForestCharacterPackage,
+    [GameCharacterExtensions.Mountain]: MountainCharacterPackage,
+    [GameCharacterExtensions.Shadow]: ShadowCharacterPackage,
+    [GameCharacterExtensions.Thunder]: ThunderCharacterPackage,
+    [GameCharacterExtensions.God]: GodCharacterPackage,
+    [GameCharacterExtensions.YiJiang2011]: YiJiang2011Package,
+    [GameCharacterExtensions.YiJiang2012]: YiJiang2012Package,
+    [GameCharacterExtensions.YiJiang2013]: YiJiang2013Package,
+    [GameCharacterExtensions.YiJiang2014]: YiJiang2014Package,
+    [GameCharacterExtensions.YiJiang2015]: YiJiang2015Package,
+    [GameCharacterExtensions.SP]: SPPackage,
+    [GameCharacterExtensions.Spark]: SparkPackage,
+    [GameCharacterExtensions.Decade]: DecadePackage,
+    [GameCharacterExtensions.Limited]: LimitedPackage,
+    [GameCharacterExtensions.Biographies]: BiographiesPackage,
+    [GameCharacterExtensions.Mobile]: MobilePackage,
+    [GameCharacterExtensions.Wisdom]: WisdomPackage,
+    [GameCharacterExtensions.Sincerity]: SincerityCharacterPackage,
+    [GameCharacterExtensions.Pve]: PvePackage,
+  };
 
   public static getInstance() {
     if (!this.instance) {
@@ -76,7 +76,7 @@ export class CharacterLoader {
 
   private loadCharacters() {
     let index = 0;
-    for (const [packageName, loader] of Object.entries(allCharacterLoaders)) {
+    for (const [packageName, loader] of Object.entries(CharacterLoader.CharacterLoaders)) {
       const characters = loader(index);
       this.characters[packageName] = characters;
 

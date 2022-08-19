@@ -1,4 +1,5 @@
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
+import { Sanguosha } from 'core/game/engine';
 import { ClientLogger } from 'core/shares/libs/logger/client_logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -10,6 +11,7 @@ import { CharactersList } from 'pages/characters_list/characters_list';
 import { OpenningPage } from 'pages/openning/openning';
 import { ReplayRoomPage } from 'pages/room/replay_room';
 import { RoomPage } from 'pages/room/room';
+import { WaitingRoom } from 'pages/waiting_room/waiting_room';
 import { ClientConfig, ClientFlavor } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
@@ -44,7 +46,7 @@ export class App extends React.PureComponent<{
   // }
   componentDidMount() {
     // this.getSkinData();
-    document.title = this.props.translator.tr('New QSanguosha');
+    document.title = this.props.translator.tr('New QSanguosha') + ' - ' + Sanguosha.Version;
     installEventEmitter();
   }
 
@@ -121,6 +123,22 @@ export class App extends React.PureComponent<{
                 electronLoader={this.props.electronLoader}
                 config={this.props.config}
                 translator={this.props.translator}
+              />
+            )}
+          />
+          <Route
+            path={'/waiting-room/:slug'}
+            render={({ match, location, history }) => (
+              <WaitingRoom
+                location={location}
+                history={history}
+                match={match}
+                imageLoader={this.imageLoader}
+                audioLoader={this.audioLoader}
+                electronLoader={this.props.electronLoader}
+                config={this.props.config}
+                translator={this.props.translator}
+                getConnectionService={this.getConnectionService}
               />
             )}
           />

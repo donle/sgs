@@ -141,7 +141,7 @@ export const skillAudios: Word[] = [
     source: '$zengdao:2',
     target: '治军之道，功过分明。',
   },
- 
+
   {
     source: '$guolun:1',
     target: '品过是非，讨评好坏。',
@@ -149,7 +149,7 @@ export const skillAudios: Word[] = [
   {
     source: '$guolun:2',
     target: '若有天下太平时，必讨四海之内才。',
-  }, 
+  },
   {
     source: '$songsang:1',
     target: '送丧至东吴，使命已完。',
@@ -174,7 +174,7 @@ export const skillAudios: Word[] = [
   {
     source: '$guanwei:2',
     target: '天下未定，请主公以大局为重。',
-  }, 
+  },
   {
     source: '$gongqing:1',
     target: '尔辈何故与降虏交善！',
@@ -183,7 +183,7 @@ export const skillAudios: Word[] = [
     source: '$gongqing:2',
     target: '豪将在外，增兵必成祸患啊！',
   },
- 
+
   {
     source: '$guanchao:1',
     target: '朝夕之间，可知所进退。',

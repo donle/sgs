@@ -13,6 +13,10 @@ import { MarkEnum } from '../types/mark_list';
 import { Precondition } from './precondition/precondition';
 
 export namespace System {
+  export const MainThread = {
+    sleep: async (milliseconds: number) => new Promise<void>(r => setTimeout(r, milliseconds)),
+  };
+
   export const enum AskForChoosingCardEventFilter {
     SheLie,
     PoXi,

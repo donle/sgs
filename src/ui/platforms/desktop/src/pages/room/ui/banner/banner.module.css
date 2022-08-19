@@ -1,12 +1,14 @@
 @value gridLine from '../../../../ui/metrics/metrics.css';
+@value textWhite from '../../../../ui/metrics/metrics.css';
+@value textLightGrey from '../../../../ui/metrics/metrics.css';
 
 .banner {
     padding: calc(gridLine / 2) gridLine;
     display: flex;
     background: rgba(0, 0, 0, 0.64);
     font-weight: 550;
-    text-shadow: 0 0 2px #1f1f1f, 0 0 2px #1f1f1f, 0 0 4px white, 0 0 4px white;
-    color: #c7c7c7;
+    text-shadow: 0 0 2px hsl(0, 0%, 12%), 0 0 2px #1f1f1f, 0 0 4px textWhite, 0 0 4px textWhite;
+    color: textLightGrey;
     box-shadow: 0 0px 5px 5px rgba(0, 0, 0, 0.4);
 }
 

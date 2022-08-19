@@ -1,8 +1,14 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
-import { DamageType } from 'core/game/game_props';
+import { DamageType, GameInfo, TemporaryRoomCreationInfo, WaitingRoomGameSettings } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
-import { EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
+import {
+  EventUtilities,
+  GameEventIdentifiers,
+  ServerEventFinder,
+  WaitingRoomEvent,
+  WaitingRoomEventUtilities,
+} from './event';
 
 export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
@@ -93,6 +99,9 @@ export interface ClientEvent extends EventUtilities {
     playerId: string;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
+    playerId: PlayerId;
+  };
+  [GameEventIdentifiers.PlayerReadyEvent]: {
     playerId: PlayerId;
   };
   [GameEventIdentifiers.PlayerDiedEvent]: {
@@ -188,6 +197,10 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.GameReadyEvent]: never;
   [GameEventIdentifiers.HookUpSkillsEvent]: never;
   [GameEventIdentifiers.UnhookSkillsEvent]: never;
+  [GameEventIdentifiers.BackToWaitingRoomEvent]: {
+    playerId: PlayerId;
+    playerName: string;
+  };
 }
 
 type PlayCardOrSkillEvent =
@@ -213,3 +226,41 @@ export type PlayerCardOrSkillInnerEvent =
       eventName: GameEventIdentifiers.ReforgeEvent;
       event: ClientEvent[GameEventIdentifiers.ReforgeEvent];
     };
+
+export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
+  [WaitingRoomEvent.GameInfoUpdate]: {
+    roomInfo: WaitingRoomGameSettings;
+  };
+  [WaitingRoomEvent.PlayerChatMessage]: {
+    from: string;
+    messageContent: string;
+  };
+  [WaitingRoomEvent.GameStart]: {
+    roomInfo: Pick<GameInfo, Exclude<keyof GameInfo, 'flavor'>> & { roomId?: number };
+  };
+  [WaitingRoomEvent.PlayerEnter]: {
+    playerInfo: { playerId: PlayerId; avatarId: number; playerName: string };
+    isHost: boolean;
+    coreVersion: string;
+  };
+  [WaitingRoomEvent.PlayerLeave]: {
+    leftPlayerId: PlayerId;
+  };
+  [WaitingRoomEvent.PlayerReady]: {
+    readyPlayerId: PlayerId;
+    isReady: boolean;
+  };
+  [WaitingRoomEvent.SeatDisabled]: {
+    seatId: number;
+    disabled: boolean;
+    kickedPlayerId?: PlayerId;
+  };
+  [WaitingRoomEvent.RoomCreated]: {
+    roomInfo: TemporaryRoomCreationInfo & { roomId?: number };
+    hostPlayerId: PlayerId;
+  };
+  [WaitingRoomEvent.ChangeHost]: {
+    prevHostPlayerId: PlayerId;
+    newHostPlayerId: PlayerId;
+  };
+}

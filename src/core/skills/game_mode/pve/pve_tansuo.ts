@@ -1,5 +1,6 @@
 import { CardType } from 'core/cards/card';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { CardUseStage } from 'core/game/stage_processor';
@@ -46,19 +47,19 @@ export class PveTanSuo extends TriggerSkill {
     const { triggeredOnEvent } = event;
     const { fromId, cardId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     const longshen = room.getPlayerById(event.fromId);
-    const longshenlv = PveHuaShen.CHARACTERS.length-room.getMark(longshen.Id, MarkEnum.PveHuaShen);
+    const longshenlv = PveHuaShen.CHARACTERS.length - room.getMark(longshen.Id, MarkEnum.PveHuaShen);
     const cardup = longshen.getFlag<string[]>(this.GeneralName) || [];
     const cardNumber = Sanguosha.getCardById(cardId).CardNumber;
     const encounter = Math.floor(Math.random() * 200 + 1);
     const cardcounter = room.Analytics.getCardUseRecord(fromId, 'round').length;
-    if (cardNumber > encounter/cardcounter) {
+    if (cardNumber > encounter / cardcounter) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} ouyujiguan',
           room.getPlayerById(fromId).Name,
         ).extract(),
       });
-      const damage = Math.floor(Math.random() * (longshenlv-2) + 1);
+      const damage = Math.floor(Math.random() * (longshenlv - 2) + 1);
       await room.damage({
         fromId: undefined,
         toId: fromId,
@@ -66,10 +67,10 @@ export class PveTanSuo extends TriggerSkill {
         damageType: DamageType.Normal,
         triggeredBySkills: [this.Name],
       });
-      if (encounter/cardcounter >= 13||encounter/cardcounter <= 14) {
+      if (encounter / cardcounter >= 13 || encounter / cardcounter <= 14) {
         await room.changeMaxHp(fromId, -1);
       }
-      if (cardNumber / (encounter/cardcounter) > 4 ) {
+      if (cardNumber / (encounter / cardcounter) > 4) {
         room.broadcast(GameEventIdentifiers.CustomGameDialog, {
           translationsMessage: TranslationPack.translationJsonPatcher(
             '{0} ouyujiguan',
@@ -90,7 +91,11 @@ export class PveTanSuo extends TriggerSkill {
         await room.drawCards(Math.floor(Math.random() * longshenlv + 1), fromId, 'top', fromId);
       }
       if (encounter === 21 || encounter === 18 || encounter === 3) {
-        await room.recover({ recoverBy: undefined, recoveredHp: Math.floor(Math.random() * longshenlv + 1), toId: fromId });
+        await room.recover({
+          recoverBy: undefined,
+          recoveredHp: Math.floor(Math.random() * longshenlv + 1),
+          toId: fromId,
+        });
       }
       if (encounter === 20 || encounter === 19) {
         this.treasure = 0;

@@ -2,12 +2,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
-import {
-  AllStage,
-  DamageEffectStage,
-  PhaseStageChangeStage,
-  PlayerPhaseStages,
-} from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -54,10 +49,13 @@ export class SPLiuBeiShiChou extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const { toIds,  fromId } = skillUseEvent;
+    const { toIds, fromId } = skillUseEvent;
     const toId = toIds![0];
     await room.moveCards({
-      movingCards: skillUseEvent.cardIds!.map(cardId => ({ card:cardId, fromArea: room.getPlayerById(fromId).cardFrom(cardId) })),
+      movingCards: skillUseEvent.cardIds!.map(cardId => ({
+        card: cardId,
+        fromArea: room.getPlayerById(fromId).cardFrom(cardId),
+      })),
       fromId,
       toId,
       toArea: CardMoveArea.HandArea,

@@ -112,7 +112,6 @@ export class LeiWeiDi extends TriggerSkill {
       } else {
         break;
       }
-
     } while (true);
 
     room.removeFlag(fromId, this.Name);

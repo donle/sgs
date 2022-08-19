@@ -1,5 +1,6 @@
 import { CardType } from 'core/cards/card';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -77,9 +78,15 @@ export class BenXi extends TriggerSkill {
           return (
             !TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).includes(playerId) &&
             room.isAvailableTarget(cardUseEvent.cardId, fromId, playerId) &&
-            (
-              Sanguosha.getCardById(cardUseEvent.cardId).Skill as unknown as ExtralCardSkillProperty
-            ).isCardAvailableTarget(fromId, room, playerId, [], [], cardUseEvent.cardId)
+            ((Sanguosha.getCardById(cardUseEvent.cardId)
+              .Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
+              fromId,
+              room,
+              playerId,
+              [],
+              [],
+              cardUseEvent.cardId,
+            )
           );
         });
 

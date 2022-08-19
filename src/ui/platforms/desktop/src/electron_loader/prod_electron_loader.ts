@@ -13,6 +13,7 @@ import {
   SET_DATA,
 } from 'electron.port';
 import { ReplayDataType } from 'types/replay_props';
+import { ElectronData } from './electron_data';
 import { ElectronLoader } from './electron_loader';
 
 export class ProdElectronLoader extends ElectronLoader {
@@ -100,24 +101,24 @@ export class ProdElectronLoader extends ElectronLoader {
     this.ipcRenderer.send(FLASH_WINDOW);
   }
 
-  public setData<T>(key: string, value: T) {
+  public setData<T>(key: ElectronData, value: T) {
     this.ipcRenderer.send(SET_DATA, { key, value });
     this.saveJson[key] = value;
   }
 
-  public getData<T>(key: string): T {
+  public getData<T>(key: ElectronData): T {
     return this.saveJson[key];
   }
 
-  public removeData(key: string) {
+  public removeData(key: ElectronData) {
     this.ipcRenderer.send(DELETE_DATA, key);
     delete this.saveJson[key];
   }
 
-  public saveTemporaryData(key: string, value: string): void {
+  public saveTemporaryData(key: ElectronData, value: string): void {
     this.tempSaveData[key] = value;
   }
-  public getTemporaryData(key: string): string | null {
+  public getTemporaryData(key: ElectronData): string | null {
     return this.tempSaveData[key];
   }
 

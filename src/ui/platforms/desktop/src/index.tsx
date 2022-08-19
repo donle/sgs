@@ -2,6 +2,7 @@ import { getClientConfig } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
 import { Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { getElectronLoader } from 'electron_loader/electron_loader_util';
 import { SimplifiedChinese, TraditionalChinese } from 'languages';
@@ -28,7 +29,7 @@ getElectronLoader(config.flavor)
   .then(loader => {
     electronLoader = loader;
     translator = ClientTranslationModule.setup(
-      electronLoader.getData('language'),
+      electronLoader.getData(ElectronData.Language),
       [Languages.ZH_CN, SimplifiedChinese],
       [Languages.ZH_HK, TraditionalChinese],
       [Languages.ZH_TW, TraditionalChinese],

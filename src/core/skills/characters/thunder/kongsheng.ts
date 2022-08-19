@@ -1,7 +1,8 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -110,8 +111,7 @@ export class KongShengShadow extends TriggerSkill {
     const kong = from.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName);
 
     const useableEquips = kong.filter(
-      card =>
-        Sanguosha.getCardById(card).is(CardType.Equip) && from.canUseCardTo(room, card, fromId),
+      card => Sanguosha.getCardById(card).is(CardType.Equip) && from.canUseCardTo(room, card, fromId),
     );
     while (useableEquips.length > 0) {
       const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(

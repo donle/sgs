@@ -1,5 +1,6 @@
 import { CardSuit } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -54,6 +55,7 @@ export class EnYuan extends TriggerSkill {
           info =>
             info.toId === owner.Id &&
             info.fromId !== undefined &&
+            info.fromId !== owner.Id &&
             info.toArea === CardMoveArea.HandArea &&
             info.movingCards.length >= 2 &&
             room.getPlayerById(info.fromId).Dead === false,

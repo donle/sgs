@@ -28,16 +28,16 @@ export class KangKai extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
   ): PatchedTranslationObject {
     return event.toId === owner.Id
-    ? TranslationPack.translationJsonPatcher(
-      '{0}: do you want to draw a card?',
-      this.Name,
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
-    ).extract()
-    : TranslationPack.translationJsonPatcher(
-      '{0}: do you want to draw 1 card, and then give {1} a card?',
-      this.Name,
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
-    ).extract();
+      ? TranslationPack.translationJsonPatcher(
+          '{0}: do you want to draw a card?',
+          this.Name,
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
+        ).extract()
+      : TranslationPack.translationJsonPatcher(
+          '{0}: do you want to draw 1 card, and then give {1} a card?',
+          this.Name,
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
+        ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

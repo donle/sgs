@@ -1,7 +1,8 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -125,7 +126,9 @@ export class HeJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = event;
-    const cards = room.findCardsByMatcherFrom(new CardMatcher({ type: [CardType.Basic, CardType.Trick, CardType.Equip] }));
+    const cards = room.findCardsByMatcherFrom(
+      new CardMatcher({ type: [CardType.Basic, CardType.Trick, CardType.Equip] }),
+    );
 
     if (cards.length > 0) {
       await room.moveCards({

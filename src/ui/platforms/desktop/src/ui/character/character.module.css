@@ -1,5 +1,9 @@
 @value SanguoshaFont from '../metrics/metrics.css';
 @value gridLine from '../metrics/metrics.css';
+@value textWhite from '../metrics/metrics.css';
+@value textBlack from '../metrics/metrics.css';
+@value textGreen from '../metrics/metrics.css';
+@value shuColor from '../metrics/metrics.css';
 
 .characterCard {
     min-width: calc(gridLine * 20);
@@ -8,9 +12,16 @@
     font-size: calc(gridLine * 3);
     position: relative;
 }
+.characterCard.clickable {
+    cursor: pointer;
+}
 .characterCard.small {
     min-width: calc(gridLine * 15);
     height: calc(gridLine * 18.75);
+}
+.characterCard.tiny {
+    min-width: calc(gridLine * 12);
+    height: calc(gridLine * 15);
 }
 
 .selected {
@@ -22,6 +33,11 @@
     position: absolute;
     top: 0;
     z-index: -2;
+}
+
+.characterImage.tiny {
+    width: calc(gridLine * 12);
+    height: inherit;
 }
 
 .characterImage.left {
@@ -36,7 +52,7 @@
 .characterHp {
     bottom: 0px;
     right: 0;
-    color: white;
+    color: textWhite;
     font-size: calc(gridLine * 2);
     font-weight: 700;
     display: flex;
@@ -46,7 +62,8 @@
     justify-content: center;
 }
 
-.characterHp.small {
+.characterHp.small,
+.characterHp.tiny {
     max-width: calc(gridLine * 10);
     flex-wrap: wrap;
 }
@@ -86,12 +103,12 @@
 .deathButton,
 .skillName {
     font-weight: 600;
-    color: rgb(255, 174, 0);
+    color: shuColor;
     font-size: 16px;
     margin-right: calc(gridLine * 2);
     padding: calc(gridLine / 2);
     border-radius: calc(gridLine / 2);
-    border: 1px solid rgb(255, 174, 0);
+    border: 1px solid shuColor;
     cursor: pointer;
 }
 
@@ -103,8 +120,8 @@
 
 .deathButton:hover,
 .skillName:hover {
-    background-color: rgb(255, 174, 0);
-    color: black;
+    background-color: shuColor;
+    color: textBlack;
 }
 
 .skillDescription {
@@ -113,7 +130,7 @@
 }
 
 .relatedSkillTiltle {
-    color: rgb(127, 196, 25);
+    color: textGreen;
     font-size: calc(gridLine * 2.2);
     margin-bottom: calc(gridLine * 1.5);
     font-family: SanguoshaFont;
@@ -121,11 +138,11 @@
 }
 
 .relatedSkill {
-    color: rgb(127, 196, 25);
-    border-color: rgb(127, 196, 25);
+    color: textGreen;
+    border-color: textGreen;
 }
 
 .relatedSkill:hover {
-    background-color: rgb(127, 196, 25);
+    background-color: textGreen;
     color: black;
 }

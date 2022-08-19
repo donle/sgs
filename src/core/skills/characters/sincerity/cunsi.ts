@@ -73,8 +73,7 @@ export class CunSi extends ActiveSkill {
         TranslationPack.translationJsonPatcher('cunsi damage: {0}', originalDamage + 1).toString(),
       );
 
-      room.getPlayerById(toIds[0]).hasShadowSkill(CunSiBuff.Name) ||
-        (await room.obtainSkill(toIds[0], CunSiBuff.Name));
+      room.getPlayerById(toIds[0]).hasShadowSkill(CunSiBuff.Name) || (await room.obtainSkill(toIds[0], CunSiBuff.Name));
     }
 
     return true;

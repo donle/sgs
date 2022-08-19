@@ -3,6 +3,7 @@ import { CharacterEquipSections } from 'core/characters/character';
 import { ImageLoader } from 'image_loader/image_loader';
 import { ImageProps } from 'props/image_props';
 import * as React from 'react';
+import { Picture } from 'ui/picture/picture';
 import itemStyles from '../equip_card_item/equip_card_item.module.css';
 import styles from './aborted_card_item.module.css';
 
@@ -29,7 +30,7 @@ export class AbortedCardItem extends React.Component<AbortedCardItemProps> {
           [itemStyles.precious]: this.props.abortedSection === CharacterEquipSections.Precious,
         })}
       >
-        {this.sectionImage && <img src={this.sectionImage.src} alt={this.sectionImage.alt} />}
+        {this.sectionImage && <Picture image={this.sectionImage} />}
       </div>
     );
   }

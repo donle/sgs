@@ -1,4 +1,7 @@
 @value gridLine from '../../../../ui/metrics/metrics.css';
+@value textWhite from '../../../../ui/metrics/metrics.css';
+@value shuColor from '../../../../ui/metrics/metrics.css';
+@value shuLightColor from '../../../../ui/metrics/metrics.css';
 
 .feedback {
     max-width: calc(gridLine * 75);
@@ -19,7 +22,7 @@
 .feedbackInfo {
     display: flex;
     flex-direction: column;
-    color: white;
+    color: textWhite;
     text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
 }
 
@@ -27,8 +30,8 @@
     justify-content: center;
 }
 .feedbackInfo a {
-    color: #ffa344;
+    color: shuColor;
 }
 .feedbackInfo a:hover {
-    color: #fdc016;
+    color: shuLightColor;
 }

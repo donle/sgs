@@ -1,16 +1,31 @@
-@value XinWeiFont from '../metrics/metrics.css';
 @value gridLine from '../metrics/metrics.css';
+@value textHighlight from '../metrics/metrics.css';
+@value textGrey from '../metrics/metrics.css';
+@value textLightGrey from '../metrics/metrics.css';
+@value textWhite from '../metrics/metrics.css';
+
+.inputContainer {
+    display: flex;
+}
+
+.suffix {
+    color: textWhite;
+    font-size: 14px;
+    padding-left: gridLine;
+    display: flex;
+    align-items: center;
+}
 
 .input {
     border-radius: calc(gridLine / 2);
     min-height: calc(gridLine * 4);
     padding: calc(gridLine / 2);
     font-size: 14px;
-    color: #dcad00;
+    color: textHighlight;
     outline: none;
 }
 
 .input::placeholder {
-    color: lightgray;
+    color: textLightGrey;
     font-size: 14px;
 }

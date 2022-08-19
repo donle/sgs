@@ -1,0 +1,87 @@
+@value gridLine from '../metrics/metrics.css';
+@value textGrey from '../metrics/metrics.css';
+@value textWhite from '../metrics/metrics.css';
+@value textHighlight from '../metrics/metrics.css';
+@value textBlack from '../metrics/metrics.css';
+
+.text {
+    font-size: 14px;
+    display: block;
+}
+
+.start {
+    text-align: start;
+}
+.center {
+    text-align: center;
+}
+.end {
+    text-align: end;
+}
+
+.normal {
+    font-weight: 500;
+}
+.semiBold {
+    font-weight: 600;
+}
+.bold {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.white {
+    color: textWhite;
+}
+.grey {
+    color: textGrey;
+}
+.highlight {
+    color: textHighligh;
+}
+.black {
+    color: textBlack;
+}
+
+.topSpacing8 {
+    margin-top: gridLine;
+}
+.topSpacing16 {
+    margin-top: calc(gridLine * 2);
+}
+.topSpacing24 {
+    margin-top: calc(gridLine * 3);
+}
+.topSpacing32 {
+    margin-top: calc(gridLine * 4);
+}
+.topSpacing40 {
+    margin-top: calc(gridLine * 5);
+}
+.topSpacing48 {
+    margin-top: calc(gridLine * 6);
+}
+.topSpacing96 {
+    margin-top: calc(gridLine * 12);
+}
+.bottomSpacing8 {
+    margin-bottom: gridLine;
+}
+.bottomSpacing16 {
+    margin-bottom: calc(gridLine * 2);
+}
+.bottomSpacing24 {
+    margin-bottom: calc(gridLine * 3);
+}
+.bottomSpacing32 {
+    margin-bottom: calc(gridLine * 4);
+}
+.bottomSpacing40 {
+    margin-bottom: calc(gridLine * 5);
+}
+.bottomSpacing48 {
+    margin-bottom: calc(gridLine * 6);
+}
+.bottomSpacing96 {
+    margin-bottom: calc(gridLine * 12);
+}

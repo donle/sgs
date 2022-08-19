@@ -32,6 +32,11 @@ import { RoomEventStacker } from './utils/room_event_stack';
 
 export type RoomId = number;
 
+export const enum TimeLimitVariant {
+  PlayPhase,
+  AskForWuxiekeji,
+}
+
 export abstract class Room<T extends WorkPlace = WorkPlace> {
   public get GameParticularAreas() {
     return ['muniuliuma', 'jinfan'];
@@ -66,7 +71,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract notify<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>, player: PlayerId): void;
   //Server only
-  public abstract doNotify(toIds: PlayerId[], notificationTime?: number): void;
+  public abstract doNotify(toIds: PlayerId[], variant?: TimeLimitVariant): void;
 
   public abstract broadcast<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>): void;
 
@@ -283,11 +288,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public uninstallSideEffectSkill(applier: System.SideEffectSkillApplierEnum) {
     delete this.sideEffectSkills[applier];
   }
-
-  public readonly sleep = async (timeDuration: number) =>
-    new Promise(r => {
-      setTimeout(r, timeDuration);
-    });
 
   public addProcessingCards(tag: string, ...cardIds: CardId[]) {
     this.onProcessingCards[tag] = this.onProcessingCards[tag] || [];

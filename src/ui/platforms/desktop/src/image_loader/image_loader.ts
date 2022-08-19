@@ -21,7 +21,7 @@ export type SkillButtonImageProps = {
 
 export interface ImageLoader {
   getCardImage(name: string): Promise<ImageProps>;
-  getCharacterImage(name: string, roomId?: PlayerId | undefined, skinName?: string): Promise<ImageProps>;
+  getCharacterImage(name: string, skinName?: string): Promise<ImageProps>;
   getOthersEquipCard(cardName: string): Promise<ImageProps>;
   getSlimEquipCard(cardName: string): Promise<ImageProps>;
   getOthersAbortedEquipCard(): Promise<ImageProps>;

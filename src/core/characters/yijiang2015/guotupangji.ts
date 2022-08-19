@@ -6,9 +6,15 @@ const skillLoaderInstance = SkillLoader.getInstance();
 
 export class GuoTuPangJi extends Character {
   constructor(id: number) {
-    super(id, 'guotupangji', CharacterGender.Male, CharacterNationality.Qun, 3, 3, GameCharacterExtensions.YiJiang2015, [
-      ...skillLoaderInstance.getSkillsByName('jigong'),
-      skillLoaderInstance.getSkillByName('shifei'),
-    ]);
+    super(
+      id,
+      'guotupangji',
+      CharacterGender.Male,
+      CharacterNationality.Qun,
+      3,
+      3,
+      GameCharacterExtensions.YiJiang2015,
+      [...skillLoaderInstance.getSkillsByName('jigong'), skillLoaderInstance.getSkillByName('shifei')],
+    );
   }
 }

@@ -1,13 +1,14 @@
 import { GameCardExtensions } from 'core/game/game_props';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomId } from 'core/room/room';
 import { ChatSocketEvent } from 'core/shares/types/server_types';
-import { TemporaryRoomCreationInfo } from 'pages/lobby/ui/create_room_dialog/create_room_dialog';
 import { ClientConfig, ServerHostTag } from 'props/config_props';
 import SocketIOClient from 'socket.io-client';
 import {
   ChatPacketObject,
   ConnectionService,
   CreateGameListenerResponse,
+  CreateWaitingRoomListenerResponse,
   RoomListListenerResponse,
   VersionCheckListenerResponse,
 } from './connection_service';
@@ -29,11 +30,19 @@ export class FakeConnectionService extends ConnectionService {
     // tslint:disable-next-line:no-empty
     checkCoreVersion: (callback: (response: VersionCheckListenerResponse) => void) => {},
     // tslint:disable-next-line:no-empty
-    checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean) => void) => {},
+    checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean, ping: number) => void) => {},
+    createWaitingRoom(
+      gameInfo: TemporaryRoomCreationInfo & { roomId?: number },
+      callback: (response: CreateWaitingRoomListenerResponse) => void,
+      // tslint:disable-next-line: no-empty
+    ): void {},
+    /**
+     * @deprecated game won't be created from lobby anymore.
+     */
     createGame: (
       gameInfo: {
         cardExtensions: GameCardExtensions[];
-      } & TemporaryRoomCreationInfo,
+      } & TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateGameListenerResponse) => void,
       // tslint:disable-next-line:no-empty
     ) => {},

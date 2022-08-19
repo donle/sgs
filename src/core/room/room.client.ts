@@ -315,7 +315,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
       if (outsideCards && player.isCharacterOutsideArea(skill.Name)) {
         outsideCards.splice(0, outsideCards.length);
       }
-      const hookedSkill = skill as unknown as OnDefineReleaseTiming;
+      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
       if (hookedSkill.whenLosingSkill) {
         await hookedSkill.whenLosingSkill(this, player);
       }

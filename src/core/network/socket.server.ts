@@ -1,12 +1,12 @@
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   serverActiveListenerEvents,
   ServerEventFinder,
   serverResponsiveListenerEvents,
   WorkPlace,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { Socket } from 'core/network/socket';
 import { ServerPlayer } from 'core/player/player.server';
@@ -68,6 +68,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
                 content as ClientEventFinder<GameEventIdentifiers.PlayerLeaveEvent>,
               );
               break;
+            case GameEventIdentifiers.PlayerReadyEvent:
+              this.onPlayerReady(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.PlayerReadyEvent>,
+              );
+              break;
             case GameEventIdentifiers.UserMessageEvent:
               this.onPlayerMessage(identifier, content as ClientEventFinder<GameEventIdentifiers.UserMessageEvent>);
               break;
@@ -76,6 +83,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
                 socket,
                 identifier,
                 content as ClientEventFinder<GameEventIdentifiers.PlayerStatusEvent>,
+              );
+              break;
+            case GameEventIdentifiers.BackToWaitingRoomEvent:
+              this.onPlayerBackingToWaitingRoom(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.BackToWaitingRoomEvent>,
               );
               break;
             default:
@@ -224,8 +238,20 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         TranslationPack.patchPureTextParameter(content.message),
       ).toString();
       content.ignoreNotifiedStatus = true;
-      this.broadcast(identifier, content as unknown as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
+      this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
     }
+  }
+
+  private async onPlayerBackingToWaitingRoom(
+    socket: IOSocketServer.Socket,
+    identifier: GameEventIdentifiers.BackToWaitingRoomEvent,
+    content: ClientEventFinder<GameEventIdentifiers.BackToWaitingRoomEvent>,
+  ) {
+    socket.emit(identifier.toString(), {
+      ...this.room!.WaitingRoomInfo,
+      playerId: content.playerId,
+      playerName: content.playerName,
+    });
   }
 
   private async onPlayerStatusChanged(
@@ -297,6 +323,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
     room.addPlayer(player);
     this.mapSocketIdToPlayerId[event.playerId] = socket.id;
+
     this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
       joiningPlayerName: event.playerName,
       joiningPlayerId: event.playerId,
@@ -309,8 +336,23 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       ).extract(),
       timestamp: event.timestamp,
     });
+  }
 
-    if (room.Players.length === room.getRoomInfo().totalPlayers) {
+  private async onPlayerReady(
+    socket: IOSocketServer.Socket,
+    identifier: GameEventIdentifiers.PlayerReadyEvent,
+    event: ClientEventFinder<typeof identifier>,
+  ) {
+    const room = this.room as ServerRoom;
+    const player = room.Players.find(player => player.Id === event.playerId);
+    if (player) {
+      player.getReady();
+    }
+
+    if (
+      room.Players.length === room.getRoomInfo().totalPlayers &&
+      room.Players.every(player => player.isSmartAI() || player.isReady())
+    ) {
       await room.gameStart();
     }
   }
@@ -331,11 +373,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       ).extract(),
       ignoreNotifiedStatus: true,
     };
+
     this.broadcast(
       GameEventIdentifiers.PlayerLeaveEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
     );
-    room.getPlayerById(event.playerId).setOffline(true);
     if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
       room.close();
       return;

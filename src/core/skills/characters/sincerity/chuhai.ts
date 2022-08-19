@@ -1,7 +1,8 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { MovingCardProps } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
@@ -184,7 +185,7 @@ export class ChuHaiShadow extends TriggerSkill implements OnDefineReleaseTiming 
             fromArea: randomIndex < length ? CardMoveArea.DrawStack : CardMoveArea.DropStack,
           },
         ];
-  
+
         await room.moveCards({
           movingCards,
           toId: fromId,

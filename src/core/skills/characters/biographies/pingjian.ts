@@ -1,5 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
@@ -211,8 +212,9 @@ export class PingJianShadow extends TriggerSkill {
     >;
     const identifier = EventPacker.getIdentifier(unknownEvent);
 
-    let realEvent: ServerEventFinder<GameEventIdentifiers> =
-      unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+    let realEvent: ServerEventFinder<GameEventIdentifiers> = unknownEvent as ServerEventFinder<
+      GameEventIdentifiers.DamageEvent
+    >;
     if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       realEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     }

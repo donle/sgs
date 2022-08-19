@@ -1,5 +1,6 @@
 import { CardType } from 'core/cards/card';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -85,9 +86,7 @@ export class YuHua extends TriggerSkill {
         translationsMessage:
           top.length > 0
             ? TranslationPack.translationJsonPatcher('yuhua finished, the card placed on the top').extract()
-            : TranslationPack.translationJsonPatcher(
-                'yuhua finished, the card placed at the bottom',
-              ).extract(),
+            : TranslationPack.translationJsonPatcher('yuhua finished, the card placed at the bottom').extract(),
       });
 
       top.length > 0 && room.putCards('top', top[0]);

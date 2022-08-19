@@ -5,23 +5,37 @@ import styles from './input.module.css';
 export type InputProps = {
   className?: string;
   onChange?(value: string): void;
+  type?: HTMLInputElement['type'];
+  min?: number;
+  max?: number;
   value?: string;
   placeholder?: string;
+  suffix?: React.ReactNode;
+  disabled?: boolean;
+  transparency?: number;
 };
 
 export const Input = (props: InputProps) => {
-  const { className, onChange, value, placeholder } = props;
+  const { className, onChange, value, placeholder, type, min, max, suffix, disabled, transparency } = props;
 
-  const onInputChnage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange && onChange(event.target.value);
+  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(event.target.value);
   };
 
   return (
-    <input
-      placeholder={placeholder}
-      className={classNames(styles.input, className)}
-      onChange={onInputChnage}
-      value={value}
-    />
+    <div className={styles.inputContainer}>
+      <input
+        placeholder={placeholder}
+        className={classNames(styles.input, className)}
+        onChange={onInputChange}
+        disabled={disabled}
+        value={value}
+        min={min}
+        max={max}
+        type={type}
+        style={transparency != null ? { backgroundColor: `rgba(0,0,0,${transparency})` } : undefined}
+      />
+      {suffix && <span className={styles.suffix}>{suffix}</span>}
+    </div>
   );
 };

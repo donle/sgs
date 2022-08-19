@@ -1,0 +1,54 @@
+@value gridLine from '../../../ui/metrics/metrics.css';
+@value textGrey from '../../../ui/metrics/metrics.css';
+@value textHighlight from '../../../ui/metrics/metrics.css';
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: calc(gridLine * 2);
+}
+
+.messageBox {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: calc(gridLine * 20);
+    overflow: auto;
+    border: 1px solid textGrey;
+    border-radius: 4px;
+    margin-bottom: calc(gridLine * 2);
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: gridLine;
+}
+
+.message {
+    margin: 0;
+    margin-bottom: 4px;
+    font-size: 14px;
+    width: 100%;
+    color: textHighlight;
+}
+
+.userInput {
+    margin: 0;
+    margin-bottom: 4px;
+    line-height: 16px;
+    display: flex;
+    width: 100%;
+}
+
+.input {
+    flex: auto;
+    background: transparent;
+    border: 1px solid textGrey;
+    margin-right: 4px;
+    border-radius: 4px;
+    color: textHighlight;
+    outline: none;
+}
+
+.sendButton {
+    height: 100%;
+}

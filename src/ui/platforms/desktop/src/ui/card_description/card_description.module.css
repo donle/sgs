@@ -1,5 +1,8 @@
+@value textWhite from '../metrics/metrics.css';
+@value gridLine from '../metrics/metrics.css';
+
 .cardDescriptions {
-    color: white;
+    color: textWhite;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -10,12 +13,12 @@
 .cardSpefication {
     display: flex;
     justify-content: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: calc(gridLine * 2);
 }
 .cardName {
     font-weight: 550;
-    margin-right: 8px;
+    margin-right: gridLine;
 }
 .attackRange {
-    margin-bottom: 16px;
+    margin-bottom: calc(gridLine * 2);
 }

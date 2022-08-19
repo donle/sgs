@@ -1,19 +1,24 @@
 @value FZLiBianFont from '../metrics/metrics.css';
 @value gridLine from '../metrics/metrics.css';
+@value halfGridLine from '../metrics/metrics.css';
+@value textBlack from '../metrics/metrics.css';
+@value textUltraLightBlack from '../metrics/metrics.css';
+@value textWhite from '../metrics/metrics.css';
+@value textGrey from '../metrics/metrics.css';
 
 .buttonOuter {
-    border-radius: 4px;
+    border-radius: halfGridLine;
 }
 
 .button {
     text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
     border: 0;
-    border-radius: 4px;
-    padding: 4px 8px;
+    border-radius: halfGridLine;
+    padding: halfGridLine gridLine;
     cursor: pointer;
     box-shadow: inset 0px 0px 10px 0px rgba(23, 23, 23, 0.75);
     outline: none;
-    color: #eaeaea;
+    color: textWhite;
     position: relative;
     font-family: FZLiBianFont;
     font-size: 15px;
@@ -25,7 +30,7 @@
 }
 .button.imageButton {
     background: transparent;
-    padding: 8px 24px 10px 24px;
+    padding: gridLine calc(gridLine * 3) 10px calc(gridLine * 3);
     display: flex;
     align-items: center;
 }
@@ -36,7 +41,7 @@
     height: calc(gridLine * 4.5);
 }
 .button:not(.disabled):hover {
-    color: white;
+    color: textWhite;
 }
 .button.disabled {
     cursor: not-allowed;
@@ -51,7 +56,7 @@
 }
 
 .optionButton {
-    border: 1px solid #404040;
+    border: 1px solid textUltraLightBlack;
     background: radial-gradient(circle, rgb(156, 47, 18) 0%, rgb(165, 19, 19) 30%, rgb(105, 13, 13) 100%);
 }
 
@@ -69,7 +74,7 @@
 }
 
 .primaryButton {
-    border: 1px solid #404040;
+    border: 1px solid textUltraLightBlack;
     background: linear-gradient(180deg, rgb(187, 126, 51) 0%, rgba(145, 62, 37, 1) 33%, rgb(97, 36, 0) 66%);
 }
 
@@ -91,22 +96,22 @@
 }
 
 .skillButton {
-    height: 26px;
+    height: calc(gridLine * 3 + 2);
     background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-left: 24px;
-    padding-bottom: 4px;
+    padding-left: calc(gridLine * 3);
+    padding-bottom: halfGridLine;
 }
 
 .linkButton {
     border: none;
     background: none;
-    padding: 4px 8px;
+    padding: halfGridLine gridLine;
     cursor: pointer;
     outline: none;
-    color: #eaeaea;
+    color: textWhite;
     position: relative;
     font-family: FZLiBianFont;
     font-size: 15px;
@@ -118,7 +123,7 @@
 }
 
 .linkButton:disabled {
-    color: grey;
+    color: textGrey;
     cursor: not-allowed;
 }
 

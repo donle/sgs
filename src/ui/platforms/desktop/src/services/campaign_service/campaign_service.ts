@@ -5,6 +5,7 @@ import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
 import { PveClassicGameProcessor } from 'core/game/game_processor/game_processor.pve_classic';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameCardExtensions } from 'core/game/game_props';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { StageProcessor } from 'core/game/stage_processor';
@@ -15,7 +16,6 @@ import { RoomEventStacker } from 'core/room/utils/room_event_stack';
 import { ClientLogger } from 'core/shares/libs/logger/client_logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
-import { TemporaryRoomCreationInfo } from 'pages/lobby/ui/create_room_dialog/create_room_dialog';
 import { ClientFlavor, ServerHostTag } from 'props/config_props';
 import { CreateGameListenerResponse } from 'services/connection_service/connection_service';
 
@@ -51,9 +51,7 @@ export class CampaignService {
 
   createRoom(
     flavor: ClientFlavor,
-    roomInfo: {
-      cardExtensions: GameCardExtensions[];
-    } & TemporaryRoomCreationInfo,
+    roomInfo: TemporaryRoomCreationInfo,
     callback: (evt: CreateGameListenerResponse) => void,
   ) {
     const roomId = Date.now();
@@ -65,7 +63,7 @@ export class CampaignService {
         campaignMode: !!roomInfo.campaignMode,
         flavor: this.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod,
       },
-      socket as unknown as ServerSocket,
+      (socket as unknown) as ServerSocket,
       this.createDifferentModeGameProcessor(roomInfo),
       new RecordAnalytics(),
       [],
@@ -74,6 +72,7 @@ export class CampaignService {
       roomInfo.gameMode,
       new GameCommonRules(),
       new RoomEventStacker(),
+      { roomInfo, roomId: 1 },
     );
     this.campaginRooms[roomId] = room;
 

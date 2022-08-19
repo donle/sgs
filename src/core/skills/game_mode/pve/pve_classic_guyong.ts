@@ -1,36 +1,37 @@
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { VirtualCard } from 'core/cards/card';
 import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
+import { DamageType } from 'core/game/game_props';
 import {
   AllStage,
+  CardUseStage,
   DamageEffectStage,
   JudgeEffectStage,
+  PhaseChangeStage,
   PhaseStageChangeStage,
+  PlayerDiedStage,
+  PlayerPhase,
   PlayerPhaseStages,
   StagePriority,
-  PlayerDiedStage,
-  CardUseStage,
-  PhaseChangeStage,
-  PlayerPhase,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { MarkEnum } from 'core/shares/types/mark_list';
+import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill, CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PveClassicLianZhen } from './pve_classic_lianzhen';
 import { PveClassicQiSha } from './pve_classic_qisha';
 import { PveClassicTianJi } from './pve_classic_tianji';
 import { PveClassicTianLiang } from './pve_classic_tianliang';
 import { PveClassicTianTong } from './pve_classic_tiantong';
 import { PveClassicTianXiang } from './pve_classic_tianxiang';
-import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
-import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
-import { PveClassicLianZhen } from './pve_classic_lianzhen';
-import { DamageType } from 'core/game/game_props';
 
 @AwakeningSkill({ name: 'pve_classic_guyong', description: 'pve_classic_guyong_description' })
 export class PveClassicGuYong extends TriggerSkill {
@@ -244,7 +245,7 @@ export class PveClassicGuYongWenQu extends TriggerSkill {
         player =>
           !TargetGroupUtil.getRealTargets(content.targetGroup).includes(player.Id) &&
           room.isAvailableTarget(card.Id, content.fromId, player.Id) &&
-          (Sanguosha.getCardById(content.cardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
+          ((Sanguosha.getCardById(content.cardId).Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
             content.fromId,
             room,
             player.Id,
@@ -419,9 +420,8 @@ export class PveClassicGuYongBufPoJun extends TriggerSkill {
 
     await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, owner.Id, owner.Id, this.Name);
 
-    const blackCardNumber = event.cardIds.filter(
-      cardId => Sanguosha.getCardById(cardId).Color === CardColor.Black,
-    ).length;
+    const blackCardNumber = event.cardIds.filter(cardId => Sanguosha.getCardById(cardId).Color === CardColor.Black)
+      .length;
 
     if (blackCardNumber === 0) {
       const fromId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId;

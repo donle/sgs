@@ -135,7 +135,7 @@ export const skillAudios: Word[] = [
     source: '$zhi_shanxi:2',
     target: '率彼东南路，将定一举勋。',
   },
- 
+
   {
     source: '$wanwei:1',
     target: '梁沛之间，无子廉焉有今日？',
@@ -143,7 +143,7 @@ export const skillAudios: Word[] = [
   {
     source: '$wanwei:2',
     target: '汝兄弟既为手足，何必苦苦相逼？',
-  }, 
+  },
   {
     source: '$yuejian:1',
     target: '吾母仪天下，于节俭处当率先垂范。',
@@ -152,7 +152,7 @@ export const skillAudios: Word[] = [
     source: '$yuejian:2',
     target: '取上为贪，取下为伪，妾则取其中者。',
   },
- 
+
   {
     source: '$shameng:1',
     target: '歃血盟誓，以告神明。',
@@ -169,7 +169,7 @@ export const skillAudios: Word[] = [
   {
     source: '$jianyu:2',
     target: '舍此不任而防后患，是备风波而废舟楫也。',
-  }, 
+  },
   {
     source: '$shengxi:1',
     target: '利治小之宜，秉居静之理。',
@@ -230,7 +230,7 @@ export const skillAudios: Word[] = [
     target: '吾军势如破竹，江东六郡唾手可得！',
   },
 
-/*  {
+  /*  {
     source: '$dingyi:1',
     target: '经国序民，还需制礼定仪。',
   },

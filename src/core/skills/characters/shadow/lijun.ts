@@ -29,10 +29,7 @@ export class LiJun extends TriggerSkill {
     );
   }
 
-  public async beforeUse(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 

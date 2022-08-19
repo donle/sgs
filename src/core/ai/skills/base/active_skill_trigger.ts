@@ -28,12 +28,7 @@ export class ActiveSkillTriggerClass<T extends ActiveSkill = ActiveSkill> extend
     return;
   };
 
-  public reforgeTrigger(
-    room: Room,
-    ai: Player,
-    skill: T,
-    card: CardId,
-  ): boolean {
+  public reforgeTrigger(room: Room, ai: Player, skill: T, card: CardId): boolean {
     return false;
   }
 

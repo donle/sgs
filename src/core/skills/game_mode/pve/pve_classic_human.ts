@@ -1,5 +1,10 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { VirtualCard } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardSuit } from 'core/cards/libs/card_props';
+import { Slash } from 'core/cards/standard/slash';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
+import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
   CardResponseStage,
@@ -11,15 +16,11 @@ import {
   StagePriority,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { Algorithm } from 'core/shares/libs/algorithm';
 import { Room } from 'core/room/room';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { Sanguosha } from 'core/game/engine';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { VirtualCard } from 'core/cards/card';
-import { Slash } from 'core/cards/standard/slash';
 
 // 孤勇：
 // 你每打出或使用一张花色的牌，若没有对应的标记，获得一个标记；
@@ -109,8 +110,9 @@ export class PveClassicGu extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(event.triggeredOnEvent);
     switch (identifier) {
       case GameEventIdentifiers.PhaseStageChangeEvent:
-        const phaseStageChangeEvent =
-          event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
+        const phaseStageChangeEvent = event.triggeredOnEvent as ServerEventFinder<
+          GameEventIdentifiers.PhaseStageChangeEvent
+        >;
         if (this.getMarkNumber(owner) > 3 && phaseStageChangeEvent.toStage === PlayerPhaseStages.PhaseFinishEnd) {
           this.useMark(room, owner, 4);
           await room.changeMaxHp(event.fromId, 1);

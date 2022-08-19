@@ -1,5 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
@@ -96,11 +97,7 @@ export class YeYan extends ActiveSkill {
       triggeredBySkills: [this.Name],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingOptionsEvent,
-      askForChoosingOptionsEvent,
-      skillUseEvent.fromId,
-    );
+    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoosingOptionsEvent, skillUseEvent.fromId);
 
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,

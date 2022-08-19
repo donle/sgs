@@ -4,10 +4,10 @@ import {
   CardDrawReason,
   CardMoveArea,
   CardMoveReason,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
@@ -42,7 +42,7 @@ export class ZhaoLie extends TriggerSkill {
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
     const from = room.getPlayerById(owner);
     const to = room.getPlayerById(targetId);
-    return room.canAttack(from,to);
+    return room.canAttack(from, to);
   }
 
   async onTrigger() {

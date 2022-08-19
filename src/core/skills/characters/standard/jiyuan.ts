@@ -1,4 +1,5 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { AllStage, CardMoveStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -52,15 +53,20 @@ export class JiYuan extends TriggerSkill {
 
     if (identifier === GameEventIdentifiers.MoveCardEvent) {
       const moveEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      const infos = moveEvent.infos.length === 1 ? moveEvent.infos : moveEvent.infos.filter(info => info.toId !== undefined &&
-        info.toId !== skillUseEvent.fromId &&
-        info.proposer === skillUseEvent.fromId &&
-        info.toArea === PlayerCardsArea.HandArea,)
-      
+      const infos =
+        moveEvent.infos.length === 1
+          ? moveEvent.infos
+          : moveEvent.infos.filter(
+              info =>
+                info.toId !== undefined &&
+                info.toId !== skillUseEvent.fromId &&
+                info.proposer === skillUseEvent.fromId &&
+                info.toArea === PlayerCardsArea.HandArea,
+            );
+
       for (const info of infos) {
-        info.toId && await room.drawCards(1, info.toId, 'top', skillUseEvent.fromId, this.Name);
+        info.toId && (await room.drawCards(1, info.toId, 'top', skillUseEvent.fromId, this.Name));
       }
-      
     } else {
       const dyingEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
       await room.drawCards(1, dyingEvent.dying, 'top', undefined, this.Name);

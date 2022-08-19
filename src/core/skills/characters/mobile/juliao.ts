@@ -11,11 +11,13 @@ export class JuLiao extends RulesBreakerSkill {
   }
 
   public breakDefenseDistance(room: Room, owner: Player): number {
-    return room.AlivePlayers.reduce<CharacterNationality[]>((allNations, player) => {
-      if (!allNations.includes(player.Nationality)) {
-        allNations.push(player.Nationality);
-      }
-      return allNations;
-    }, []).length - 1;
+    return (
+      room.AlivePlayers.reduce<CharacterNationality[]>((allNations, player) => {
+        if (!allNations.includes(player.Nationality)) {
+          allNations.push(player.Nationality);
+        }
+        return allNations;
+      }, []).length - 1
+    );
   }
 }

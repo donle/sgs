@@ -21,6 +21,7 @@ import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
 import { ClientCard } from 'ui/card/card';
 import { FlatClientCard } from 'ui/card/flat_card';
 import { Hp } from 'ui/hp/hp';
+import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
@@ -335,7 +336,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         this.props.store.room.Info.gameMode,
       );
       mobx.runInAction(() => {
-        this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
+        this.PlayerRoleCard = () => <Picture className={styles.playerRoleCard} image={image} />;
       });
     } else if (
       this.props.player &&
@@ -486,11 +487,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                     })}
                     onClick={this.onFocusPlayerHandcard}
                   >
-                    <img
-                      className={styles.handCardsNumberBgImage}
-                      src={imageLoader.getCardNumberBgImage().src}
-                      alt={''}
-                    />
+                    <Picture className={styles.handCardsNumberBgImage} image={imageLoader.getCardNumberBgImage()} />
                     <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
                     {this.showPlayerHandcards && this.focusedOnPlayerHandcard && this.props.player && (
                       <Tooltip position={['right', 'bottom']} className={styles.tooltip}>
@@ -507,26 +504,22 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   </span>
                 </>
               ) : (
-                <img
+                <Picture
                   className={classNames(styles.playerImage, styles.playerUnknownImage)}
-                  alt={player.Name}
-                  src={imageLoader.getUnknownCharacterImage().src}
+                  image={imageLoader.getUnknownCharacterImage()}
                 />
               )}
               {this.getPlayerJudgeCards()}
-              {!player.isFaceUp() && (
-                <img className={styles.status} src={imageLoader.getTurnedOverCover().src} alt="" />
-              )}
+              {!player.isFaceUp() && <Picture className={styles.status} image={imageLoader.getTurnedOverCover()} />}
               {player.hasDrunk() > 0 && <div className={styles.drunk} />}
-              {player.ChainLocked && <img className={styles.chain} src={imageLoader.getChainImage().src} alt="" />}
+              {player.ChainLocked && <Picture className={styles.chain} image={imageLoader.getChainImage()} />}
 
               <p className={styles.playerSeats}>{translator.tr(`seat ${player.Position}`)}</p>
             </>
           ) : (
-            <img
+            <Picture
               className={classNames(styles.playerImage, styles.playerUnknownImage)}
-              alt={translator.tr('waiting')}
-              src={imageLoader.getEmptySeatImage().src}
+              image={imageLoader.getEmptySeatImage()}
             />
           )}
           {playerPhase !== undefined && (
@@ -573,7 +566,7 @@ class PlayerAbortedEquipSection extends React.Component<PlayerAbortedEquipSectio
       <div className={styles.playerAbortedEquipSections}>
         {this.abortedImageProp &&
           abortedSections.map(section => (
-            <img
+            <Picture
               className={classNames(styles.playerEquip, {
                 [styles.weapon]: section === CharacterEquipSections.Weapon,
                 [styles.armor]: section === CharacterEquipSections.Shield,
@@ -582,8 +575,7 @@ class PlayerAbortedEquipSection extends React.Component<PlayerAbortedEquipSectio
                 [styles.precious]: section === CharacterEquipSections.Precious,
               })}
               key={section}
-              src={this.abortedImageProp!.src}
-              alt={this.abortedImageProp!.alt}
+              image={this.abortedImageProp!}
             />
           ))}
       </div>

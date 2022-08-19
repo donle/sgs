@@ -9,7 +9,7 @@ export type AudioPlayerProps = {
   defaultVolume?: number;
 };
 
-export const AudioPlayer = (props: AudioPlayerProps) => {
+export const AudioPlayer = React.memo((props: AudioPlayerProps) => {
   const [end, onEnds] = React.useState(false);
   const onAudioCreated = (instance: HTMLAudioElement | null) => {
     if (!instance) {
@@ -48,4 +48,4 @@ export const AudioPlayer = (props: AudioPlayerProps) => {
       autoPlay={true}
     />
   );
-};
+});

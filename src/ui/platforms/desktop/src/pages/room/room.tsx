@@ -1,11 +1,15 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
-import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
+import { PlayerId } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -46,10 +50,15 @@ export class RoomPage extends React.Component<
   private socket: ClientSocket;
   private gameProcessor: GameClientProcessor;
   private roomId: number;
-  private playerName: string = this.props.electronLoader.getData('username') || 'unknown';
+  private playerName: string = this.props.electronLoader.getData(ElectronData.PlayerName) || 'unknown';
+  private playerId: PlayerId = Precondition.exists(
+    this.props.electronLoader.getTemporaryData(ElectronData.PlayerId),
+    'unknown player id',
+  );
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
   private isCampaignMode = false;
+  private connectionService: ConnectionService;
 
   private lastEventTimeStamp: number;
 
@@ -60,24 +69,24 @@ export class RoomPage extends React.Component<
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
-  private defaultMainVolume = this.props.electronLoader.getData('mainVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
+  private defaultMainVolume = this.props.electronLoader.getData(ElectronData.MainVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.MainVolume), 10)
     : 50;
   @mobx.observable.ref
-  private defaultGameVolume = this.props.electronLoader.getData('gameVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
+  private defaultGameVolume = this.props.electronLoader.getData(ElectronData.GameVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.GameVolume), 10)
     : 50;
   @mobx.observable.ref
   private renderSideBoard = true;
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('gameVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.GameVolume, volume.toString());
       this.defaultGameVolume = volume;
       this.audioService.changeGameVolume();
     }),
     onMainVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('mainVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.MainVolume, volume.toString());
       this.defaultMainVolume = volume;
       this.audioService.changeBGMVolume();
     }),
@@ -95,37 +104,12 @@ export class RoomPage extends React.Component<
     }>,
   ) {
     super(props);
-    const { translator } = this.props;
+    const { match, translator } = this.props;
 
+    this.roomId = parseInt(match.params.slug, 10);
     this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
 
-    this.baseService = installService(this.props.translator, this.store, this.props.imageLoader);
-    this.gameProcessor = new GameClientProcessor(
-      this.presenter,
-      this.store,
-      translator,
-      this.props.imageLoader,
-      this.audioService,
-      this.props.electronLoader,
-      this.props.skinData,
-    );
-  }
-
-  private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
-    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData('playerId')!);
-    for (const content of events) {
-      const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
-      await this.gameProcessor.onHandleIncomingEvent(identifier, content);
-      this.showMessageFromEvent(content);
-      this.updateGameStatus(content);
-    }
-  };
-
-  componentDidMount() {
-    this.audioService.playRoomBGM();
-
-    this.roomId = parseInt(this.props.match.params.slug, 10);
     const roomId = this.roomId.toString();
     const { ping, hostConfig, campaignMode } = this.props.location.state as {
       ping?: number;
@@ -133,6 +117,7 @@ export class RoomPage extends React.Component<
       campaignMode?: boolean;
     };
     this.isCampaignMode = !!campaignMode;
+    this.connectionService = this.props.getConnectionService(this.isCampaignMode);
 
     if (campaignMode) {
       this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
@@ -149,15 +134,48 @@ export class RoomPage extends React.Component<
       mobx.runInAction(() => (this.roomPing = ping));
     }
 
+    this.baseService = installService(this.props.translator, this.store, this.props.imageLoader);
+    this.gameProcessor = new GameClientProcessor(
+      this.presenter,
+      this.store,
+      translator,
+      this.props.imageLoader,
+      this.audioService,
+      this.props.electronLoader,
+      this.props.skinData,
+      this.createWaitingRoomCaller,
+    );
+  }
+
+  private readonly createWaitingRoomCaller = (roomInfo: TemporaryRoomCreationInfo, roomId: number) => {
+    this.props.history.push(`/waiting-room/${roomId}`, {
+      ping: 0,
+      hostConfig: this.props.config.host.find(host => host.hostTag === this.gameHostedServer),
+    });
+  };
+
+  private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
+    this.store.room.emitStatus('trusted', this.playerId!);
+    for (const content of events) {
+      const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
+      await this.gameProcessor.onHandleIncomingEvent(identifier, content);
+      this.showMessageFromEvent(content);
+      this.updateGameStatus(content);
+    }
+  };
+
+  componentDidMount() {
+    this.audioService.playRoomBGM();
     this.presenter.setupRoomStatus({
       playerName: this.playerName,
       socket: this.socket,
       roomId: this.roomId,
       timestamp: Date.now(),
+      playerId: this.playerId,
     });
 
-    if (!this.props.electronLoader.getTemporaryData('playerId')) {
-      this.props.electronLoader.saveTemporaryData('playerId', `${this.playerName}-${Date.now()}`);
+    if (!this.playerId) {
+      this.props.electronLoader.saveTemporaryData(ElectronData.PlayerId, `${this.playerName}-${Date.now()}`);
     }
 
     this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {
@@ -185,7 +203,7 @@ export class RoomPage extends React.Component<
     });
 
     this.socket.onReconnected(() => {
-      const playerId = this.props.electronLoader.getTemporaryData('playerId');
+      const playerId = this.playerId;
       if (!playerId) {
         return;
       }
@@ -205,7 +223,7 @@ export class RoomPage extends React.Component<
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerEnterEvent, {
         playerName: this.playerName,
         timestamp: this.store.clientRoomInfo.timestamp,
-        playerId: this.props.electronLoader.getTemporaryData('playerId')!,
+        playerId: this.playerId!,
         coreVersion: Sanguosha.Version,
       }),
     );
@@ -301,7 +319,7 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
-              connectionService={this.props.getConnectionService(this.isCampaignMode)}
+              connectionService={this.connectionService}
               onClickSettings={this.onClickSettings}
               onSwitchSideBoard={this.onSwitchSideBoard}
               defaultPing={this.roomPing}
@@ -325,7 +343,7 @@ export class RoomPage extends React.Component<
                     store={this.store}
                     presenter={this.presenter}
                     translator={this.props.translator}
-                    connectionService={this.props.getConnectionService(this.isCampaignMode)}
+                    connectionService={this.connectionService}
                   />
                 </div>
               )}

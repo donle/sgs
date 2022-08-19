@@ -1,12 +1,14 @@
 @value gridLine from '../metrics/metrics.css';
+@value textLightGrey from '../metrics/metrics.css';
 
 .tooltip {
     position: absolute;
     padding: calc(gridLine * 2);
     z-index: 99;
     min-width: calc(gridLine * 40);
+    max-width: calc(gridLine * 80);
     background: rgba(0, 0, 0, 0.7);
-    color: #ddd;
+    color: textLightGrey;
     box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.7);
     border-radius: 4px;
     font-size: 14px;

@@ -60,7 +60,9 @@ export class ShanLi extends TriggerSkill {
     const lordSkills = Sanguosha.getRandomCharacters(3, undefined, [], character => character.isLord()).reduce<
       string[]
     >((skills, general) => {
-      skills.push(...general.Skills.filter(skill => skill.isLordSkill() && !skill.isShadowSkill()).map(skill => skill.Name));
+      skills.push(
+        ...general.Skills.filter(skill => skill.isLordSkill() && !skill.isShadowSkill()).map(skill => skill.Name),
+      );
       return skills;
     }, []);
 

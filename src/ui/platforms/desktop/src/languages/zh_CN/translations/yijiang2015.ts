@@ -104,7 +104,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'qiaoshi_description',
-    target: '其他角色的结束阶段开始时，若其手牌数与你相等，你可以与其各摸一张牌，然后若以此法摸的两张牌花色相同，你可重复此流程。',
+    target:
+      '其他角色的结束阶段开始时，若其手牌数与你相等，你可以与其各摸一张牌，然后若以此法摸的两张牌花色相同，你可重复此流程。',
   },
   {
     source: 'yanyu_description',
@@ -136,8 +137,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'yanzhu_ex_description',
-    target:
-      '出牌阶段限一次，你可以令一名其他角色于其下个回合开始前受到的下一次伤害+1。',
+    target: '出牌阶段限一次，你可以令一名其他角色于其下个回合开始前受到的下一次伤害+1。',
   },
   {
     source: 'xingxue_description',
@@ -151,8 +151,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zhaofu_description',
-    target:
-      '<b>主公技</b>，<b>锁定技</b>，你距离为1的角色视为在其他吴势力角色的攻击范围内。',
+    target: '<b>主公技</b>，<b>锁定技</b>，你距离为1的角色视为在其他吴势力角色的攻击范围内。',
   },
 
   {
@@ -282,7 +281,7 @@ export const skillAudios: Word[] = [
     source: '$yaoming:2',
     target: '则天而行，作功邀名。',
   },
-  
+
   {
     source: '$yanzhu:1',
     target: '觥筹交错，杀人于无形！',

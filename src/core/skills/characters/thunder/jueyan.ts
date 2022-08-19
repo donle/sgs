@@ -1,7 +1,8 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterEquipSections } from 'core/characters/character';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
 import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
@@ -17,7 +18,7 @@ export class JueYan extends ActiveSkill {
   public get RelatedSkills(): string[] {
     return ['jizhi'];
   }
-  
+
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name) && owner.AvailableEquipSections.length > 0;
   }

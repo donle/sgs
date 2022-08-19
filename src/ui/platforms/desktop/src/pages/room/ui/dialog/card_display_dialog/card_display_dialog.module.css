@@ -1,4 +1,24 @@
+@value SanguoshaFont from '../../../../../ui/metrics/metrics.css';
+@value gridLine from '../../../../../ui/metrics/metrics.css';
+@value halfGridLine from '../../../../../ui/metrics/metrics.css';
+
 .confirmButton {
     display: flex;
     justify-content: flex-end;
+}
+
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: calc(gridLine * 100);
+}
+
+.cardLine {
+    display: flex;
+    margin: halfGridLine 0;
+}
+
+.cardLine > * {
+    margin: 0 halfGridLine;
 }

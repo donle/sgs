@@ -1,9 +1,17 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterEquipSections, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
-import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
+import {
+  DamageType,
+  GameCommonRuleObject,
+  GameInfo,
+  GameRunningInfo,
+  TemporaryRoomCreationInfo,
+  WaitingRoomGameSettings,
+} from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
+import { RoomId } from 'core/room/room';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { System } from 'core/shares/libs/system';
 import { AimGroup } from 'core/shares/libs/utils/aim_group';
@@ -19,6 +27,8 @@ import {
   EventUtilities,
   GameEventIdentifiers,
   ServerEventFinder,
+  WaitingRoomEvent,
+  WaitingRoomEventUtilities,
 } from './event';
 
 export type MovingCardProps = {
@@ -494,6 +504,12 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     skillNames: string[];
   };
+  [GameEventIdentifiers.BackToWaitingRoomEvent]: {
+    playerId: PlayerId;
+    playerName: string;
+    roomInfo: TemporaryRoomCreationInfo;
+    roomId: RoomId;
+  };
 }
 
 export type PinDianProcedure = {
@@ -506,3 +522,58 @@ export type PinDianReport = {
   pindianCardId?: CardId;
   pindianRecord: PinDianProcedure[];
 };
+
+export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
+  [WaitingRoomEvent.GameInfoUpdate]: {
+    roomInfo: WaitingRoomGameSettings;
+  };
+  [WaitingRoomEvent.PlayerChatMessage]: {
+    from: string;
+    messageContent: string;
+    timestamp: number;
+  };
+  [WaitingRoomEvent.GameStart]: {
+    roomId: RoomId;
+    otherPlayersId: PlayerId[];
+    roomInfo: GameInfo;
+  };
+  [WaitingRoomEvent.PlayerEnter]: {
+    hostPlayerId: PlayerId;
+    playerInfo: { playerId: PlayerId; avatarId: number; playerName: string; seatId: number };
+    otherPlayersInfo: {
+      playerId: PlayerId;
+      avatarId: number;
+      playerName: string;
+      seatId: number;
+      playerReady: boolean;
+    }[];
+    roomInfo: TemporaryRoomCreationInfo;
+    disableSeats: number[];
+  };
+  [WaitingRoomEvent.PlayerLeave]: {
+    leftPlayerId: PlayerId;
+    byKicked: boolean;
+    newHostPlayerId?: PlayerId;
+  };
+  [WaitingRoomEvent.PlayerReady]: {
+    readyPlayerId: PlayerId;
+    isReady: boolean;
+  };
+  [WaitingRoomEvent.SeatDisabled]: {
+    seatId: number;
+    disabled: boolean;
+  };
+  [WaitingRoomEvent.RoomCreated]:
+    | {
+        roomId: RoomId;
+        roomInfo: TemporaryRoomCreationInfo;
+        hostPlayerId: PlayerId;
+        disabledSeats: number[];
+        error: null;
+      }
+    | { error: string };
+  [WaitingRoomEvent.ChangeHost]: {
+    prevHostPlayerId: PlayerId;
+    newHostPlayerId: PlayerId;
+  };
+}

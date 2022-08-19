@@ -7,12 +7,13 @@ import {
   CardMovedBySpecifiedReason,
   CardMoveReason,
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
   serverResponsiveListenerEvents,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -58,6 +59,7 @@ export class GameClientProcessor {
     protected audioService: AudioService,
     protected electron: ElectronLoader,
     protected skinData?: CharacterSkinInfo[],
+    protected createWaitingRoomCaller?: (roomInfo: TemporaryRoomCreationInfo, roomId: number) => void,
   ) {}
 
   protected tryToThrowNotReadyException(e: GameEventIdentifiers) {
@@ -373,6 +375,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.UnhookSkillsEvent:
         await this.onHandleUnhookSkillsEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.BackToWaitingRoomEvent:
+        await this.BackingToWaitingRoomEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -963,7 +968,7 @@ export class GameClientProcessor {
   ) {
     Precondition.assert(this.store.clientRoomInfo !== undefined, 'Uninitialized Client room info');
     if (
-      content.joiningPlayerName === this.store.clientRoomInfo.playerName &&
+      content.joiningPlayerId === this.store.clientRoomInfo.playerId &&
       content.timestamp === this.store.clientRoomInfo.timestamp
     ) {
       this.presenter.setupClientPlayerId(content.joiningPlayerId);
@@ -974,8 +979,12 @@ export class GameClientProcessor {
         content.gameInfo,
         content.playersInfo,
       );
+
       this.translator.setupPlayer(this.presenter.ClientPlayer);
       this.store.animationPosition.insertPlayer(content.joiningPlayerId);
+
+      this.presenter.ClientPlayer?.getReady();
+      this.store.room.broadcast(GameEventIdentifiers.PlayerReadyEvent, { playerId: this.store.clientPlayerId });
     } else {
       const playerInfo = Precondition.exists(
         content.playersInfo.find(playerInfo => playerInfo.Id === content.joiningPlayerId),
@@ -983,7 +992,10 @@ export class GameClientProcessor {
       );
 
       this.store.animationPosition.insertPlayer(playerInfo.Id);
-      this.presenter.playerEnter(playerInfo);
+
+      if (this.store.room) {
+        this.presenter.playerEnter(playerInfo);
+      }
     }
   }
 
@@ -1191,7 +1203,7 @@ export class GameClientProcessor {
       ) {
         const actualCardIds = VirtualCard.getActualCards(cardIds);
         if (toArea === CardMoveArea.OutsideArea) {
-          to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
         } else if (toArea === CardMoveArea.JudgeArea) {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -1352,7 +1364,7 @@ export class GameClientProcessor {
   }
 
   protected onHandleAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
     const selectedCardsIndex: number[] = [];
@@ -1618,11 +1630,19 @@ export class GameClientProcessor {
         gameMode={this.store.room.Info.gameMode}
         winners={winners}
         losers={losers}
+        onBackingToWaitingRoom={this.store.room.Info.campaignMode ? undefined : this.onBackingToWaitingRoom}
       />,
     );
     this.presenter.broadcastUIUpdate();
     this.store.room.gameOver();
   }
+
+  private readonly onBackingToWaitingRoom = () => {
+    this.store.room.broadcast(GameEventIdentifiers.BackToWaitingRoomEvent, {
+      playerId: this.store.clientPlayerId!,
+      playerName: this.store.clientRoomInfo.playerName,
+    });
+  };
 
   protected async onHandleChainLockedEvent<T extends GameEventIdentifiers.ChainLockedEvent>(
     type: T,
@@ -1666,7 +1686,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
   >(type: T, content: ServerEventFinder<T>) {
     const { user, cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({
@@ -1805,7 +1825,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAbortOrResumePlayerSectionsEvent<
-    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent,
+    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent
   >(type: T, content: ServerEventFinder<T>) {
     const { toId, isResumption, toSections } = content;
     const to = this.store.room.getPlayerById(toId);
@@ -1819,7 +1839,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAbortOrResumePlayerJudgeAreaEvent<
-    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent,
+    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent
   >(type: T, content: ServerEventFinder<T>) {
     const { toId, isResumption } = content;
     const to = this.store.room.getPlayerById(toId);
@@ -1850,5 +1870,13 @@ export class GameClientProcessor {
       .getPlayerById(content.toId)
       .removeHookedSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
     this.presenter.broadcastUIUpdate();
+  }
+
+  protected BackingToWaitingRoomEvent<T extends GameEventIdentifiers.BackToWaitingRoomEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { roomId, roomInfo } = content;
+    this.createWaitingRoomCaller?.(roomInfo, roomId);
   }
 }
