@@ -383,135 +383,89 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       : undefined;
 
     const skillSource: Readonly<['character', 'equip']> = ['character', 'equip'];
-    for (const player of this.getAllPlayersFrom()) {
-      if (EventPacker.isTerminated(content)) {
-        return;
-      }
-
-      for (const skillFrom of skillSource) {
+    try {
+      for (const player of this.getAllPlayersFrom()) {
         if (EventPacker.isTerminated(content)) {
           return;
         }
 
-        let canTriggerSkills = this.playerTriggerableSkills(player, skillFrom, content, stage);
-        const triggeredSkills: TriggerSkill[] = [];
-        do {
+        for (const skillFrom of skillSource) {
           if (EventPacker.isTerminated(content)) {
             return;
           }
 
-          const skillsInPriorities: TriggerSkill[][] = [];
-          const skillTriggerableTimes: {
-            [K: string]: number;
-          } = {};
-          for (const skill of canTriggerSkills) {
-            const priority = skill.getPriority(this, player, content);
-            skillsInPriorities[priority]
-              ? skillsInPriorities[priority].push(skill)
-              : (skillsInPriorities[priority] = [skill]);
-            skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content);
-          }
-
-          for (const skills of skillsInPriorities) {
+          let canTriggerSkills = this.playerTriggerableSkills(player, skillFrom, content, stage);
+          const triggeredSkills: TriggerSkill[] = [];
+          do {
             if (EventPacker.isTerminated(content)) {
               return;
             }
-            if (!skills) {
-              continue;
+
+            const skillsInPriorities: TriggerSkill[][] = [];
+            const skillTriggerableTimes: {
+              [K: string]: number;
+            } = {};
+            for (const skill of canTriggerSkills) {
+              const priority = skill.getPriority(this, player, content);
+              skillsInPriorities[priority]
+                ? skillsInPriorities[priority].push(skill)
+                : (skillsInPriorities[priority] = [skill]);
+              skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content);
             }
 
-            if (skills.length === 1) {
-              const skill = skills[0];
-              for (let i = 0; i < skill.triggerableTimes(content); i++) {
-                const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
-                  fromId: player.Id,
-                  skillName: skill.Name,
-                  triggeredOnEvent: content,
-                  mute: skill.Muted,
-                };
-                if (
-                  skill.isAutoTrigger(this, player, content) ||
-                  skill.SkillType === SkillType.Compulsory ||
-                  skill.SkillType === SkillType.Awaken
-                ) {
-                  await this.useSkill(triggerSkillEvent);
-                } else {
-                  const event = {
-                    invokeSkillNames: [skill.Name],
-                    triggeredOnEvent: content,
-                    toId: player.Id,
-                    conversation: skill.getSkillLog(this, player, content),
-                  };
-                  if (skill.isUncancellable(this, content)) {
-                    EventPacker.createUncancellableEvent(event);
-                  }
-                  this.notify(GameEventIdentifiers.AskForSkillUseEvent, event, player.Id);
-                  const { invoke, cardIds, toIds } = await this.onReceivingAsyncResponseFrom(
-                    GameEventIdentifiers.AskForSkillUseEvent,
-                    player.Id,
-                  );
-                  const skillsUsing = player.getFlag<string[]>(FlagEnum.SkillsUsing);
-                  if (!invoke && skillsUsing && skillsUsing.includes(skill.Name)) {
-                    await this.loseSkill(player.Id, skill.Name, true);
-                  }
-                  triggerSkillEvent.toIds = toIds;
-                  triggerSkillEvent.cardIds = cardIds;
-                  if (invoke) {
-                    await this.useSkill(triggerSkillEvent);
-                  }
-                }
+            for (const skills of skillsInPriorities) {
+              if (EventPacker.isTerminated(content)) {
+                return;
               }
-            } else {
-              let awaitedSkills: TriggerSkill[] = [];
-              for (const skill of skills) {
-                if (skill.isFlaggedSkill(this, content, stage)) {
+              if (!skills) {
+                continue;
+              }
+
+              if (skills.length === 1) {
+                const skill = skills[0];
+                for (let i = 0; i < skill.triggerableTimes(content); i++) {
                   const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
                     fromId: player.Id,
                     skillName: skill.Name,
                     triggeredOnEvent: content,
                     mute: skill.Muted,
                   };
-                  await this.useSkill(triggerSkillEvent);
-                } else {
-                  awaitedSkills.push(skill);
-                }
-              }
-
-              while (awaitedSkills.length > 0) {
-                const uncancellableSkills = awaitedSkills.filter(
-                  skill =>
+                  if (
                     skill.isAutoTrigger(this, player, content) ||
                     skill.SkillType === SkillType.Compulsory ||
-                    skill.SkillType === SkillType.Awaken,
-                );
-
-                const event = {
-                  invokeSkillNames: awaitedSkills.map(skill => skill.Name),
-                  toId: player.Id,
-                };
-                if (awaitedSkills.length === 1 && uncancellableSkills.length === 1) {
-                  const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
-                    fromId: player.Id,
-                    skillName: awaitedSkills[0].Name,
-                    triggeredOnEvent: content,
-                    mute: awaitedSkills[0].Muted,
-                  };
-                  for (let i = 0; i < skillTriggerableTimes[awaitedSkills[0].Name]; i++) {
+                    skill.SkillType === SkillType.Awaken
+                  ) {
                     await this.useSkill(triggerSkillEvent);
+                  } else {
+                    const event = {
+                      invokeSkillNames: [skill.Name],
+                      triggeredOnEvent: content,
+                      toId: player.Id,
+                      conversation: skill.getSkillLog(this, player, content),
+                    };
+                    if (skill.isUncancellable(this, content)) {
+                      EventPacker.createUncancellableEvent(event);
+                    }
+                    this.notify(GameEventIdentifiers.AskForSkillUseEvent, event, player.Id);
+                    const { invoke, cardIds, toIds } = await this.onReceivingAsyncResponseFrom(
+                      GameEventIdentifiers.AskForSkillUseEvent,
+                      player.Id,
+                    );
+                    const skillsUsing = player.getFlag<string[]>(FlagEnum.SkillsUsing);
+                    if (!invoke && skillsUsing && skillsUsing.includes(skill.Name)) {
+                      await this.loseSkill(player.Id, skill.Name, true);
+                    }
+                    triggerSkillEvent.toIds = toIds;
+                    triggerSkillEvent.cardIds = cardIds;
+                    if (invoke) {
+                      await this.useSkill(triggerSkillEvent);
+                    }
                   }
-                  break;
                 }
-
-                if (uncancellableSkills.length > 1) {
-                  EventPacker.createUncancellableEvent(event);
-                }
-                this.notify(GameEventIdentifiers.AskForSkillUseEvent, event, player.Id);
-                const { invoke, cardIds, toIds } = await this.onReceivingAsyncResponseFrom(
-                  GameEventIdentifiers.AskForSkillUseEvent,
-                  player.Id,
-                );
-                if (invoke === undefined) {
-                  for (const skill of uncancellableSkills) {
+              } else {
+                let awaitedSkills: TriggerSkill[] = [];
+                for (const skill of skills) {
+                  if (skill.isFlaggedSkill(this, content, stage)) {
                     const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
                       fromId: player.Id,
                       skillName: skill.Name,
@@ -519,46 +473,107 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                       mute: skill.Muted,
                     };
                     await this.useSkill(triggerSkillEvent);
-                  }
-                  break;
-                }
-
-                const awaitedSkill = awaitedSkills.find(skill => skill.Name === invoke);
-                const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
-                  fromId: player.Id,
-                  skillName: invoke,
-                  triggeredOnEvent: content,
-                  mute: awaitedSkill?.Muted,
-                };
-                triggerSkillEvent.toIds = toIds;
-                triggerSkillEvent.cardIds = cardIds;
-                await this.useSkill(triggerSkillEvent);
-
-                const index = awaitedSkills.findIndex(skill => skill.Name === invoke);
-                if (index >= 0) {
-                  skillTriggerableTimes[awaitedSkills[index].Name]--;
-                  if (skillTriggerableTimes[awaitedSkills[index].Name] <= 0) {
-                    awaitedSkills.splice(index, 1);
+                  } else {
+                    awaitedSkills.push(skill);
                   }
                 }
 
-                awaitedSkills = awaitedSkills.filter(skill => {
-                  const canTrigger = bySkills
-                    ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
-                    : true;
-
-                  return (
-                    canTrigger && skill.isTriggerable(content, stage) && skill.canUse(this, player, content, stage)
+                while (awaitedSkills.length > 0) {
+                  const uncancellableSkills = awaitedSkills.filter(
+                    skill =>
+                      skill.isAutoTrigger(this, player, content) ||
+                      skill.SkillType === SkillType.Compulsory ||
+                      skill.SkillType === SkillType.Awaken,
                   );
-                });
+
+                  const event = {
+                    invokeSkillNames: awaitedSkills.map(skill => skill.Name),
+                    toId: player.Id,
+                  };
+                  if (awaitedSkills.length === 1 && uncancellableSkills.length === 1) {
+                    const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
+                      fromId: player.Id,
+                      skillName: awaitedSkills[0].Name,
+                      triggeredOnEvent: content,
+                      mute: awaitedSkills[0].Muted,
+                    };
+                    for (let i = 0; i < skillTriggerableTimes[awaitedSkills[0].Name]; i++) {
+                      await this.useSkill(triggerSkillEvent);
+                    }
+                    break;
+                  }
+
+                  if (uncancellableSkills.length > 1) {
+                    EventPacker.createUncancellableEvent(event);
+                  }
+                  this.notify(GameEventIdentifiers.AskForSkillUseEvent, event, player.Id);
+                  const { invoke, cardIds, toIds } = await this.onReceivingAsyncResponseFrom(
+                    GameEventIdentifiers.AskForSkillUseEvent,
+                    player.Id,
+                  );
+                  if (invoke === undefined) {
+                    for (const skill of uncancellableSkills) {
+                      const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
+                        fromId: player.Id,
+                        skillName: skill.Name,
+                        triggeredOnEvent: content,
+                        mute: skill.Muted,
+                      };
+                      await this.useSkill(triggerSkillEvent);
+                    }
+                    break;
+                  }
+
+                  const awaitedSkill = awaitedSkills.find(skill => skill.Name === invoke);
+                  const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
+                    fromId: player.Id,
+                    skillName: invoke,
+                    triggeredOnEvent: content,
+                    mute: awaitedSkill?.Muted,
+                  };
+                  triggerSkillEvent.toIds = toIds;
+                  triggerSkillEvent.cardIds = cardIds;
+                  await this.useSkill(triggerSkillEvent);
+
+                  const index = awaitedSkills.findIndex(skill => skill.Name === invoke);
+                  if (index >= 0) {
+                    skillTriggerableTimes[awaitedSkills[index].Name]--;
+                    if (skillTriggerableTimes[awaitedSkills[index].Name] <= 0) {
+                      awaitedSkills.splice(index, 1);
+                    }
+                  }
+
+                  awaitedSkills = awaitedSkills.filter(skill => {
+                    const canTrigger = bySkills
+                      ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
+                      : true;
+
+                    return (
+                      canTrigger && skill.isTriggerable(content, stage) && skill.canUse(this, player, content, stage)
+                    );
+                  });
+                }
               }
             }
-          }
 
-          triggeredSkills.push(...canTriggerSkills);
-          canTriggerSkills = this.playerTriggerableSkills(player, skillFrom, content, stage, triggeredSkills);
-        } while (canTriggerSkills.length > 0);
+            triggeredSkills.push(...canTriggerSkills);
+            canTriggerSkills = this.playerTriggerableSkills(player, skillFrom, content, stage, triggeredSkills);
+          } while (canTriggerSkills.length > 0);
+        }
       }
+    } catch (e) {
+      this.logger.error(e);
+      const message = TranslationPack.patchPureTextParameter(
+        'Room running with exceptions, please re-create your room',
+      );
+      this.broadcast(GameEventIdentifiers.UserMessageEvent, {
+        message,
+        originalMessage: message,
+        playerId: this.players[0].Id,
+      });
+      this.gameOvered = true;
+      this.close();
+      return;
     }
 
     for (const p of this.getAlivePlayersFrom()) {
