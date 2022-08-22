@@ -112,7 +112,7 @@ export class DevImageLoader implements ImageLoader {
         throw Precondition.UnreachableError(section);
     }
 
-    const image: string = (await import(`${remoteRoot}/images/slim_equips/${sectionName}.png`)).default;
+    const image: string = (await import(/* @vite-ignore */ `${remoteRoot}/images/slim_equips/${sectionName}.png`)).default;
     return { alt: 'Aborted Slim Equip Card', src: image };
   }
 

@@ -15,7 +15,8 @@ import { emojiLoader } from './emoji_loader/emoji_loader';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-const mode = (process.env.REACT_APP_DEV_MODE as ClientFlavor) || ClientFlavor.Dev;
+// const mode = (process.env.REACT_APP_DEV_MODE as ClientFlavor) || ClientFlavor.Dev;
+const mode = ClientFlavor.Dev
 const config = getClientConfig(mode);
 
 if (config.flavor !== ClientFlavor.Web) {
