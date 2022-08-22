@@ -22,6 +22,10 @@
     align-self: center;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .dead {
     filter: grayscale(100%);
 }

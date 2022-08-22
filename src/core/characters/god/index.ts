@@ -10,6 +10,7 @@ import { GodLvMeng } from './god_lvmeng';
 import { GodSiMaYi } from './god_simayi';
 import { GodSunCe } from './god_sunce';
 import { GodTaiShiCi } from './god_taishici';
+import { GodXunYu } from './god_xunyu';
 import { GodZhangLiao } from './god_zhangliao';
 import { GodZhaoYun } from './god_zhaoyun';
 import { GodZhouYu } from './god_zhouyu';
@@ -38,4 +39,6 @@ export const GodCharacterPackage: (index: number) => Character[] = index => [
   new GodTaiShiCi(index++),
 
   new GodSunCe(index++),
+
+  new GodXunYu(index++),
 ];

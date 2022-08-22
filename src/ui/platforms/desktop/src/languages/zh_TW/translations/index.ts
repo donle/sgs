@@ -1,5 +1,6 @@
 import * as biographiesCharacterDictionary from './biopraphies';
 import * as cardsDictionary from './card';
+import * as generatedCardsDictionary from './character_skill_generated_cards';
 import * as decadeCharactersDictionary from './decade';
 import * as fireCharactersDictionary from './fire';
 import * as forestCharactersDictionary from './forest';
@@ -27,6 +28,7 @@ import * as yiJiang5CharactersDictionary from './yijiang2015';
 
 export {
   cardsDictionary,
+  generatedCardsDictionary,
   fireCharactersDictionary,
   forestCharactersDictionary,
   generalDictionary,

@@ -1910,6 +1910,10 @@ export class StandardGameProcessor extends GameProcessor {
       if (processingCards.length > 0) {
         this.room.addProcessingCards(processingCards.join('+'), ...processingCards);
       }
+    } else if (toArea === CardMoveArea.UniqueCardArea) {
+      this.room.bury(
+        ...VirtualCard.getActualCards(cardIds).filter(cardId => !Sanguosha.getCardById(cardId).isUniqueCard()),
+      );
     } else {
       if (to) {
         if (toArea === CardMoveArea.EquipArea) {

@@ -88,6 +88,12 @@ export const characterDictionary: Word[] = [
   { source: 'pingding', target: '平定' },
   { source: 'god_fuhai', target: '覆海' },
   { source: 'pinghe', target: '冯河' },
+
+  { source: 'god_xunyu', target: '神荀彧' },
+  { source: 'tianzuo', target: '天佐' },
+  { source: '#tianzuo', target: '天佐' },
+  { source: 'lingce', target: '灵策' },
+  { source: 'dinghan', target: '定汉' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -288,6 +294,20 @@ export const skillDescriptions: Word[] = [
     source: 'pinghe_description',
     target:
       '<b>锁定技</b>，你的手牌上限基值等同于你已损失的体力值；当你受到其他角色造成的伤害时，若你有手牌且体力上限大于1，防止此伤害，你减1点体力上限并将一张手牌交给一名其他角色，令伤害来源获得一枚“平定”标记。',
+  },
+  {
+    source: 'tianzuo_description',
+    target: '<b>锁定技</b>，①游戏开始时，将8张【奇正相生】加入牌堆；②【奇正相生】对你无效。',
+  },
+  {
+    source: 'lingce_description',
+    target:
+      '<b>锁定技</b>，当一名角色使用非虚拟非转化的锦囊牌时，若此牌为智囊牌、“定汉”已记录的牌或【奇正相生】，你摸一张牌。',
+  },
+  {
+    source: 'dinghan_description',
+    target:
+      '①当你成为未被记录的锦囊牌的目标时，你记录此牌名，然后取消之；②回合开始时，你可以在“定汉”的记录中增加或移出一种锦囊牌的牌名。',
   },
 ];
 
@@ -675,7 +695,7 @@ export const conversations: Word[] = [
   { source: 'powei:prey', target: '获得其一张手牌' },
 
   {
-    source: '{0}: please choose shenzhuo options: {1}',
+    source: '{0}: please choose shenzhuo options',
     target: '{0}：请选择以下一项',
   },
   { source: 'shenzhuo:drawOne', target: '摸一张牌，本回合使用【杀】次数+1' },
@@ -685,4 +705,7 @@ export const conversations: Word[] = [
     source: 'pinghe: please give a handcard to another player',
     target: '冯河：请交给一名其他角色一张手牌',
   },
+  { source: '{0} used skill {1}, which has been removed from target list of {2}', target: '{0} 使用了技能【{1}】，{0} 从 {2} 的目标中移除' },
+  { source: '{0}: please choose a dinghan option', target: '{0}：请选择以下一项加入或移出定汉记录' },
+  { source: '{0} shuffled 8 {1} cards into the draw stack', target: '{0} 将八张【{1}】洗入了摸牌堆' },
 ];

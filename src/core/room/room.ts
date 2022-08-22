@@ -76,6 +76,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract broadcast<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>): void;
 
   //Server only
+  public abstract shuffleCardsIntoDrawStack(cardIds: CardId[]): void;
+  //Server only
   public abstract shuffle(): void;
   //Server only
   public abstract getCards(numberOfCards: number, from: 'top' | 'bottom'): CardId[];
@@ -599,7 +601,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     this.getPlayerById(player).removeFlag(name);
   }
   public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string, visiblePlayers?: PlayerId[]): T {
-    return this.getPlayerById(player).setFlag(name, value);
+    return this.getPlayerById(player).setFlag(name, value, tagName, visiblePlayers);
   }
   public getFlag<T>(player: PlayerId, name: string): T {
     return this.getPlayerById(player).getFlag(name);

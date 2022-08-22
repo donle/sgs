@@ -153,7 +153,7 @@ export abstract class Player implements PlayerInfo {
   removeFlag(name: string) {
     delete this.flags[name];
   }
-  setFlag<T>(name: string, value: T): T {
+  setFlag<T>(name: string, value: T, tagName?: string, visiblePlayers?: PlayerId[]): T {
     return (this.flags[name] = value);
   }
   getFlag<T>(name: string): T {

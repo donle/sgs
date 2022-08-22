@@ -39,6 +39,7 @@ export const enum GameCharacterExtensions {
 export const enum GameCardExtensions {
   Standard = 'standard',
   LegionFight = 'legion_fight',
+  CharacterSkills = 'character_skills',
 }
 
 export type GameInfo = {

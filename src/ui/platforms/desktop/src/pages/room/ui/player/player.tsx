@@ -1,11 +1,12 @@
 import classNames from 'classnames';
-import { CardType } from 'core/cards/card';
+import { Card, CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterEquipSections } from 'core/characters/character';
+import { Character, CharacterEquipSections, CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId, PlayerRole, PlayerStatus } from 'core/player/player_props';
+import { System } from 'core/shares/libs/system';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { GameMode } from 'core/shares/types/room_props';
 import { Skill } from 'core/skills/skill';
@@ -25,6 +26,7 @@ import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
+import { CharacterSelectorDialog } from '../dialog/character_selector_dialog/character_selector_dialog';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
 import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
@@ -175,17 +177,53 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     this.onTooltipOpened = false;
   };
 
+  private readonly onClickUniqueSkillTag = (name: string, items: (Card | Character)[]) => () => {
+    if (this.openedDialog === name) {
+      this.openedDialog = undefined;
+      this.props.presenter.closeDialog();
+    } else {
+      this.openedDialog = name;
+      this.props.presenter.createDialog(
+        items[0] instanceof Card ? (
+          <CardSelectorDialog
+            imageLoader={this.props.imageLoader}
+            options={items.map(item => item.Id)}
+            translator={this.props.translator}
+          />
+        ) : (
+          <CharacterSelectorDialog
+            imageLoader={this.props.imageLoader}
+            characterIds={items.map(item => item.Id) as CharacterId[]}
+            translator={this.props.translator}
+          />
+        ),
+      );
+    }
+  };
+
   private getSkillTags(viewer: PlayerId) {
     const { translator, player } = this.props;
-    const flags = player && player.getAllVisibleTags(viewer);
+    if (!player) {
+      return undefined;
+    }
+    const flags = player.getAllVisibleTags(viewer);
     return (
       flags && (
         <div className={styles.skillTags}>
-          {flags.map((flag, index) => (
-            <span key={index} className={styles.skillTag}>
-              {translator.trx(flag)}
-            </span>
-          ))}
+          {flags.map((flag, index) => {
+            const items = System.SkillTagsTransformer[flag]?.(player.getFlag(flag));
+            return (
+              <span
+                key={index}
+                className={classNames(styles.skillTag, {
+                  [styles.clickable]: !!items,
+                })}
+                onClick={items && items.length > 0 ? this.onClickUniqueSkillTag(flag, items) : undefined}
+              >
+                {translator.trx(flag)}
+              </span>
+            );
+          })}
         </div>
       )
     );
