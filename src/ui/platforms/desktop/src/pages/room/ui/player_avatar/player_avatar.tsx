@@ -22,7 +22,6 @@ import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { CharacterSelectorDialog } from '../dialog/character_selector_dialog/character_selector_dialog';
 import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
 import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
 import { Mask } from '../mask/mask';
@@ -148,19 +147,13 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     } else {
       this.openedDialog = name;
       this.props.presenter.createDialog(
-        items[0] instanceof Card ? (
-          <CardSelectorDialog
-            imageLoader={this.props.imageLoader}
-            options={items.map(item => item.Id)}
-            translator={this.props.translator}
-          />
-        ) : (
-          <CharacterSelectorDialog
-            imageLoader={this.props.imageLoader}
-            characterIds={items.map(item => item.Id) as CharacterId[]}
-            translator={this.props.translator}
-          />
-        ),
+        <CardSelectorDialog
+          title={this.props.translator.tr(name)}
+          isCharacterCard={items[0] instanceof Character}
+          imageLoader={this.props.imageLoader}
+          options={items.map(item => item.Id)}
+          translator={this.props.translator}
+        />,
       );
     }
   };

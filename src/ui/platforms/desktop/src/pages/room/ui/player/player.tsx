@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { Card, CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterEquipSections, CharacterId } from 'core/characters/character';
+import { Character, CharacterEquipSections } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
@@ -26,7 +26,6 @@ import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { CharacterSelectorDialog } from '../dialog/character_selector_dialog/character_selector_dialog';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
 import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
@@ -184,19 +183,13 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     } else {
       this.openedDialog = name;
       this.props.presenter.createDialog(
-        items[0] instanceof Card ? (
-          <CardSelectorDialog
-            imageLoader={this.props.imageLoader}
-            options={items.map(item => item.Id)}
-            translator={this.props.translator}
-          />
-        ) : (
-          <CharacterSelectorDialog
-            imageLoader={this.props.imageLoader}
-            characterIds={items.map(item => item.Id) as CharacterId[]}
-            translator={this.props.translator}
-          />
-        ),
+        <CardSelectorDialog
+          title={this.props.translator.tr(name)}
+          isCharacterCard={items[0] instanceof Character}
+          imageLoader={this.props.imageLoader}
+          options={items.map(item => item.Id)}
+          translator={this.props.translator}
+        />,
       );
     }
   };

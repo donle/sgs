@@ -5,7 +5,7 @@ export const cardDictionary: Word[] = [
   {
     source: 'qizhengxiangsheng_description',
     target:
-      '<b style="color:red">出牌階段</b>，對一名其他角色使用。你選擇“<b style="color:green">奇兵</b>”或“<b style="color:green">正兵</b>”（僅你可見），然後目標角色可以打出一張【殺】或【閃】。若你是“<b style="color:green">奇兵</b>”且目標角色沒有打出【殺】，你對其造成1點傷害；若你是“正兵”且目標角色沒有打出【閃】，你獲得其一張牌。',
+      '<b style="color:red">出牌階段</b>，對一名其他角色使用。你選擇“<b style="color:green">奇兵</b>”或“<b style="color:green">正兵</b>”（僅你可見），然後目標角色可以打出一張【殺】或【閃】。若你是“<b style="color:green">奇兵</b>”且目標角色沒有打出【殺】，你對其造成1點傷害；若你是“<b style="color:green">正兵</b>”且目標角色沒有打出【閃】，你獲得其一張牌。',
   },
   {
     source: '{0} used {1} to you, please response a {2} or {3} card',
