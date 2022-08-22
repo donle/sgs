@@ -16,7 +16,7 @@ export class QiZhengXiangSheng extends TrickCard {
       0,
       'qizhengxiangsheng',
       'qizhengxiangsheng_description',
-      GameCardExtensions.Standard,
+      GameCardExtensions.CharacterSkills,
       SkillLoader.getInstance().getSkillByName('qizhengxiangsheng'),
     );
   }
