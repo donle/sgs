@@ -246,7 +246,7 @@ export class PveClassicGuYongWenQu extends TriggerSkill {
         player =>
           !TargetGroupUtil.getRealTargets(content.targetGroup).includes(player.Id) &&
           room.isAvailableTarget(card.Id, content.fromId, player.Id) &&
-          (Sanguosha.getCardById(content.cardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
+          ((Sanguosha.getCardById(content.cardId).Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
             content.fromId,
             room,
             player.Id,

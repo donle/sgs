@@ -49,9 +49,8 @@ export class PveClassicTianXiang extends TriggerSkill {
 
     await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, owner.Id, owner.Id, this.Name);
 
-    const blackCardNumber = event.cardIds.filter(
-      cardId => Sanguosha.getCardById(cardId).Color === CardColor.Black,
-    ).length;
+    const blackCardNumber = event.cardIds.filter(cardId => Sanguosha.getCardById(cardId).Color === CardColor.Black)
+      .length;
 
     if (blackCardNumber === 0) {
       const fromId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId;
