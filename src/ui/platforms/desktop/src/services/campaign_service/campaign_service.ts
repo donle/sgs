@@ -1,7 +1,7 @@
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
 import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
-import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
+import { PveLongshenGameProcessor } from 'core/game/game_processor/game_processor.pve_longshen';
 import { PveClassicGameProcessor } from 'core/game/game_processor/game_processor.pve_classic';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameCardExtensions } from 'core/game/game_props';
@@ -33,7 +33,7 @@ export class CampaignService {
     switch (roomInfo.gameMode) {
       case GameMode.Pve:
         if (roomInfo.numberOfPlayers <= 3) {
-          return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
+          return new PveLongshenGameProcessor(new StageProcessor(this.logger), this.logger);
         } else if (roomInfo.numberOfPlayers <= 5) {
           return new PveClassicGameProcessor(new StageProcessor(this.logger), this.logger);
         } else {

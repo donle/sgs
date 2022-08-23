@@ -64,6 +64,19 @@ export class ResponsiveUseCardAction<
     }
   }
 
+  isOutsideCardShowOnSkillTriggered(card: Card, matcher: CardMatcher) {
+    if (this.isCardFromParticularArea(card)) {
+      return true;
+    }
+    if (this.selectedSkillToPlay !== undefined) {
+      const skill = this.selectedSkillToPlay;
+      if (skill instanceof ActiveSkill) {
+        return skill.availableCardAreas().includes(PlayerCardsArea.OutsideArea);
+      }
+    }
+    return false;
+  }
+
   isCardEnabledOnResponsiveUse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
     for (const skill of this.player.getSkills<FilterSkill>('filter')) {
       if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
@@ -130,7 +143,7 @@ export class ResponsiveUseCardAction<
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          this.isCardEnabledInArea(skill, card, fromArea) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -239,6 +252,9 @@ export class ResponsiveUseCardAction<
       );
       this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.OutsideArea, this.matcher),
+      );
+      this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) =>
+        this.isOutsideCardShowOnSkillTriggered(card, this.matcher),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.EquipArea, this.matcher),

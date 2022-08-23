@@ -86,7 +86,10 @@ export class JieDaoShaRenSkill extends ActiveSkill implements ExtralCardSkillPro
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, cardId } = event;
-    Precondition.assert(toIds?.length === 2, 'Invaild targets length in jiedaosharen');
+    if (toIds === undefined || toIds.length < 2) {
+      // attacker or target maybe dead before effect
+      return false;
+    }
     const [attacker, target] = Precondition.exists(toIds, 'Unknown targets in jiedaosharen');
 
     const response = await room.askForCardUse(

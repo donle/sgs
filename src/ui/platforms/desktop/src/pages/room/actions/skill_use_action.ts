@@ -103,6 +103,16 @@ export class SkillUseAction extends BaseAction {
     });
   }
 
+  isOutsideCardShowOnSkillTriggered(card: Card) {
+    if (this.isCardFromParticularArea(card)) {
+      return true;
+    }
+    if (this.selectedSkillToPlay instanceof TriggerSkill) {
+      return this.selectedSkillToPlay.availableCardAreas().includes(PlayerCardsArea.OutsideArea);
+    }
+    return false;
+  }
+
   isCardEnabledOnSkillTriggered(card: Card, fromArea: PlayerCardsArea) {
     if (this.selectedSkillToPlay instanceof TriggerSkill) {
       return (
@@ -151,6 +161,9 @@ export class SkillUseAction extends BaseAction {
     );
     this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.OutsideArea),
+    );
+    this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) =>
+      this.isOutsideCardShowOnSkillTriggered(card),
     );
     this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.EquipArea),

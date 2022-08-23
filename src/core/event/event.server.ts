@@ -510,6 +510,9 @@ export interface ServerEvent extends EventUtilities {
     roomInfo: TemporaryRoomCreationInfo;
     roomId: RoomId;
   };
+  [GameEventIdentifiers.AskForChangeInitCardEvent]: {
+    toId: PlayerId;
+  };
 }
 
 export type PinDianProcedure = {

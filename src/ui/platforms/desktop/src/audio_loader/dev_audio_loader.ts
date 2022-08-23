@@ -3,7 +3,8 @@ import { Sanguosha } from 'core/game/engine';
 import { CharacterSkinInfo } from 'skins/skins';
 import { AudioLoader } from './audio_loader';
 
-const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
+const giteeRepo: string = 'http://doublebit.gitee.io/pictest/backup_remote';
+const cosRepo: string = 'https://sgs-static-1256205614.cos.ap-nanjing.myqcloud.com/backup_remote';
 
 export class DevAudioLoader implements AudioLoader {
   getLobbyBackgroundMusic() {
@@ -16,19 +17,19 @@ export class DevAudioLoader implements AudioLoader {
     return 'http://doublebit.gitee.io/pictest/audio/common/gamestart.ogg';
   }
   getDamageAudio(damage: number) {
-    return `${remoteRoot}/audios/` + (damage === 1 ? 'damage' : 'damage2') + '.mp3';
+    return `${cosRepo}/audios/` + (damage === 1 ? 'damage' : 'damage2') + '.mp3';
   }
   getLoseHpAudio(): string {
-    return `${remoteRoot}/audios/loseHp.mp3`;
+    return `${cosRepo}/audios/loseHp.mp3`;
   }
   getEquipAudio(): string {
-    return `${remoteRoot}/audios/equip.mp3`;
+    return `${cosRepo}/audios/equip.mp3`;
   }
   getChainAudio(): string {
-    return `${remoteRoot}/audios/chain.mp3`;
+    return `${cosRepo}/audios/chain.mp3`;
   }
   async getQuickChatAudio(index: number, gender: CharacterGender): Promise<string> {
-    return `${remoteRoot}/audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`;
+    return `${cosRepo}/audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`;
   }
   async getSkillAudio(
     skillName: string,
@@ -46,13 +47,13 @@ export class DevAudioLoader implements AudioLoader {
       characterName = skill.RelatedCharacters.includes(characterName) ? '.' + characterName : '';
     }
 
-    return `${remoteRoot}/audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`;
+    return `${giteeRepo}/audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`;
   }
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
-    return `${remoteRoot}/audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`;
+    return `${cosRepo}/audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`;
   }
   async getDeathAudio(characterName: string): Promise<string> {
-    return `${remoteRoot}/audios/characters/${characterName}.mp3`;
+    return `${cosRepo}/audios/characters/${characterName}.mp3`;
   }
 
   async getCharacterSkinAudio(

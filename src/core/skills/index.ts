@@ -318,7 +318,7 @@ export { ZongXuan } from './characters/yijiang2013/zongxuan';
 export { ZhiYan } from './characters/yijiang2013/zhiyan';
 export { AnJian, AnJianPeach } from './characters/yijiang2013/anjian';
 export { DuoDao } from './characters/yijiang2013/duodao';
-export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yijiang2013/xiansi';
+export { XianSi, XianSiShadow, XianSiSlash, XianSiSlashShadow } from './characters/yijiang2013/xiansi';
 export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
 export { JieZhong } from './characters/yijiang2013/jiezhong';
 export { QiaoShuo, QiaoShuoLose, QiaoShuoWin } from './characters/yijiang2013/qiaoshuo';
@@ -607,28 +607,14 @@ export { GuiXiu } from './characters/sincerity/guixiu';
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
-export { PveHuaShen } from './game_mode/pve/pve_huashen';
-export { PveLongLin, PveLongLinShadow, PveLongLinDraw } from './game_mode/pve/pve_longlin';
-export { PveRuiYan } from './game_mode/pve/pve_ruiyan';
-export { PveLongLie, PveLongLieShadow } from './game_mode/pve/pve_longlie';
-export { PveSuWei } from './game_mode/pve/pve_suwei';
-export { PveLongShi } from './game_mode/pve/pve_longshi';
-export { PveLingXi, PveLingXiBuff, PveLingXiShadow, PveLingXiDraw } from './game_mode/pve/pve_lingxi';
-export { PveChaiYue, PveChaiYueBuff, PveChaiYueShadow, PveChaiYueDraw } from './game_mode/pve/pve_chaiyue';
-export { PveLongHou } from './game_mode/pve/pve_longhou';
-export { PveLiGe } from './game_mode/pve/pve_lige';
-export { PveQinLv } from './game_mode/pve/pve_qinlv';
-export { PveJieNu } from './game_mode/pve/pve_jienu';
-export { PveBiBao } from './game_mode/pve/pve_bibao';
-export { PveTanSuo, PveTanSuoShow } from './game_mode/pve/pve_tansuo';
-export { PveClassicGu, PveClassicGuShadow } from './game_mode/pve/pve_classic_human';
+
 export {
   PveClassicGuYong,
   PveClassicGuYongMark,
   PveClassicGuYongTanLang,
   PveClassicGuYongWenQu,
   PveClassicGuYongWuQu,
-  PveClassicGuYongBufPoJun,
+  PveClassicGuYongPoJun,
 } from './game_mode/pve/pve_classic_guyong';
 export { PveClassicAi, PveClassicAiEx } from './game_mode/pve/pve_classic_ai';
 export { PveClassicQiSha } from './game_mode/pve/pve_classic_qisha';
@@ -637,3 +623,26 @@ export { PveClassicTianLiang } from './game_mode/pve/pve_classic_tianliang';
 export { PveClassicTianTong } from './game_mode/pve/pve_classic_tiantong';
 export { PveClassicTianXiang } from './game_mode/pve/pve_classic_tianxiang';
 export { PveClassicLianZhen, PveClassicLianZhenBuf } from './game_mode/pve/pve_classic_lianzhen';
+export {
+  PveLongShenQiFu,
+  PveLongShenQiFuReward,
+  PveLongShenZiYu,
+  PveLongShenChouXin,
+  PveLongShenSuWei,
+  PveLongShenLongLin,
+  PveLongShenLongLing,
+  PveLongShenLongNing,
+  PveLongShenRuiYan,
+  PveLongShenLongShi,
+  PveLongShenLongLi,
+  PveLongShenLonglie,
+  PveLongShenQinLv,
+  PveLongShenLongHou,
+  PveLongShenLongWei,
+  PveLongShenLongEn,
+  PveLongShenLongXiao,
+  PveLongShenLongGu,
+  PveLongShenChaiYue,
+  PveLongShenLiGe,
+  PveLongShenBiBao,
+} from './game_mode/pve/pve_longshen_skills';

@@ -1,6 +1,3 @@
-import { VirtualCard } from 'core/cards/card';
-import { CardId } from 'core/cards/libs/card_props';
-import { Character } from 'core/characters/character';
 import {
   CardDrawReason,
   CardMoveArea,
@@ -12,6 +9,8 @@ import {
 import { EventPacker } from 'core/event/event_packer';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { Character, CharacterGender } from 'core/characters/character';
+import { CardId } from 'core/cards/libs/card_props';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { MarkEnum } from 'core/shares/types/mark_list';
@@ -22,12 +21,12 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 import { Sanguosha } from '../engine';
 import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 import { StandardGameProcessor } from './game_processor.standard';
+import { VirtualCard } from 'core/cards/card';
+import { GameCharacterExtensions } from '../game_props';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
-  private level: number = 0;
+  protected level: number = 0;
   private markList: MarkEnum[] = [];
-  private human: Player[];
-  private activateAi: Player[];
 
   public getLevelMark() {
     if (this.markList.length === 0) {
@@ -41,22 +40,88 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       ];
       Algorithm.shuffle(this.markList);
     }
-    return this.markList.splice(0, this.human.length * this.activateAi.length);
+    return this.markList.splice(0, this.room.Players.filter(player => !player.isSmartAI()).length * this.level);
   }
 
   public assignRoles(players: Player[]) {
-    const ais = players.filter(player => player.isSmartAI());
-    const humans = players.filter(player => !player.isSmartAI());
-    players = [...ais, ...humans];
+    players.sort((a, _) => (a.isSmartAI() ? -1 : 0));
     for (let i = 0; i < players.length; i++) {
-      this.logger.debug(`player ${i} is ${players[i].Id}`);
       players[i].Role = players[i].isSmartAI() ? PlayerRole.Rebel : PlayerRole.Loyalist;
       players[i].Position = i;
+      this.logger.info(`player ${i} is ${players[i].Id}: ${players[i].Position}`);
     }
   }
 
+  async beforeGameBeginPreparation() {
+    // const human = this.room.Players.filter(player => !player.isSmartAI());
+    // for (const toId of human.map(player => player.Id)) {
+    //   const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
+    //   this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
+    //   const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId);
+    //   const cardIds = resp.cardIds;
+    //   if (cardIds !== undefined) {
+    //     const newCardIds = this.room.getCards(cardIds.length, 'top');
+    //     await this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId);
+    //     this.room.notify(
+    //       GameEventIdentifiers.MoveCardEvent,
+    //       {
+    //         infos: [
+    //           {
+    //             moveReason: CardMoveReason.CardDraw,
+    //             movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+    //             toArea: CardMoveArea.HandArea,
+    //             toId,
+    //           },
+    //         ],
+    //       },
+    //       toId,
+    //     );
+    //     this.room
+    //       .getPlayerById(toId)
+    //       .getCardIds(PlayerCardsArea.HandArea)
+    //       .push(...newCardIds);
+    //   }
+    // }
+    // const sequenceAsyncResp: Promise<void>[] = [];
+    // for (const toId of this.human.map(player => player.Id)) {
+    //   const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
+    //   this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
+    //   const asyncResp = this.room
+    //     .onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId)
+    //     .then(resp => {
+    //       const cardIds = resp.cardIds;
+    //       const toId = resp.fromId;
+    //       if (cardIds !== undefined) {
+    //         const newCardIds = this.room.getCards(cardIds.length, 'top');
+    //         this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId).then(() => {
+    //           this.room.notify(
+    //             GameEventIdentifiers.MoveCardEvent,
+    //             {
+    //               infos: [
+    //                 {
+    //                   moveReason: CardMoveReason.CardDraw,
+    //                   movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+    //                   toArea: CardMoveArea.HandArea,
+    //                   toId,
+    //                 },
+    //               ],
+    //             },
+    //             toId,
+    //           );
+    //           this.room
+    //             .getPlayerById(toId)
+    //             .getCardIds(PlayerCardsArea.HandArea)
+    //             .push(...newCardIds);
+    //         });
+    //       }
+    //     });
+    //   sequenceAsyncResp.push(asyncResp);
+    // }
+    // await Promise.all(sequenceAsyncResp);
+    // this.room.shuffle();
+  }
+
   protected async beforeGameStartPreparation() {
-    this.human = this.room.Players.filter(player => !player.isSmartAI());
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       this.room.obtainSkill(player.Id, PveClassicAi.Name),
     );
@@ -64,19 +129,22 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
-    const bossCharacter = Sanguosha.getCharacterByCharaterName('pve_soldier');
     const bossInfos = playersInfo.filter(info => this.room.getPlayerById(info.Id).isSmartAI());
+    const bossCharacters = Algorithm.shuffle(
+      Sanguosha.getAllCharacters().filter(
+        character => character.Gender === CharacterGender.Female && character.Package !== GameCharacterExtensions.Pve,
+      ),
+    ).slice(0, bossInfos.length);
     for (let i = 0; i < bossInfos.length; i++) {
-      this.logger.debug(bossInfos[i]);
       const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-        changedProperties: [{ toId: bossInfos[i].Id, characterId: bossCharacter.Id, playerPosition: i }],
+        changedProperties: [{ toId: bossInfos[i].Id, characterId: bossCharacters[i].Id, playerPosition: i }],
       };
       this.room.changePlayerProperties(bossPropertiesChangeEvent);
     }
 
     const otherPlayersInfo = playersInfo.filter(info => !this.room.getPlayerById(info.Id).isSmartAI())!;
 
-    await this.sequentialChooseCharacters(otherPlayersInfo, selectableCharacters, [bossCharacter]);
+    await this.sequentialChooseCharacters(otherPlayersInfo, selectableCharacters, bossCharacters);
   }
 
   public getWinners(players: Player[]) {
@@ -91,6 +159,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
   protected async nextLevel() {
     this.level++;
+    const human = this.room.Players.filter(player => !player.isSmartAI());
     const allAI = this.room.Players.filter(player => player.isSmartAI());
     Algorithm.shuffle(allAI);
     const changedProperties: {
@@ -100,16 +169,16 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       activate: boolean;
     }[] = [];
     allAI.splice(0, 3 - this.level);
-    this.activateAi = allAI;
+    const activateAi = allAI;
 
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       changedProperties.push(
-        this.activateAi.includes(player)
+        activateAi.includes(player)
           ? {
               toId: player.Id,
               activate: true,
-              hp: Sanguosha.getCharacterByCharaterName('pve_soldier').Hp,
-              maxHp: Sanguosha.getCharacterByCharaterName('pve_soldier').MaxHp,
+              hp: Sanguosha.getCharacterById(player.getPlayerInfo().CharacterId!).Hp,
+              maxHp: Sanguosha.getCharacterById(player.getPlayerInfo().CharacterId!).MaxHp,
             }
           : { toId: player.Id, activate: false, hp: 0, maxHp: 0 },
       ),
@@ -118,28 +187,36 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
     // level 1 draw game begins cards at game begin
     if (this.level > 1) {
-      for (const player of this.activateAi) {
+      for (const player of activateAi) {
         this.drawGameBeginsCards(player.getPlayerInfo());
       }
     }
 
-    const marks = this.getLevelMark();
-    for (let i = 0; i < this.human.length; i++) {
-      this.activateAi.map(player => {
+    let marks = this.getLevelMark();
+    for (let i = 0; i < human.length; i++) {
+      activateAi.map(player => {
         const mark = marks.pop()!;
         this.room.addMark(player.Id, mark, 1);
         return [];
       });
     }
 
-    if (this.human.length === 1 && this.level === 1) {
-      await this.room.obtainSkill(this.human[0].Id, PveClassicGuYong.Name);
-    } else if (this.level === 3) {
-      await this.levelRewardSkill(this.human);
+    if (human.length === 1) {
+      switch (this.level) {
+        case 1:
+          await this.room.obtainSkill(human[0].Id, PveClassicGuYong.Name);
+          break;
+      }
+    } else {
+      switch (this.level) {
+        case 3:
+          await this.levelRewardSkill(human);
+          break;
+      }
     }
 
     this.logger.debug(`room entry ${this.level} level`);
-    for (const ai of this.activateAi) {
+    for (const ai of activateAi) {
       for (const [mark, num] of Object.entries(ai.getAllMarks())) {
         this.logger.debug(`player: ${ai.Id} has marks ${mark}:${num}`);
       }
@@ -156,7 +233,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
       toId: playerId,
-      conversation: 'please announce a skill',
+      conversation: 'Please announce a skill',
     };
 
     this.room.notify(
@@ -201,9 +278,8 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       );
     }
 
-    const askForChoosingOptionsEvent: Promise<
-      ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>
-    >[] = [];
+    const askForChoosingOptionsEvent: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] =
+      [];
     for (const resp of await Promise.all(sequentialAsyncResponse)) {
       const options = Sanguosha.getCharacterById(resp.chosenCharacterIds[0])
         .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))
@@ -288,7 +364,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           }
         }
       } else if (stage === PlayerDiedStage.AfterPlayerDied) {
-        if (this.activateAi.every(player => player.Dead) && this.level < 3) {
+        if (this.room.Players.filter(player => player.isSmartAI()).every(player => player.Dead)) {
           this.stageProcessor.clearProcess();
           await this.nextLevel();
         }

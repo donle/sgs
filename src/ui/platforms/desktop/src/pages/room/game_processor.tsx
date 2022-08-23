@@ -32,6 +32,7 @@ import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
 import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
+import { ResponsiveChangeCardAction } from './actions/responsive_change_card_action';
 import { SelectAction } from './actions/select_action';
 import { SkillUseAction } from './actions/skill_use_action';
 import { DisplayCardProp, RoomPresenter, RoomStore } from './room.presenter';
@@ -373,6 +374,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.HookUpSkillsEvent:
         await this.onHandleHookUpSkillsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForChangeInitCardEvent:
+        await this.onHandleAskForChangeInitCardEvent(e as any, content);
+        break;
       case GameEventIdentifiers.UnhookSkillsEvent:
         await this.onHandleUnhookSkillsEvent(e as any, content);
         break;
@@ -645,6 +649,15 @@ export class GameClientProcessor {
     await action.onPlay(this.translator);
   }
 
+  protected async onHandleAskForChangeInitCardEvent<T extends GameEventIdentifiers.AskForChangeInitCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    if (this.store.clientPlayerId === content.toId) {
+      const action = new ResponsiveChangeCardAction(this.store.clientPlayerId, this.store, this.presenter);
+      await action.onPlay(this.translator);
+    }
+  }
   protected async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
