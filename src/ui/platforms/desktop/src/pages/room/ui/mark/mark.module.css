@@ -16,7 +16,8 @@
     right: 0;
     font-size: 10px;
     color: textWhite;
-    text-shadow: 0 0 2px textBlack, 0 0 2px textBlack, 0 0 2px textBlack, 0 0 2px textBlack, 0 0 2px textBlack, 0 0 2px textBlack;
+    text-shadow: 0 0 2px textBlack, 0 0 2px textBlack, 0 0 2px textBlack, 0 0 2px textBlack, 0 0 2px textBlack,
+        0 0 2px textBlack;
 }
 
 .tooltip {
