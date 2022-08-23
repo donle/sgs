@@ -1,5 +1,6 @@
 import { Character } from 'core/characters/character';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Sanguosha } from '../engine';
