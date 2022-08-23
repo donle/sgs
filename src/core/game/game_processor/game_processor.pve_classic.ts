@@ -208,8 +208,8 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     }
 
     this.logger.debug(`room entry ${this.level} level`);
-    for (const ai of activateAi) {
-      for (const [mark, num] of Object.entries(ai.getAllMarks())) {
+    for (const ai of this.activateAi) {
+      for (const [mark, num] of Object.entries(ai.Marks)) {
         this.logger.debug(`player: ${ai.Id} has marks ${mark}:${num}`);
       }
     }

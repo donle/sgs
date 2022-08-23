@@ -4,7 +4,7 @@ import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { GameMode } from 'core/shares/types/room_props';
+import { GameMode, RoomMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -145,6 +145,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       gameMode: roomInfo.gameMode,
       ping,
       hostConfig,
+      roomMode: RoomMode.Online,
     });
   };
 

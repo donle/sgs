@@ -22,6 +22,10 @@ export class AnimationPosition {
 
   insertPlayer(playerId: PlayerId) {
     this.positions = this.positions || [];
+    if (this.positions.find(position => position.playerId === playerId)) {
+      return;
+    }
+
     this.positions.push({ playerId });
   }
 

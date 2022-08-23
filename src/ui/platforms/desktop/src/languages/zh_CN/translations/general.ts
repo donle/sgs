@@ -790,4 +790,6 @@ export const UiDictionary: Word[] = [
   { source: 'give host', target: '设为房主' },
   { source: 'forbidden characters', target: '禁用武将列表' },
   { source: 'search character by name', target: '输入武将名' },
+  { source: 'observer {0} join in the room', target: '{0} 加入了旁观' },
+  { source: 'Observe', target: '旁观' },
 ];

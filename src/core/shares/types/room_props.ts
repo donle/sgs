@@ -5,3 +5,9 @@ export const enum GameMode {
   Hegemony = 'hegemony-game',
   Pve = 'pve',
 }
+
+export const enum RoomMode {
+  Online,
+  Campaign,
+  Observer,
+}

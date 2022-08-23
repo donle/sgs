@@ -1,4 +1,6 @@
 import { GameCharacterExtensions, GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { GameMode } from './room_props';
 
@@ -31,6 +33,14 @@ export type RoomInfo = {
   id: RoomId;
   gameMode: GameMode;
   passcode?: string;
+  allowObserver: boolean;
+};
+
+export type RoomShortcutInfo = RoomInfo & {
+  currentPlayerId: PlayerId;
+  currentPhasePlayerId: PlayerId;
+  currentPlayerStage: PlayerPhaseStages;
+  currentPlayerPhase: PlayerPhase;
 };
 
 export type LobbySocketEventPicker<E extends LobbySocketEvent> = LobbyEventList[E];

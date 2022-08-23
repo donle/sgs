@@ -20,7 +20,7 @@ export type GuanXingDialogProps = {
   bottomStackName: string;
   presenter: RoomPresenter;
   imageLoader: ImageLoader;
-  onConfirm(top: Card[], bottom: Card[]): () => void;
+  onConfirm?(top: Card[], bottom: Card[]): () => void;
   title?: string;
   movable?: boolean;
   topMaxCard?: number;
@@ -72,7 +72,10 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
 
   @mobx.action
   UNSAFE_componentWillMount() {
-    this.props.presenter.defineConfirmButtonActions(this.props.onConfirm(this.topCards, this.bottomCards));
+    if (this.props.onConfirm) {
+      this.props.presenter.defineConfirmButtonActions(this.props.onConfirm(this.topCards, this.bottomCards));
+    }
+
     for (let i = 0; i < this.props.cards.length; i++) {
       const card = this.props.cards[i];
       this.topCards.push(card);

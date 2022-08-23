@@ -8,7 +8,7 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
-import type { PlayerId, PlayerInfo } from 'core/player/player_props';
+import type { PlayerId, PlayerInfo, PlayerShortcutInfo } from 'core/player/player_props';
 import type { RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
@@ -50,6 +50,9 @@ export class RoomStore {
 
   @mobx.observable.ref
   selectorDialog: JSX.Element | undefined;
+
+  @mobx.observable.ref
+  selectorViewDialog: JSX.Element | undefined;
 
   @mobx.observable.ref
   incomingConversation: JSX.Element | undefined;
@@ -232,19 +235,37 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  createClientRoom(roomId: RoomId, socket: ClientSocket, gameInfo: GameInfo, playersInfo: PlayerInfo[]) {
+  createClientRoom(
+    roomId: RoomId,
+    socket: ClientSocket,
+    gameInfo: GameInfo,
+    playersInfo: (PlayerShortcutInfo | PlayerInfo)[],
+  ) {
     this.tryToThrowUninitializedError();
-    const players = playersInfo.map(
-      playerInfo =>
-        new ClientPlayer(
-          playerInfo.Id,
-          playerInfo.Name,
-          playerInfo.Position,
-          playerInfo.CharacterId,
-          undefined,
-          playerInfo.Status,
-        ),
-    );
+    const players = playersInfo.map(playerInfo => {
+      const player = new ClientPlayer(
+        playerInfo.Id,
+        playerInfo.Name,
+        playerInfo.Position,
+        playerInfo.CharacterId,
+        undefined,
+        playerInfo.Status,
+      );
+
+      for (const [key, properties] of Object.entries(playerInfo.Flags)) {
+        player.setFlag(key, properties.value, key, properties.visiblePlayers);
+      }
+      for (const [mark, value] of Object.entries(playerInfo.Marks)) {
+        player.setMark(mark, value);
+      }
+
+      if ('equipSectionsStatus' in playerInfo) {
+        const info = playerInfo as PlayerShortcutInfo;
+        player.syncUpPlayer(info);
+      }
+
+      return player;
+    });
 
     this.store.room = new ClientRoom(
       roomId,
@@ -347,6 +368,15 @@ export class RoomPresenter {
       }),
       100,
     );
+  }
+
+  @mobx.action
+  createViewDialog = (dialog: JSX.Element) => {
+    this.store.selectorViewDialog = dialog;
+  };
+  @mobx.action
+  closeViewDialog() {
+    this.store.selectorViewDialog = undefined;
   }
 
   @mobx.action
