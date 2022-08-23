@@ -1,8 +1,8 @@
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
 import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
-import { PveLongshenGameProcessor } from 'core/game/game_processor/game_processor.pve_longshen';
 import { PveClassicGameProcessor } from 'core/game/game_processor/game_processor.pve_classic';
+import { PveLongshenGameProcessor } from 'core/game/game_processor/game_processor.pve_longshen';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameCardExtensions } from 'core/game/game_props';
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';

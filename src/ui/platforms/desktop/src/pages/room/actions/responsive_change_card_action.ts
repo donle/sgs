@@ -1,9 +1,9 @@
 import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { RoomPresenter, RoomStore } from '../room.presenter';
-import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { RoomPresenter, RoomStore } from '../room.presenter';
 export class ResponsiveChangeCardAction {
   private inProcessDialog = false;
   protected selectedCards: CardId[] = [];
@@ -36,7 +36,7 @@ export class ResponsiveChangeCardAction {
   }
 
   protected unselectCard(cardId: CardId) {
-    let index = this.selectedCards.findIndex(selectedCard => selectedCard === cardId);
+    const index = this.selectedCards.findIndex(selectedCard => selectedCard === cardId);
     if (index >= 0) {
       this.selectedCards.splice(index, 1);
     }

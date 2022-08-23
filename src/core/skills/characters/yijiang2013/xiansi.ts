@@ -157,6 +157,7 @@ export class XianSiSlash extends ViewAsSkill {
             content.toId === target.Id &&
             CardMatcher.match(content.cardMatcher, new CardMatcher({ generalName: ['slash'] }))
           );
+        default:
       }
     }
 

@@ -1,3 +1,6 @@
+import { VirtualCard } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
+import { Character, CharacterGender } from 'core/characters/character';
 import {
   CardDrawReason,
   CardMoveArea,
@@ -9,8 +12,6 @@ import {
 import { EventPacker } from 'core/event/event_packer';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
-import { Character, CharacterGender } from 'core/characters/character';
-import { CardId } from 'core/cards/libs/card_props';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { MarkEnum } from 'core/shares/types/mark_list';
@@ -19,10 +20,9 @@ import { PveClassicGuYong } from 'core/skills';
 import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { Sanguosha } from '../engine';
+import { GameCharacterExtensions } from '../game_props';
 import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 import { StandardGameProcessor } from './game_processor.standard';
-import { VirtualCard } from 'core/cards/card';
-import { GameCharacterExtensions } from '../game_props';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   protected level: number = 0;
@@ -192,7 +192,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       }
     }
 
-    let marks = this.getLevelMark();
+    const marks = this.getLevelMark();
     for (let i = 0; i < human.length; i++) {
       activateAi.map(player => {
         const mark = marks.pop()!;
@@ -201,18 +201,10 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       });
     }
 
-    if (human.length === 1) {
-      switch (this.level) {
-        case 1:
-          await this.room.obtainSkill(human[0].Id, PveClassicGuYong.Name);
-          break;
-      }
-    } else {
-      switch (this.level) {
-        case 3:
-          await this.levelRewardSkill(human);
-          break;
-      }
+    if (human.length === 1 && this.level === 1) {
+      await this.room.obtainSkill(human[0].Id, PveClassicGuYong.Name);
+    } else if (this.level === 3) {
+      await this.levelRewardSkill(human);
     }
 
     this.logger.debug(`room entry ${this.level} level`);
@@ -278,8 +270,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       );
     }
 
-    const askForChoosingOptionsEvent: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] =
-      [];
+    const askForChoosingOptionsEvent: Promise<
+      ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>
+    >[] = [];
     for (const resp of await Promise.all(sequentialAsyncResponse)) {
       const options = Sanguosha.getCharacterById(resp.chosenCharacterIds[0])
         .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))

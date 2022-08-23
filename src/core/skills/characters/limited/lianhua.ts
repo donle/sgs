@@ -1,7 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { EventPacker } from 'core/event/event_packer';
 import { MovingCardProps } from 'core/event/event.server';
+import { EventPacker } from 'core/event/event_packer';
 import {
   AllStage,
   DamageEffectStage,

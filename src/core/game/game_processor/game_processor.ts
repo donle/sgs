@@ -81,6 +81,7 @@ export abstract class GameProcessor {
   protected abstract drawGameBeginsCards(playerInfo: PlayerInfo): Promise<void>;
   // tslint:disable-next-line: no-empty
   protected async beforeGameStartPreparation() {}
+  // tslint:disable-next-line: no-empty
   protected async beforeGameBeginPreparation() {}
 
   protected abstract onPlayerJudgeStage(phase: PlayerPhase): Promise<void>;

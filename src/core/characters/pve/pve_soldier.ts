@@ -1,13 +1,13 @@
-import { GameCharacterExtensions } from 'core/game/game_props';
 import { Character, CharacterGender, CharacterNationality } from 'core/characters/character';
+import { GameCharacterExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import {
+  PveClassicLianZhen,
   PveClassicQiSha,
   PveClassicTianJi,
   PveClassicTianLiang,
   PveClassicTianTong,
   PveClassicTianXiang,
-  PveClassicLianZhen,
 } from 'core/skills';
 
 const skillLoaderInstance = SkillLoader.getInstance();

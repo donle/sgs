@@ -7,6 +7,7 @@ import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import {
+  AimStage,
   AllStage,
   CardUseStage,
   JudgeEffectStage,
@@ -16,7 +17,6 @@ import {
   PlayerPhase,
   PlayerPhaseStages,
   StagePriority,
-  AimStage,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -439,8 +439,8 @@ export class PveClassicGuYongPoJun extends TriggerSkill {
         const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
         await room.moveCards({
           movingCards: [{ card: randomCard }],
-          fromId: fromId,
-          toId: toId,
+          fromId,
+          toId,
           moveReason: CardMoveReason.ActivePrey,
           toArea: CardMoveArea.HandArea,
           movedByReason: this.Name,
