@@ -94,7 +94,6 @@ export class ResponsiveChangeCardAction {
           cardIds: this.selectedCards,
         };
         this.store.room.broadcast(GameEventIdentifiers.AskForChangeInitCardEvent, event);
-        console.log(event);
         this.resetActionHandlers();
         this.resetAction();
         resolve();
@@ -106,7 +105,6 @@ export class ResponsiveChangeCardAction {
           cardIds: [],
         };
         this.store.room.broadcast(GameEventIdentifiers.AskForChangeInitCardEvent, event);
-        console.log(event);
         this.resetActionHandlers();
         this.resetAction();
         resolve();

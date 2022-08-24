@@ -80,7 +80,9 @@
 .actionButtons {
     position: absolute;
     left: calc(gridLine * 3);
+    max-width: calc(gridLine * 25);
     display: flex;
+    flex-wrap: wrap;
     z-index: 2;
 }
 
@@ -107,7 +109,7 @@
 }
 
 .actionButton {
-    margin: 0 halfGridLine;
+    margin: halfGridLine;
 }
 
 .trustedCover {

@@ -792,4 +792,8 @@ export const UiDictionary: Word[] = [
   { source: 'search character by name', target: '输入武将名' },
   { source: 'observer {0} join in the room', target: '{0} 加入了旁观' },
   { source: 'Observe', target: '旁观' },
+  {
+    source: 'Room running with exceptions, please re-create your room',
+    target: '房间出现错误，请退出房间重新创建游戏',
+  },
 ];

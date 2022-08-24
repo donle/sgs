@@ -153,12 +153,17 @@ export class GameClientProcessor {
     }
     this.presenter.closeDialog();
     this.presenter.closeIncomingConversation();
+    this.presenter.disableActionButton('cancel', 'confirm', 'finish');
 
     this.endAction();
     this.onPlayTrustedActionTimer && clearTimeout(this.onPlayTrustedActionTimer);
   }
 
   private doTrustedAction() {
+    if (this.isObserver) {
+      return;
+    }
+
     this.onPlayTrustedActionTimer = setTimeout(
       () => this.onPlayTrustedAction(),
       this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000),
