@@ -227,6 +227,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.clearSubscriber(identifier, to);
   }
 
+  public shuffleCardsIntoDrawStack(cardIds: CardId[]) {
+    for (const cardId of cardIds) {
+      const randomIndex = Math.floor(Math.random() * this.drawStack.length);
+      this.drawStack.splice(randomIndex, 0, cardId);
+    }
+  }
+
   public clearHeaded(toId: PlayerId) {
     this.getPlayerById(toId).clearHeaded();
     this.broadcast(GameEventIdentifiers.DrunkEvent, { toId, drunk: false });

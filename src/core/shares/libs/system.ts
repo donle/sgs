@@ -1,5 +1,6 @@
+import { Card, VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterNationality } from 'core/characters/character';
+import { Character, CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -107,6 +108,10 @@ export namespace System {
 
   export type AwakeningSkillApplierFunc = (room: Room, player: Player) => boolean;
 
+  export const enum SkillTagsTransformEnum {
+    DingHan = 'dinghan',
+  }
+
   export const enum AwakeningSkillApplierEnum {
     BaiYin = 'baiyin',
     HunZi = 'hunzi',
@@ -209,5 +214,10 @@ export namespace System {
         mark => player.getMark(mark) > 0,
       );
     },
+  };
+
+  export const SkillTagsTransformer: Record<string, (values: any[]) => (Card | Character)[]> = {
+    [SkillTagsTransformEnum.DingHan]: (cardNames: string[]) =>
+      cardNames.map(cardName => VirtualCard.create({ cardName, bySkill: SkillTagsTransformEnum.DingHan })),
   };
 }

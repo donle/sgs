@@ -39,6 +39,8 @@ export { TieSuoLianHuanSkill } from './cards/legion_fight/tiesuolianhuan';
 export { AlcoholSkill } from './cards/legion_fight/alcohol';
 export { MuNiuLiuMaSkill } from './cards/legion_fight/muniuliuma';
 
+export { QiZhengXiangShengSkill } from './cards/character_skills/qizhengxiangsheng';
+
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';
 export { JiJiang, JiJiangShadow } from './characters/standard/jijiang';
@@ -254,6 +256,9 @@ export { ShenZhuo, ShenZhuoExtra, ShenZhuoBlock, ShenZhuoRemove } from './charac
 export { YingBa, YingBaShadow } from './characters/god/yingba';
 export { GodFuHai } from './characters/god/god_fuhai';
 export { PingHe, PingHeShadow, PingHeSelect } from './characters/god/pinghe';
+export { DingHan } from './characters/god/dinghan';
+export { TianZuo, TianZuoShadow } from './characters/god/tianzuo';
+export { LingCe } from './characters/god/lingce';
 
 export { SanYao } from './characters/yijiang2011/sanyao';
 export { ZhiMan } from './characters/yijiang2011/zhiman';

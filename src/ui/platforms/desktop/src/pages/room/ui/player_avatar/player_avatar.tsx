@@ -1,9 +1,11 @@
 import classNames from 'classnames';
+import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterId } from 'core/characters/character';
+import { Character, CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
+import { System } from 'core/shares/libs/system';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { Skill, TriggerSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -138,17 +140,49 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     );
   }
 
+  private readonly onClickUniqueSkillTag = (name: string, items: (Card | Character)[]) => () => {
+    if (this.openedDialog === name) {
+      this.openedDialog = undefined;
+      this.props.presenter.closeDialog();
+    } else {
+      this.openedDialog = name;
+      this.props.presenter.createDialog(
+        <CardSelectorDialog
+          title={this.props.translator.tr(name)}
+          isCharacterCard={items[0] instanceof Character}
+          imageLoader={this.props.imageLoader}
+          options={items.map(item => item.Id)}
+          translator={this.props.translator}
+        />,
+      );
+    }
+  };
+
   private getSkillTags(viewer: PlayerId) {
     const { translator, presenter } = this.props;
-    const flags = presenter.ClientPlayer && presenter.ClientPlayer.getAllVisibleTags(viewer);
+    const player = presenter.ClientPlayer;
+    if (!player) {
+      return undefined;
+    }
+
+    const flags = player.getAllVisibleTags(viewer);
     return (
       flags && (
         <div className={styles.skillTags}>
-          {flags.map((flag, index) => (
-            <span key={index} className={styles.skillTag}>
-              {translator.trx(flag)}
-            </span>
-          ))}
+          {flags.map((flag, index) => {
+            const items = System.SkillTagsTransformer[flag]?.(player.getFlag(flag));
+            return (
+              <span
+                key={index}
+                className={classNames(styles.skillTag, {
+                  [styles.clickable]: !!items,
+                })}
+                onClick={items && items.length > 0 ? this.onClickUniqueSkillTag(flag, items) : undefined}
+              >
+                {translator.trx(flag)}
+              </span>
+            );
+          })}
         </div>
       )
     );

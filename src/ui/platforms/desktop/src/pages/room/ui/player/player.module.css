@@ -33,6 +33,10 @@
     bottom: 0;
     border-radius: calc(gridLine * 1.5);
 }
+
+.clickable {
+    cursor: pointer;
+}
 .selected {
     box-shadow: 0px 0px 10px 5px textWarning;
 }

@@ -17,7 +17,7 @@ export class Sanguosha {
     [name: string]: Skill;
   } = {};
   private static cards: Card[];
-  private static charactersMap: Map<GameCharacterExtensions, Character[]> = new Map();
+  private static uniquCardMaps: Map<string, Card[]> = new Map();
   private static characters: Character[] = [];
   private static version: string;
   private static transformSkills: string[] = [];
@@ -51,6 +51,7 @@ export class Sanguosha {
     }
 
     Sanguosha.cards = CardLoader.getInstance().getAllCards();
+    Sanguosha.uniquCardMaps = CardLoader.getInstance().getUniquCards();
     Sanguosha.characters = CharacterLoader.getInstance().getAllCharacters();
     Sanguosha.parseCoreVersion();
 
@@ -114,8 +115,19 @@ export class Sanguosha {
     }
 
     // const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
-    const card = Sanguosha.cards[cardId - 1] as T;
-    return Precondition.exists(card, `Unable to find the card by id: ${cardId}`);
+    let card = Sanguosha.cards[cardId - 1] as T | undefined;
+    if (card) {
+      return card;
+    } else {
+      for (const cards of this.uniquCardMaps.values()) {
+        card = cards.find(c => c.Id === cardId) as T | undefined;
+        if (card) {
+          return card;
+        }
+      }
+    }
+
+    throw new Error(`Unable to find the card by id: ${cardId}`);
   }
 
   public static getCardsByMatcher(matcher: CardMatcher) {
@@ -127,6 +139,18 @@ export class Sanguosha {
 
     const card = Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
     return Precondition.exists(card, `Unable to find the card by name: ${cardName}`);
+  }
+
+  public static getSkillGeneratedCards<T extends Card = Card>(bySkill: string): T[] {
+    return (Sanguosha.uniquCardMaps.get(bySkill) || []) as T[];
+  }
+
+  public static isCardGeneratedBySkill(card: Card): string | undefined {
+    for (const [skillName, cards] of Object.entries(Sanguosha.uniquCardMaps)) {
+      if (cards.includes(card)) {
+        return skillName;
+      }
+    }
   }
 
   public static getSkillBySkillName<T extends Skill = Skill>(name: string): T {

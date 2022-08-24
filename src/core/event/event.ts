@@ -271,6 +271,7 @@ export const enum CardMoveArea {
   DropStack,
   DrawStack,
   ProcessingArea,
+  UniqueCardArea,
 }
 
 export const enum WorkPlace {

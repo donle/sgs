@@ -44,6 +44,19 @@ export function Globe<T extends Card>(constructor: new (...args: any) => any): a
   } as any) as T;
 }
 
+export function UniqueCard<T extends Card>(option: { bySkill: string }) {
+  return (constructor: new (...args: any) => any): any =>
+    (class extends constructor {
+      public generatedBySkill() {
+        return option.bySkill;
+      }
+
+      public isUniqueCard() {
+        return true;
+      }
+    } as any) as T;
+}
+
 export const enum CardType {
   Basic,
   Equip,
@@ -137,6 +150,10 @@ export abstract class Card {
     return this.cardType.includes(type);
   }
 
+  public isUniqueCard() {
+    return false;
+  }
+
   public isCommonTrick() {
     return false;
   }
@@ -173,12 +190,20 @@ export abstract class Card {
     return typeof id === 'string';
   }
 
+  public isWisdomCard() {
+    return ['guohechaiqiao', 'wuzhongshengyou', 'wuxiekeji'].includes(this.name);
+  }
+
   public equals(card: Readonly<Card>) {
     return this.cardNumber === card.CardNumber && this.suit === card.Suit && this.name === card.Name;
   }
 
   public reset() {
     this.manualSetCardTargetNumber = this.cardTargetNumber;
+  }
+
+  public generatedBySkill(): string | undefined {
+    return undefined;
   }
 }
 

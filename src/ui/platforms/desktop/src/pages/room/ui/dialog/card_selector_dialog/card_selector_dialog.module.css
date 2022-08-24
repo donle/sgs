@@ -6,10 +6,11 @@
     display: flex;
     justify-content: flex-start;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .selectorCard {
-    margin: 0 gridLine;
+    margin: gridLine;
 }
 
 .selectorCard.selected {

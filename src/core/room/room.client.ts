@@ -69,6 +69,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.isExtraPhase.name);
   }
   //Server only
+  public shuffleCardsIntoDrawStack(): void {
+    this.throwUntouchableError(this.notify.name);
+  }
+  //Server only
   public notify(): void {
     this.throwUntouchableError(this.notify.name);
   }
