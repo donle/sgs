@@ -14,7 +14,8 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
-import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
+import { RoomPresenter } from 'pages/room/room.presenter';
+import { RoomStore } from 'pages/room/room.store';
 import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';

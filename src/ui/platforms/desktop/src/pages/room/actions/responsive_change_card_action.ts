@@ -3,7 +3,8 @@ import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter, RoomStore } from '../room.presenter';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 export class ResponsiveChangeCardAction {
   private inProcessDialog = false;
   protected selectedCards: CardId[] = [];

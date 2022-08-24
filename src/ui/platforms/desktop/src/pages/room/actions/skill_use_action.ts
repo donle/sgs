@@ -7,7 +7,8 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Skill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter, RoomStore } from '../room.presenter';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 import { BaseAction } from './base_action';
 
 export class SkillUseAction extends BaseAction {

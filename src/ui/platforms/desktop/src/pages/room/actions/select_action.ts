@@ -10,7 +10,8 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
 import { ActiveSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter, RoomStore } from '../room.presenter';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 import { BaseAction } from './base_action';
 
 export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
@@ -183,7 +184,6 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         this.presenter.disableActionButton('cancel');
       }
 
-      const selectedCards: CardId[] = [];
       this.presenter.setupClientPlayerCardActionsMatcher(card => {
         if (
           !fromArea.includes(PlayerCardsArea.HandArea) ||
@@ -193,8 +193,9 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           return false;
         }
         return (
-          (cardAmount instanceof Array ? selectedCards.length < cardAmount[1] : selectedCards.length !== cardAmount) ||
-          selectedCards.includes(card.Id)
+          (cardAmount instanceof Array
+            ? this.store.selectedCards.length < cardAmount[1]
+            : this.store.selectedCards.length !== cardAmount) || this.store.selectedCards.includes(card.Id)
         );
       });
       this.presenter.setupClientPlayerOutsideCardActionsMatcher(card => {
@@ -206,8 +207,9 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           return false;
         }
         return (
-          (cardAmount instanceof Array ? selectedCards.length < cardAmount[1] : selectedCards.length !== cardAmount) ||
-          selectedCards.includes(card.Id)
+          (cardAmount instanceof Array
+            ? this.store.selectedCards.length < cardAmount[1]
+            : this.store.selectedCards.length !== cardAmount) || this.store.selectedCards.includes(card.Id)
         );
       });
 
@@ -234,43 +236,49 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           return false;
         }
         return (
-          (cardAmount instanceof Array ? selectedCards.length < cardAmount[1] : selectedCards.length !== cardAmount) ||
-          selectedCards.includes(card.Id)
+          (cardAmount instanceof Array
+            ? this.store.selectedCards.length < cardAmount[1]
+            : this.store.selectedCards.length !== cardAmount) || this.store.selectedCards.includes(card.Id)
         );
       });
 
+      this.presenter.setValidSelectionReflectAction(() => this.availableToConfirm(cardAmount));
       const onClickCard = (card: Card, selected: boolean) => {
         if (selected) {
           this.presenter.selectCard(card);
-          selectedCards.push(card.Id);
         } else {
           this.presenter.unselectCard(card);
-          const index = selectedCards.findIndex(cardId => card.Id === cardId);
+          const index = this.store.selectedCards.findIndex(cardId => card.Id === cardId);
           if (index >= 0) {
-            selectedCards.splice(index, 1);
+            this.store.selectedCards.splice(index, 1);
           }
         }
 
-        if (this.match(cardAmount, selectedCards.length)) {
-          this.presenter.enableActionButton('confirm');
-        } else {
-          this.presenter.disableActionButton('confirm');
-        }
-        this.presenter.broadcastUIUpdate();
+        this.availableToConfirm(cardAmount);
       };
 
       this.presenter.onClickPlayerCard(onClickCard);
       this.presenter.onClickEquipment(onClickCard);
 
       this.presenter.defineConfirmButtonActions(() => {
+        const cards = this.store.selectedCards.slice();
         this.resetActionHandlers();
         this.resetAction();
         this.presenter.isSkillDisabled(BaseAction.disableSkills);
         this.presenter.resetSelectedSkill();
-        resolve(selectedCards);
+        resolve(cards);
       });
     });
   }
+
+  private readonly availableToConfirm = (cardAmount: number | [number, number]) => {
+    if (this.match(cardAmount, this.store.selectedCards.length)) {
+      this.presenter.enableActionButton('confirm');
+    } else {
+      this.presenter.disableActionButton('confirm');
+    }
+    this.presenter.broadcastUIUpdate();
+  };
 
   // tslint:disable-next-line:no-empty
   async onPlay() {}

@@ -611,18 +611,20 @@ export class StandardGameProcessor extends GameProcessor {
   protected async onPlayerDropCardStage(phase: PlayerPhase) {
     this.logger.debug(`${this.currentPhasePlayer.Id} enter drop cards phase`);
     const maxCardHold = this.currentPhasePlayer.getMaxCardHold(this.room);
-    const discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
+    let discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
     this.logger.debug(`${this.currentPhasePlayer.Id},  Upper Limit: ${maxCardHold}`);
-    if (discardAmount > 0) {
+    while (discardAmount > 0 && this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length > 0) {
       const response = await this.room.askForCardDrop(
         this.currentPhasePlayer.Id,
-        discardAmount,
+        discardAmount === 1 ? discardAmount : [1, discardAmount],
         [PlayerCardsArea.HandArea],
         true,
       );
 
       response.droppedCards.length > 0 &&
         (await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId));
+
+      discardAmount = discardAmount - response.droppedCards.length;
     }
   }
 

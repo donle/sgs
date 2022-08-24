@@ -2,7 +2,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import { GuideLine } from './animations/guideline/guideline';
 import { MoveInstantCardAnimation } from './animations/move_card/move_instant_card';
-import { RoomStore } from './room.presenter';
+import { RoomStore } from './room.store';
 
 export type RoomBaseService = {
   Animation: {
