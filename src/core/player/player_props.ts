@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterId, CharacterNationality } from 'core/characters/character';
+import { CharacterEquipSections, CharacterId, CharacterNationality } from 'core/characters/character';
 
 export type PlayerId = string;
 
@@ -44,7 +44,23 @@ export interface PlayerInfo {
   Status: PlayerStatus | undefined;
   Hp: number;
   MaxHp: number;
+  Flags: Record<string, { value: any; visiblePlayers?: PlayerId[] }>;
+  Marks: Record<string, number>;
 }
+
+export type PlayerShortcutInfo = PlayerInfo & {
+  chainLocked: boolean;
+  turnedOver: boolean;
+  equipSectionsStatus: {
+    [K in CharacterEquipSections]: 'enabled' | 'disabled';
+  };
+  judgeAreaStatus: 'enabled' | 'disabled';
+  drunk: number;
+  playerCards: PlayerCards;
+  playerOutsideCards: PlayerCardsOutside;
+  playerOutsideCharactersAreaNames: string[];
+  dead: boolean;
+};
 
 export const enum DistanceType {
   Offense,

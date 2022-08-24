@@ -7,6 +7,7 @@ import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
 import { PlayerId } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { RoomMode } from 'core/shares/types/room_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
@@ -57,7 +58,7 @@ export class RoomPage extends React.Component<
   );
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
-  private isCampaignMode = false;
+  private roomMode: RoomMode;
   private connectionService: ConnectionService;
 
   private lastEventTimeStamp: number;
@@ -111,15 +112,15 @@ export class RoomPage extends React.Component<
     this.store = this.presenter.createStore();
 
     const roomId = this.roomId.toString();
-    const { ping, hostConfig, campaignMode } = this.props.location.state as {
+    const { ping, hostConfig, roomMode } = this.props.location.state as {
       ping?: number;
       hostConfig: ServiceConfig;
-      campaignMode?: boolean;
+      roomMode: RoomMode;
     };
-    this.isCampaignMode = !!campaignMode;
-    this.connectionService = this.props.getConnectionService(this.isCampaignMode);
+    this.roomMode = roomMode;
+    this.connectionService = this.props.getConnectionService(this.roomMode === RoomMode.Campaign);
 
-    if (campaignMode) {
+    if (this.roomMode === RoomMode.Campaign) {
       this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
       mobx.runInAction(() => (this.gameHostedServer = ServerHostTag.Localhost));
     } else {
@@ -202,6 +203,13 @@ export class RoomPage extends React.Component<
       });
     });
 
+    this.setupReconnection();
+    this.joinRoom();
+
+    window.addEventListener('beforeunload', () => this.disconnect());
+  }
+
+  private readonly setupReconnection = () => {
     this.socket.onReconnected(() => {
       const playerId = this.playerId;
       if (!playerId) {
@@ -217,7 +225,9 @@ export class RoomPage extends React.Component<
         }),
       );
     });
+  };
 
+  private readonly joinRoom = () => {
     this.socket.notify(
       GameEventIdentifiers.PlayerEnterEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerEnterEvent, {
@@ -225,14 +235,13 @@ export class RoomPage extends React.Component<
         timestamp: this.store.clientRoomInfo.timestamp,
         playerId: this.playerId!,
         coreVersion: Sanguosha.Version,
+        joinAsObserver: this.roomMode === RoomMode.Observer,
       }),
     );
-
-    window.addEventListener('beforeunload', () => this.disconnect());
-  }
+  };
 
   private readonly disconnect = () => {
-    this.isCampaignMode
+    this.roomMode === RoomMode.Campaign
       ? this.socket.disconnect()
       : this.socket.notify(
           GameEventIdentifiers.PlayerLeaveEvent,
@@ -310,6 +319,7 @@ export class RoomPage extends React.Component<
       <div className={styles.room}>
         <Background imageLoader={this.props.imageLoader} />
         {this.store.selectorDialog}
+        {this.store.selectorViewDialog}
 
         <div className={styles.incomingConversation}>{this.store.incomingConversation}</div>
         {this.store.room && (
@@ -344,6 +354,7 @@ export class RoomPage extends React.Component<
                     presenter={this.presenter}
                     translator={this.props.translator}
                     connectionService={this.connectionService}
+                    replayOrObserverMode={this.roomMode === RoomMode.Observer}
                   />
                 </div>
               )}
@@ -369,6 +380,7 @@ export class RoomPage extends React.Component<
               playerSelectableMatcher={this.store.playersSelectionMatcher}
               onClickSkill={this.store.onClickSkill}
               isSkillDisabled={this.store.isSkillDisabled}
+              observerMode={this.roomMode === RoomMode.Observer}
             />
           </div>
         )}

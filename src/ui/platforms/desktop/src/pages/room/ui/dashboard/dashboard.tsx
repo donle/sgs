@@ -38,6 +38,7 @@ export type DashboardProps = {
   updateFlag: boolean;
   imageLoader: ImageLoader;
   skinData?: CharacterSkinInfo[];
+  observerMode: boolean;
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(card: Card): boolean;
@@ -196,7 +197,7 @@ export class Dashboard extends React.Component<DashboardProps> {
             translator={this.props.translator}
             onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index + outsideCards.length)}
             onMouseLeave={this.onFocusCard(-2)}
-            card={card}
+            card={!this.props.observerMode ? card : undefined}
             highlight={this.props.store.highlightedCards}
             onSelected={this.onClick(card)}
             className={styles.handCard}
@@ -229,37 +230,41 @@ export class Dashboard extends React.Component<DashboardProps> {
   }
 
   getPlayerHandBoard() {
+    const buttons = (
+      <>
+        {(this.props.store.actionButtonStatus.finish ||
+          this.props.store.actionButtonStatus.cancel ||
+          this.props.store.actionButtonStatus.confirm) && (
+          <AutoButton
+            variant="confirm"
+            disabled={!this.props.store.actionButtonStatus.confirm}
+            onClick={this.props.onClickConfirmButton}
+          />
+        )}
+        {this.props.store.actionButtonStatus.cancel && (
+          <AutoButton
+            variant="cancel"
+            disabled={!this.props.store.actionButtonStatus.cancel}
+            onClick={this.props.onClickCancelButton}
+          />
+        )}
+        {this.props.store.actionButtonStatus.finish && (
+          <AutoButton
+            variant="finish"
+            disabled={!this.props.store.actionButtonStatus.finish}
+            onClick={this.props.onClickFinishButton}
+          />
+        )}
+      </>
+    );
+
     return (
       <div className={styles.handBoard} ref={this.handBoardRef}>
         {this.props.store.inAction && (
           <PlayingBar className={styles.playBar} playTime={this.props.store.notificationTime} />
         )}
         {this.getPlayerJudgeCards()}
-        <div className={styles.userActionsButtons}>
-          {(this.props.store.actionButtonStatus.finish ||
-            this.props.store.actionButtonStatus.cancel ||
-            this.props.store.actionButtonStatus.confirm) && (
-            <AutoButton
-              variant="confirm"
-              disabled={!this.props.store.actionButtonStatus.confirm}
-              onClick={this.props.onClickConfirmButton}
-            />
-          )}
-          {this.props.store.actionButtonStatus.cancel && (
-            <AutoButton
-              variant="cancel"
-              disabled={!this.props.store.actionButtonStatus.cancel}
-              onClick={this.props.onClickCancelButton}
-            />
-          )}
-          {this.props.store.actionButtonStatus.finish && (
-            <AutoButton
-              variant="finish"
-              disabled={!this.props.store.actionButtonStatus.finish}
-              onClick={this.props.onClickFinishButton}
-            />
-          )}
-        </div>
+        <div className={styles.userActionsButtons}>{!this.props.observerMode && buttons}</div>
         <div className={styles.handCards}>
           {this.AllClientHandCards}
           <div
@@ -327,21 +332,19 @@ export class Dashboard extends React.Component<DashboardProps> {
   };
 
   private readonly createShortcutButtons = (player: ClientPlayer) => {
+    const buttonDisabled =
+      !this.props.store.room.isPlaying() || this.props.store.room.isGameOver() || this.props.observerMode;
+
     return (
       <div className={styles.actionButtons}>
-        <Button
-          variant="primary"
-          className={styles.actionButton}
-          onClick={this.onTrusted}
-          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
-        >
+        <Button variant="primary" className={styles.actionButton} onClick={this.onTrusted} disabled={buttonDisabled}>
           {this.props.translator.tr(player.isTrusted() ? 'cancel trusted' : 'trusted')}
         </Button>
         <Button
           variant="primary"
           className={styles.actionButton}
           onClick={this.onSortHandcards}
-          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+          disabled={buttonDisabled}
         >
           {this.props.translator.tr('adjust handcards')}
         </Button>
@@ -350,8 +353,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           className={styles.actionButton}
           onClick={this.onReverseSelectCards}
           disabled={
-            !this.props.store.room.isPlaying() ||
-            this.props.store.room.isGameOver() ||
+            buttonDisabled ||
             this.props.store.room.CurrentPlayer !== player ||
             this.props.store.room.CurrentPlayerPhase !== PlayerPhase.DropCardStage
           }

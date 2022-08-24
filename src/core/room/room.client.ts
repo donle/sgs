@@ -9,6 +9,7 @@ import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
+import { RoomShortcutInfo } from 'core/shares/types/server_types';
 import { OnDefineReleaseTiming, SkillLifeCycle } from 'core/skills/skill';
 import { Room, RoomId } from './room';
 import { RoomEventStacker } from './utils/room_event_stack';
@@ -42,6 +43,13 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.gameInfo = gameInfo;
     this.players = players;
     this.gameMode = gameInfo.gameMode;
+  }
+
+  public syncUpRoom(roomInfo: RoomShortcutInfo) {
+    this.currentPlayer = this.getPlayerById(roomInfo.currentPlayerId);
+    this.currentPhasePlayer = this.getPlayerById(roomInfo.currentPhasePlayerId);
+    this.currentPlayerStage = roomInfo.currentPlayerStage;
+    this.currentPlayerPhase = roomInfo.currentPlayerPhase;
   }
 
   protected init(gameStartInfo: GameRunningInfo): void {

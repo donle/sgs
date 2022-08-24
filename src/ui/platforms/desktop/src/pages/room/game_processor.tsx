@@ -6,6 +6,7 @@ import {
   CardMoveArea,
   CardMovedBySpecifiedReason,
   CardMoveReason,
+  clientAsyncEvents,
   ClientEventFinder,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -45,6 +46,7 @@ import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng
 import { getSkinName } from './ui/switch_avatar/switch_skin';
 
 export class GameClientProcessor {
+  private isObserver: boolean = false;
   protected onPlayTrustedActionTimer: NodeJS.Timer | undefined;
 
   protected excludedResponsiveEvents: GameEventIdentifiers[] = [
@@ -64,13 +66,20 @@ export class GameClientProcessor {
   ) {}
 
   protected tryToThrowNotReadyException(e: GameEventIdentifiers) {
-    if (!this.store.room && e !== GameEventIdentifiers.PlayerEnterEvent) {
+    if (
+      !this.store.room &&
+      e !== GameEventIdentifiers.PlayerEnterEvent &&
+      e !== GameEventIdentifiers.ObserverEnterEvent
+    ) {
       throw new Error('Game client process does not work when client room is not initialized');
     }
   }
 
   protected eventFilter<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
-    if (identifier !== GameEventIdentifiers.PlayerEnterEvent) {
+    if (
+      identifier !== GameEventIdentifiers.PlayerEnterEvent &&
+      identifier !== GameEventIdentifiers.ObserverEnterEvent
+    ) {
       this.store.room.Analytics.record(event, this.store.room.CurrentPlayerPhase);
       if (this.store.room.isPlaying()) {
         const { circle, numberOfDrawStack, numberOfDropStack } = EventPacker.getGameRunningInfo(event);
@@ -144,12 +153,17 @@ export class GameClientProcessor {
     }
     this.presenter.closeDialog();
     this.presenter.closeIncomingConversation();
+    this.presenter.disableActionButton('cancel', 'confirm', 'finish');
 
     this.endAction();
     this.onPlayTrustedActionTimer && clearTimeout(this.onPlayTrustedActionTimer);
   }
 
   private doTrustedAction() {
+    if (this.isObserver) {
+      return;
+    }
+
     this.onPlayTrustedActionTimer = setTimeout(
       () => this.onPlayTrustedAction(),
       this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000),
@@ -164,10 +178,18 @@ export class GameClientProcessor {
     this.store.inAction && this.presenter.endAction();
   }
 
+  private clearDialogs(e: GameEventIdentifiers) {
+    if (!clientAsyncEvents.includes(e)) {
+      this.presenter.closeIncomingConversation();
+      this.presenter.closeDialog();
+    }
+  }
+
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
     this.eventFilter(e, content);
     this.record(e, content);
+    this.clearDialogs(e);
 
     switch (e) {
       case GameEventIdentifiers.UserMessageEvent:
@@ -214,6 +236,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.PlayerLeaveEvent:
         await this.onHandlePlayerLeaveEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.ObserverEnterEvent:
+        await this.onHandleObserverEnterEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForChoosingCharacterEvent:
         await this.onHandleChoosingCharacterEvent(e as any, content);
@@ -994,7 +1019,9 @@ export class GameClientProcessor {
       );
 
       this.translator.setupPlayer(this.presenter.ClientPlayer);
-      this.store.animationPosition.insertPlayer(content.joiningPlayerId);
+      for (const player of content.playersInfo) {
+        this.store.animationPosition.insertPlayer(player.Id);
+      }
 
       this.presenter.ClientPlayer?.getReady();
       this.store.room.broadcast(GameEventIdentifiers.PlayerReadyEvent, { playerId: this.store.clientPlayerId });
@@ -1009,6 +1036,35 @@ export class GameClientProcessor {
       if (this.store.room) {
         this.presenter.playerEnter(playerInfo);
       }
+    }
+  }
+
+  protected onHandleObserverEnterEvent<T extends GameEventIdentifiers.ObserverEnterEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    Precondition.assert(this.store.clientRoomInfo !== undefined, 'Uninitialized Client room info');
+    if (
+      content.joiningPlayerId === this.store.clientRoomInfo.playerId &&
+      content.timestamp === this.store.clientRoomInfo.timestamp
+    ) {
+      this.presenter.setupClientPlayerId(content.observePlayerId);
+
+      this.presenter.createClientRoom(
+        this.store.clientRoomInfo.roomId,
+        this.store.clientRoomInfo.socket,
+        content.gameInfo,
+        content.playersInfo,
+      );
+      this.store.room.syncUpRoom(content.roomInfo);
+
+      this.translator.setupPlayer(this.presenter.ClientPlayer);
+      for (const player of content.playersInfo) {
+        this.store.animationPosition.insertPlayer(player.Id);
+      }
+
+      this.isObserver = true;
+      this.presenter.broadcastUIUpdate();
     }
   }
 
@@ -1077,7 +1133,7 @@ export class GameClientProcessor {
       <CharacterSelectorDialog
         imageLoader={this.imageLoader}
         characterIds={content.characterIds}
-        onClick={onClick}
+        onClick={this.isObserver ? undefined : onClick}
         translator={this.translator}
         selectedCharacters={selectedCharacters}
       />,
@@ -1369,7 +1425,7 @@ export class GameClientProcessor {
       <CardSelectorDialog
         imageLoader={this.imageLoader}
         options={content.options}
-        onClick={onSelectedCard}
+        onClick={this.isObserver ? undefined : onSelectedCard}
         translator={this.translator}
         title={content.customTitle}
       />,
@@ -1464,7 +1520,7 @@ export class GameClientProcessor {
     this.presenter.createDialog(
       <CardSelectorDialog
         options={content.cardIds || content.customCardFields!}
-        onClick={onSelectedCard}
+        onClick={this.isObserver ? undefined : onSelectedCard}
         translator={this.translator}
         isCardDisabled={isCardDisabled}
         imageLoader={this.imageLoader}
@@ -1539,7 +1595,7 @@ export class GameClientProcessor {
     this.presenter.createDialog(
       <CardSelectorDialog
         options={content.cardIds || content.customCardFields!}
-        onClick={onSelectedCard}
+        onClick={this.isObserver ? undefined : onSelectedCard}
         translator={this.translator}
         isCardDisabled={isCardDisabled}
         imageLoader={this.imageLoader}
@@ -1570,6 +1626,10 @@ export class GameClientProcessor {
     const actionHandlers = {};
     options.forEach(option => {
       actionHandlers[option] = () => {
+        if (this.isObserver) {
+          return;
+        }
+
         const response: ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
           fromId: toId,
           selectedOption: option,
@@ -1762,7 +1822,7 @@ export class GameClientProcessor {
         translator={this.translator}
         cards={cards}
         presenter={this.presenter}
-        onConfirm={onConfirm}
+        onConfirm={this.isObserver ? undefined : onConfirm}
         movable={movable}
         title={content.triggeredBySkills && content.triggeredBySkills[0]}
       />,
@@ -1805,7 +1865,7 @@ export class GameClientProcessor {
             TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(selectedCard.player)),
         }))}
         translator={this.translator}
-        onClick={this.store.clientPlayerId === content.toId ? onClick : undefined}
+        onClick={this.store.clientPlayerId === content.toId && !this.isObserver ? onClick : undefined}
       />,
     );
   }

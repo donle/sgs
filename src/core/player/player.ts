@@ -19,6 +19,7 @@ import {
   PlayerId,
   PlayerInfo,
   PlayerRole,
+  PlayerShortcutInfo,
   PlayerStatus,
 } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -105,6 +106,8 @@ export abstract class Player implements PlayerInfo {
   protected playerOutsideCards: PlayerCardsOutside;
   protected playerOutsideCharactersAreaNames: string[] = [];
 
+  protected visiblePlayerTags: { [name: string]: string } = {};
+  protected visiblePlayers: { [name: string]: PlayerId[] } = {};
   private flags: {
     [k: string]: any;
   } = {};
@@ -135,31 +138,82 @@ export abstract class Player implements PlayerInfo {
       this.playerOutsideCards = {};
     }
 
-    if (this.playerCharacterId) {
+    if (this.playerCharacterId != null) {
       this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
-      this.hp = this.playerCharacter.MaxHp;
-      this.maxHp = this.playerCharacter.MaxHp;
-      this.nationality = this.playerCharacter.Nationality;
-      this.gender = this.playerCharacter.Gender;
+      if (this.hp == null) {
+        this.hp = this.playerCharacter.MaxHp;
+      }
+      if (this.maxHp == null) {
+        this.maxHp = this.playerCharacter.MaxHp;
+      }
+      if (this.nationality == null) {
+        this.nationality = this.playerCharacter.Nationality;
+      }
+      if (this.gender == null) {
+        this.gender = this.playerCharacter.Gender;
+      }
     }
 
     this.dead = false;
     // GameCommonRules.initPlayerCommonRules(this);
   }
 
+  protected syncUpPlayer(playerInfo: PlayerShortcutInfo) {
+    const {
+      chainLocked,
+      turnedOver,
+      drunk,
+      dead,
+      equipSectionsStatus,
+      judgeAreaStatus,
+      playerCards,
+      playerOutsideCards,
+      playerOutsideCharactersAreaNames,
+    } = playerInfo;
+
+    this.chainLocked = chainLocked;
+    this.turnedOver = turnedOver;
+    this.drunk = drunk;
+    this.dead = dead;
+    this.equipSectionsStatus = equipSectionsStatus;
+    this.judgeAreaStatus = judgeAreaStatus;
+    this.playerCards = playerCards;
+    this.playerOutsideCards = playerOutsideCards;
+    this.playerOutsideCharactersAreaNames = playerOutsideCharactersAreaNames;
+  }
+
   public clearFlags() {
+    this.visiblePlayerTags = {};
     this.flags = {};
   }
   removeFlag(name: string) {
+    delete this.visiblePlayerTags[name];
+    delete this.visiblePlayers[name];
     delete this.flags[name];
   }
   setFlag<T>(name: string, value: T, tagName?: string, visiblePlayers?: PlayerId[]): T {
+    if (tagName && this.visiblePlayerTags[name] !== tagName) {
+      this.visiblePlayerTags[name] = tagName;
+      if (visiblePlayers && visiblePlayers.length > 0) {
+        this.visiblePlayers[name] = visiblePlayers;
+      }
+    } else if (!tagName && this.visiblePlayerTags[name] !== undefined) {
+      delete this.visiblePlayerTags[name];
+    }
+
+    if (!this.visiblePlayerTags[name]) {
+      delete this.visiblePlayers[name];
+    } else if (visiblePlayers && visiblePlayers.length > 0) {
+      this.visiblePlayers[name] = visiblePlayers;
+    }
+
     return (this.flags[name] = value);
   }
   getFlag<T>(name: string): T {
     return this.flags[name];
   }
-  getAllFlags() {
+
+  get Flags() {
     return this.flags;
   }
 
@@ -183,7 +237,7 @@ export abstract class Player implements PlayerInfo {
   getMark(name: string) {
     return this.marks[name] || 0;
   }
-  getAllMarks() {
+  get Marks() {
     return this.marks;
   }
   addInvisibleMark(name: string, value: number) {
@@ -1007,16 +1061,59 @@ export abstract class Player implements PlayerInfo {
   }
 
   public getPlayerInfo(): PlayerInfo {
+    const flags = {};
+    for (const [key, value] of Object.entries(this.flags)) {
+      flags[key] = {
+        value,
+        visiblePlayers: this.visiblePlayers[key],
+      };
+    }
+
     return {
       Id: this.playerId,
       Name: this.playerName,
       Position: this.playerPosition,
-      Nationality: this.playerCharacterId ? this.Nationality : undefined,
+      Nationality: this.playerCharacterId != null ? this.Nationality : undefined,
       CharacterId: this.playerCharacterId,
       Role: this.playerRole,
       Hp: this.hp,
       MaxHp: this.maxHp,
       Status: this.status,
+      Flags: flags,
+      Marks: this.marks,
+    };
+  }
+
+  public getPlayerShortcutInfo(): PlayerShortcutInfo {
+    const flags = {};
+    for (const [key, value] of Object.entries(this.flags)) {
+      flags[key] = {
+        value,
+        visiblePlayers: this.visiblePlayers[key],
+      };
+    }
+
+    return {
+      Id: this.playerId,
+      Name: this.playerName,
+      Position: this.playerPosition,
+      Nationality: this.playerCharacterId != null ? this.Nationality : undefined,
+      CharacterId: this.playerCharacterId,
+      Role: this.playerRole,
+      Hp: this.hp,
+      MaxHp: this.maxHp,
+      Status: this.status,
+      Flags: flags,
+      Marks: this.marks,
+      chainLocked: this.chainLocked,
+      drunk: this.drunk,
+      turnedOver: this.turnedOver,
+      equipSectionsStatus: this.equipSectionsStatus,
+      judgeAreaStatus: this.judgeAreaStatus,
+      playerOutsideCharactersAreaNames: this.playerOutsideCharactersAreaNames,
+      playerCards: this.playerCards,
+      playerOutsideCards: this.playerOutsideCards,
+      dead: this.dead,
     };
   }
 

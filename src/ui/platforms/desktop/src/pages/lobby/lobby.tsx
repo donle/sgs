@@ -3,6 +3,7 @@ import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { RoomMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -26,6 +27,7 @@ import { SignalBar } from 'ui/signal_bar/signal_bar';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import lockerImage from './images/locked.png';
 import styles from './lobby.module.css';
+import { Messages } from './messages';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
 import { Chat } from './ui/chat/chat';
 import { CreateRoomButton } from './ui/create_room_button/create_room_button';
@@ -147,59 +149,62 @@ export class Lobby extends React.Component<LobbyProps> {
     );
   };
 
-  @mobx.computed
-  get UnmatchedHint() {
-    return this.unmatchedCoreVersion && this.unmatchedView();
+  getUnmatchedHint() {
+    return this.unmatchedCoreVersion && <div>{this.props.translator.tr(Messages.versionMismatch())}</div>;
   }
 
-  @mobx.computed
-  get RoomListTable() {
-    return (
-      !this.unmatchedCoreVersion &&
-      this.roomList.map((hostInfo, index) => (
-        <li className={styles.roomInfo} key={index}>
-          <span className={styles.roomName}>
-            <span>{hostInfo.info.name}</span>
-          </span>
-          <span
-            className={styles.roomMode}
-            onMouseEnter={this.viewGameCharaterExtensions(index)}
-            onMouseLeave={this.closeGameCharaterExtensions}
-          >
-            <Picture
-              className={styles.gameModeIcon}
-              image={this.props.imageLoader.getGameModeIcon(hostInfo.info.gameMode)}
-            />
-            {this.viewCharacterExtenstions === index && (
-              <Tooltip position={['slightBottom', 'right']}>
-                {hostInfo.info.packages.map(p => this.props.translator.tr(p)).join(', ')}
-              </Tooltip>
-            )}
-          </span>
-          <span className={styles.roomStatus}>{this.props.translator.tr(hostInfo.info.status)}</span>
-          <span className={styles.roomPlayers}>{`${hostInfo.info.activePlayers}/${hostInfo.info.totalPlayers}`}</span>
-          <span className={styles.roomLocker}>{hostInfo.info.passcode && <img src={lockerImage} alt="" />}</span>
-          <span className={styles.roomActions}>
-            <LinkButton
-              onClick={this.enterRoom(hostInfo)}
-              disabled={
-                hostInfo.info.activePlayers === hostInfo.info.totalPlayers ||
-                !this.username ||
-                hostInfo.info.status === 'playing'
-              }
+  private readonly RoomListTable = () => (
+    <>
+      {!this.unmatchedCoreVersion &&
+        this.roomList.map((hostInfo, index) => (
+          <li className={styles.roomInfo} key={hostInfo.info.id}>
+            <span className={styles.roomName}>
+              <span>{hostInfo.info.name}</span>
+            </span>
+            <span
+              className={styles.roomMode}
+              onMouseEnter={this.viewGameCharaterExtensions(index)}
+              onMouseLeave={this.closeGameCharaterExtensions}
             >
-              {this.props.translator.tr('Join')}
-            </LinkButton>
-          </span>
-          <SignalBar
-            host={hostInfo.host}
-            className={styles.signalBar}
-            connectionService={this.props.connectionService}
-          />
-        </li>
-      ))
-    );
-  }
+              <Picture
+                className={styles.gameModeIcon}
+                image={this.props.imageLoader.getGameModeIcon(hostInfo.info.gameMode)}
+              />
+              {this.viewCharacterExtenstions === index && (
+                <Tooltip position={['slightBottom', 'right']}>
+                  {hostInfo.info.packages.map(p => this.props.translator.tr(p)).join(', ')}
+                </Tooltip>
+              )}
+            </span>
+            <span className={styles.roomStatus}>{this.props.translator.tr(hostInfo.info.status)}</span>
+            <span className={styles.roomPlayers}>{`${hostInfo.info.activePlayers}/${hostInfo.info.totalPlayers}`}</span>
+            <span className={styles.roomLocker}>{hostInfo.info.passcode && <img src={lockerImage} alt="" />}</span>
+            <span className={styles.roomActions}>
+              <LinkButton
+                onClick={this.enterRoom(hostInfo)}
+                disabled={
+                  hostInfo.info.activePlayers === hostInfo.info.totalPlayers ||
+                  !this.username ||
+                  hostInfo.info.status === 'playing'
+                }
+              >
+                {this.props.translator.tr(Messages.join())}
+              </LinkButton>
+              {hostInfo.info.allowObserver && hostInfo.info.status === 'playing' && (
+                <LinkButton onClick={this.enterRoomAsObserver(hostInfo)} disabled={!this.username}>
+                  {this.props.translator.tr(Messages.observe())}
+                </LinkButton>
+              )}
+            </span>
+            <SignalBar
+              host={hostInfo.host}
+              className={styles.signalBar}
+              connectionService={this.props.connectionService}
+            />
+          </li>
+        ))}
+    </>
+  );
 
   private createRoom(roomInfo: TemporaryRoomCreationInfo, roomName: string, passcode?: string) {
     if (roomInfo.campaignMode) {
@@ -212,7 +217,7 @@ export class Lobby extends React.Component<LobbyProps> {
             gameMode: gameInfo.gameMode,
             ping,
             hostConfig,
-            campaignMode: gameInfo.campaignMode,
+            roomMode: RoomMode.Campaign,
             hostPlayerId: roomInfo.hostPlayerId,
             roomName,
           });
@@ -262,10 +267,6 @@ export class Lobby extends React.Component<LobbyProps> {
     this.queryRoomList();
   };
 
-  unmatchedView() {
-    return <div>{this.props.translator.tr('Unmatched core version, please update your application')}</div>;
-  }
-
   @mobx.action
   private readonly enterRoom = (hostInfo: HostRoomInfo) => () => {
     const { info, host } = hostInfo;
@@ -292,6 +293,30 @@ export class Lobby extends React.Component<LobbyProps> {
         }
       });
     }
+  };
+
+  @mobx.action
+  private readonly enterRoomAsObserver = (hostInfo: HostRoomInfo) => () => {
+    const { info, host } = hostInfo;
+    this.props.connectionService.Lobby.checkRoomExist(host, info.id, (exist, ping) => {
+      if (exist) {
+        this.props.history.push(`/room/${info.id}`, {
+          ping,
+          hostConfig: this.props.config.host.find(config => config.hostTag === host),
+          roomMode: RoomMode.Observer,
+        });
+      } else {
+        //TODO: add error popout
+        mobx.runInAction(() => {
+          const deadRoomIndex = this.roomList.findIndex(
+            roomHostInfo => roomHostInfo.info.id === this.currentInteractiveRoomInfo.info.id,
+          );
+          if (deadRoomIndex >= 0) {
+            this.roomList.splice(deadRoomIndex, 1);
+          }
+        });
+      }
+    });
   };
 
   @mobx.action
@@ -420,13 +445,13 @@ export class Lobby extends React.Component<LobbyProps> {
               onClick={this.onClickRefresh}
               disabled={this.unmatchedCoreVersion}
             >
-              {this.props.translator.tr('Refresh room list')}
+              {this.props.translator.tr(Messages.refreshRoom())}
             </Button>
           </div>
           <div className={classNames(styles.roomList, { [styles.unavailable]: !this.username })}>
-            {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
-            {this.UnmatchedHint}
-            {this.RoomListTable}
+            {this.roomList.length === 0 && <span>{this.props.translator.tr(Messages.noRoomsAvailable())}</span>}
+            {this.getUnmatchedHint()}
+            <this.RoomListTable />
             <CreateRoomButton
               imageLoader={this.props.imageLoader}
               onClick={this.onCreateRoom}
@@ -455,7 +480,7 @@ export class Lobby extends React.Component<LobbyProps> {
             <button className={styles.systemButton} onClick={this.onClickSettings}>
               {!this.username && (
                 <Tooltip autoAnimation position={['top']}>
-                  {this.props.translator.tr('please input your username here')}
+                  {this.props.translator.tr(Messages.usernamePlaceholder())}
                 </Tooltip>
               )}
               <Picture
@@ -525,14 +550,11 @@ export class Lobby extends React.Component<LobbyProps> {
           {this.updateTo && !this.updateComplete && (
             <span>
               {this.props.translator.trx(
-                TranslationPack.translationJsonPatcher(
-                  'updating core version to {0}, downloading...',
-                  this.updateTo,
-                ).toString(),
+                TranslationPack.translationJsonPatcher(Messages.updating(), this.updateTo).toString(),
               )}
               {this.props.translator.trx(
                 TranslationPack.translationJsonPatcher(
-                  'downloading file {0}/{1}',
+                  Messages.downloadingPatch(),
                   this.updateDownloadingFile,
                   this.updateDownloadTotalFile,
                 ).toString(),
@@ -540,9 +562,7 @@ export class Lobby extends React.Component<LobbyProps> {
               {(this.updateProgress * 100).toFixed(2)} %
             </span>
           )}
-          {this.updateComplete && (
-            <span>{this.props.translator.tr('Update complete, please restart client to complete update')}</span>
-          )}
+          {this.updateComplete && <span>{this.props.translator.tr(Messages.updateComplete())}</span>}
           {this.props.translator.trx(
             TranslationPack.translationJsonPatcher('core version: {0}', Sanguosha.Version).toString(),
           )}

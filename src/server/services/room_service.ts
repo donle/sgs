@@ -70,6 +70,7 @@ export class RoomService {
       id: roomId,
       gameMode: roomInfo.gameMode,
       passcode: roomInfo.passcode,
+      allowObserver: !!roomInfo.allowObserver,
     };
   }
 

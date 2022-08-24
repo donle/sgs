@@ -1,12 +1,17 @@
 import { CharacterId } from 'core/characters/character';
 import { HuaShenInfo, Player } from 'core/player/player';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId, PlayerStatus } from './player_props';
+import {
+  PlayerCards,
+  PlayerCardsArea,
+  PlayerCardsOutside,
+  PlayerId,
+  PlayerShortcutInfo,
+  PlayerStatus,
+} from './player_props';
 
 export class ClientPlayer extends Player {
   private visibleOutsideAreas: string[] = [];
-  private visiblePlayerTags: { [name: string]: string } = {};
-  private visiblePlayers: { [name: string]: PlayerId[] } = {};
 
   constructor(
     protected playerId: PlayerId,
@@ -21,32 +26,8 @@ export class ClientPlayer extends Player {
     super(playerCards, playerCharacterId);
   }
 
-  setFlag<T>(name: string, value: T, tagName?: string, visiblePlayers?: PlayerId[]): T {
-    if (tagName && this.visiblePlayerTags[name] !== tagName) {
-      this.visiblePlayerTags[name] = tagName;
-      if (visiblePlayers && visiblePlayers.length > 0) {
-        this.visiblePlayers[name] = visiblePlayers;
-      }
-    } else if (!tagName && this.visiblePlayerTags[name] !== undefined) {
-      delete this.visiblePlayerTags[name];
-    }
-
-    if (!this.visiblePlayerTags[name]) {
-      delete this.visiblePlayers[name];
-    } else if (visiblePlayers && visiblePlayers.length > 0) {
-      this.visiblePlayers[name] = visiblePlayers;
-    }
-
-    return super.setFlag(name, value);
-  }
-  public clearFlags() {
-    this.visiblePlayerTags = {};
-    super.clearFlags();
-  }
-  removeFlag(name: string) {
-    delete this.visiblePlayerTags[name];
-    delete this.visiblePlayers[name];
-    super.removeFlag(name);
+  public syncUpPlayer(playerInfo: PlayerShortcutInfo) {
+    super.syncUpPlayer(playerInfo);
   }
 
   setVisibleOutsideArea(areaName: string) {

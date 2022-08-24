@@ -30,6 +30,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   private playerReconnectTimer: { [K in string]: NodeJS.Timer } = {};
   private mapSocketIdToPlayerId: { [K in string]: string } = {};
+  private mapPlayerIdToObservers: { [K in string]: string[] } = {};
   private lastResponsiveEvent:
     | {
         to: PlayerId;
@@ -93,7 +94,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               );
               break;
             default:
-              logger.info('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
+              logger.info('Not implemented active listener', identifier);
           }
         });
       });
@@ -143,18 +144,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         if (player.isOnline()) {
           player.setOffline();
           this.delayToDisconnect(playerId);
-          // const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
-          //   playerId,
-          //   translationsMessage: TranslationPack.translationJsonPatcher(
-          //     'player {0} has disconnected from the room',
-          //     room.getPlayerById(playerId).Name,
-          //   ).extract(),
-          //   ignoreNotifiedStatus: true,
-          // };
-          // this.broadcast(
-          //   GameEventIdentifiers.PlayerLeaveEvent,
-          //   EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
-          // );
         } else {
           const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
             playerId,
@@ -305,11 +294,15 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    if (
-      room.Info.numberOfPlayers <= room.Players.length ||
-      room.isPlaying() ||
-      event.coreVersion !== Sanguosha.Version
-    ) {
+
+    let joinFailed = false;
+    if (event.coreVersion !== Sanguosha.Version) {
+      joinFailed = true;
+    } else if (!event.joinAsObserver && (room.isPlaying() || room.Info.numberOfPlayers <= room.Players.length)) {
+      joinFailed = true;
+    }
+
+    if (joinFailed) {
       socket.emit(GameEventIdentifiers.PlayerEnterRefusedEvent.toString(), {
         playerId: event.playerId,
         playerName: event.playerName,
@@ -320,22 +313,43 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       return;
     }
 
-    const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
-    room.addPlayer(player);
     this.mapSocketIdToPlayerId[event.playerId] = socket.id;
+    if (!event.joinAsObserver) {
+      const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
+      room.addPlayer(player);
 
-    this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
-      joiningPlayerName: event.playerName,
-      joiningPlayerId: event.playerId,
-      roomInfo: room.getRoomInfo(),
-      playersInfo: room.Players.map(p => p.getPlayerInfo()),
-      gameInfo: room.Info,
-      translationsMessage: TranslationPack.translationJsonPatcher(
-        'player {0} join in the room',
-        TranslationPack.patchPureTextParameter(event.playerName),
-      ).extract(),
-      timestamp: event.timestamp,
-    });
+      this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
+        joiningPlayerName: event.playerName,
+        joiningPlayerId: event.playerId,
+        roomInfo: room.getRoomInfo(),
+        playersInfo: room.Players.map(p => p.getPlayerInfo()),
+        gameInfo: room.Info,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          'player {0} join in the room',
+          TranslationPack.patchPureTextParameter(event.playerName),
+        ).extract(),
+        timestamp: event.timestamp,
+      });
+    } else {
+      const observePlayer = room.AlivePlayers[0];
+      this.mapPlayerIdToObservers[observePlayer.Id] = this.mapPlayerIdToObservers[observePlayer.Id] || [];
+      this.mapPlayerIdToObservers[observePlayer.Id].push(event.playerId);
+
+      this.broadcast(GameEventIdentifiers.ObserverEnterEvent, {
+        joiningPlayerName: event.playerName,
+        joiningPlayerId: event.playerId,
+        roomInfo: room.getRoomShortcurInfo(),
+        playersInfo: room.Players.map(p => p.getPlayerShortcutInfo()),
+        gameInfo: room.Info,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          'observer {0} join in the room',
+          TranslationPack.patchPureTextParameter(event.playerName),
+        ).extract(),
+        timestamp: event.timestamp,
+        observePlayerId: observePlayer.Id,
+        ignoreNotifiedStatus: true,
+      });
+    }
   }
 
   private async onPlayerReady(
@@ -413,6 +427,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     } else {
       this.room?.setAwaitingResponseEvent(type, content, to);
       this.socket.to(this.mapSocketIdToPlayerId[to]).emit(type.toString(), content);
+
+      const observers = this.mapPlayerIdToObservers[to];
+      if (observers) {
+        for (const observer of observers) {
+          this.socket.to(this.mapSocketIdToPlayerId[observer]).emit(type.toString(), content);
+        }
+      }
     }
   }
 

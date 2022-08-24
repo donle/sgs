@@ -10,13 +10,13 @@ import {
   WaitingRoomGameSettings,
 } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
-import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerShortcutInfo } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { System } from 'core/shares/libs/system';
 import { AimGroup } from 'core/shares/libs/utils/aim_group';
 import { TargetGroup } from 'core/shares/libs/utils/target_group';
-import { RoomInfo } from 'core/shares/types/server_types';
+import { RoomInfo, RoomShortcutInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
   BaseGameEvent,
@@ -241,6 +241,15 @@ export interface ServerEvent extends EventUtilities {
     roomInfo: RoomInfo;
     gameInfo: GameInfo;
     timestamp: number;
+  };
+  [GameEventIdentifiers.ObserverEnterEvent]: {
+    joiningPlayerName: string;
+    joiningPlayerId: PlayerId;
+    playersInfo: PlayerShortcutInfo[];
+    roomInfo: RoomShortcutInfo;
+    gameInfo: GameInfo;
+    timestamp: number;
+    observePlayerId: PlayerId;
   };
   [GameEventIdentifiers.PlayerReenterEvent]: {
     toId: PlayerId;

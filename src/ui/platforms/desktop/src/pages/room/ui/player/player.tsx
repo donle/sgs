@@ -179,10 +179,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   private readonly onClickUniqueSkillTag = (name: string, items: (Card | Character)[]) => () => {
     if (this.openedDialog === name) {
       this.openedDialog = undefined;
-      this.props.presenter.closeDialog();
+      this.props.presenter.closeViewDialog();
     } else {
       this.openedDialog = name;
-      this.props.presenter.createDialog(
+      this.props.presenter.createViewDialog(
         <CardSelectorDialog
           title={this.props.translator.tr(name)}
           isCharacterCard={items[0] instanceof Character}
@@ -225,10 +225,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   private readonly onOutsideAreaTagClicked = (name: string, cards: CardId[]) => () => {
     if (this.openedDialog === name) {
       this.openedDialog = undefined;
-      this.props.presenter.closeDialog();
+      this.props.presenter.closeViewDialog();
     } else {
       this.openedDialog = name;
-      this.props.presenter.createDialog(
+      this.props.presenter.createViewDialog(
         <CardSelectorDialog imageLoader={this.props.imageLoader} options={cards} translator={this.props.translator} />,
       );
     }
@@ -424,7 +424,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       )),
     );
 
-    const playerMarks = clientPlayer.getAllMarks();
+    const playerMarks = clientPlayer.Marks;
     for (const [markName, amount] of Object.entries(playerMarks)) {
       marks.push(<Mark amount={amount} markType={markName as MarkEnum} key={markName} />);
     }

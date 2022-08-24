@@ -25,7 +25,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { FlagEnum } from 'core/shares/types/flag_list';
 import { GameMode } from 'core/shares/types/room_props';
-import { RoomInfo } from 'core/shares/types/server_types';
+import { RoomInfo, RoomShortcutInfo } from 'core/shares/types/server_types';
 import { FilterSkill, GlobalRulesBreakerSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import { RoomEventStacker } from './utils/room_event_stack';
@@ -227,7 +227,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
   public abstract getCardsByNameFromStack(cardName: string, stackName: 'draw' | 'drop', amount?: number): CardId[];
-
   public abstract setCharacterOutsideAreaCards(
     player: PlayerId,
     areaName: string,
@@ -238,6 +237,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
+  public abstract kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
 
   public updatePlayerStatus(
     status: 'online' | 'offline' | 'quit' | 'trusted' | 'trusted' | 'player' | 'smart-ai',
@@ -552,9 +552,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return true;
   }
-
-  public abstract kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
-
   public canUseCardTo(cardId: CardId | CardMatcher, from: Player, target: Player, unlimited?: boolean): boolean {
     return from.canUseCardTo(this, cardId, target.Id, unlimited);
   }
@@ -729,6 +726,18 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       id: this.roomId,
       gameMode: this.gameInfo.gameMode,
       passcode: this.gameInfo.passcode,
+      allowObserver: !!this.gameInfo.allowObserver,
+    };
+  }
+
+  public getRoomShortcurInfo(): RoomShortcutInfo {
+    const info = this.getRoomInfo();
+    return {
+      ...info,
+      currentPlayerId: this.CurrentPlayer.Id,
+      currentPhasePlayerId: this.CurrentPhasePlayer.Id,
+      currentPlayerStage: this.CurrentPlayerStage,
+      currentPlayerPhase: this.CurrentPlayerPhase,
     };
   }
 

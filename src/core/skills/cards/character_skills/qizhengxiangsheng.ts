@@ -1,3 +1,4 @@
+import { QiZhengXiangShengSkillTrigger } from 'core/ai/skills/cards/qizhengxiangsheng';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -6,10 +7,11 @@ import { DamageType } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
+@AI(QiZhengXiangShengSkillTrigger)
 @CommonSkill({ name: 'qizhengxiangsheng', description: 'qizhengxiangsheng_description' })
 export class QiZhengXiangShengSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse() {
@@ -35,11 +37,7 @@ export class QiZhengXiangShengSkill extends ActiveSkill implements ExtralCardSki
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ): boolean {
-    return (
-      target !== owner &&
-      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
-      room.getPlayerById(target).getCardIds().length > 0
-    );
+    return target !== owner && room.getPlayerById(owner).canUseCardTo(room, containerCard, target);
   }
 
   public isAvailableTarget(

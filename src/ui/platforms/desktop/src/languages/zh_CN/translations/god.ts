@@ -705,7 +705,10 @@ export const conversations: Word[] = [
     source: 'pinghe: please give a handcard to another player',
     target: '冯河：请交给一名其他角色一张手牌',
   },
-  { source: '{0} used skill {1}, which has been removed from target list of {2}', target: '{0} 使用了技能【{1}】，{0} 从 {2} 的目标中移除' },
+  {
+    source: '{0} used skill {1}, which has been removed from target list of {2}',
+    target: '{0} 使用了技能【{1}】，{0} 从 {2} 的目标中移除',
+  },
   { source: '{0}: please choose a dinghan option', target: '{0}：请选择以下一项加入或移出定汉记录' },
   { source: '{0} shuffled 8 {1} cards into the draw stack', target: '{0} 将八张【{1}】洗入了摸牌堆' },
 ];

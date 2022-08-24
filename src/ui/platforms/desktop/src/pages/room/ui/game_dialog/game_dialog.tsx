@@ -12,7 +12,7 @@ export type GameDialogProps = {
   store: RoomStore;
   presenter: RoomPresenter;
   connectionService: ConnectionService;
-  replayMode?: boolean;
+  replayOrObserverMode?: boolean;
 };
 
 @mobxReact.observer
@@ -97,7 +97,7 @@ export class GameDialog extends React.Component<GameDialogProps> {
             translator={this.props.translator}
             store={this.props.store}
             presenter={this.props.presenter}
-            replayMode={this.props.replayMode}
+            replayMode={this.props.replayOrObserverMode}
             fixedHeight={this.fixedHeight}
             connectionService={this.props.connectionService}
           />

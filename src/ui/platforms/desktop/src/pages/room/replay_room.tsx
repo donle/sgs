@@ -255,7 +255,7 @@ export class ReplayRoomPage extends React.Component<
                     store={this.store}
                     presenter={this.presenter}
                     translator={this.props.translator}
-                    replayMode={true}
+                    replayOrObserverMode={true}
                     connectionService={this.props.connectionService}
                   />
                 </div>
@@ -270,6 +270,7 @@ export class ReplayRoomPage extends React.Component<
               imageLoader={this.props.imageLoader}
               onClick={this.store.onClickHandCardToPlay}
               isSkillDisabled={this.store.isSkillDisabled}
+              observerMode={false}
             />
           </div>
         )}

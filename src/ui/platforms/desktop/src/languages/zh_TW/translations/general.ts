@@ -786,4 +786,10 @@ export const UiDictionary: Word[] = [
   { source: 'give host', target: '設為房主' },
   { source: 'forbidden characters', target: '禁用武將列表' },
   { source: 'search character by name', target: '輸入武將名' },
+  { source: 'observer {0} join in the room', target: '{0} 加入了旁觀' },
+  { source: 'Observe', target: '旁觀' },
+  {
+    source: 'Room running with exceptions, please re-create your room',
+    target: '房間出現錯誤，請退出房間重新建立遊戲',
+  },
 ];

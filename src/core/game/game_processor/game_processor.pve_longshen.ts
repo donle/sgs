@@ -39,7 +39,6 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     });
 
     const candSkills = pveLongShenSkills.slice();
-    console.log(candSkills);
     Algorithm.shuffle(candSkills);
 
     let weights = 0;

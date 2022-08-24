@@ -143,10 +143,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   private readonly onClickUniqueSkillTag = (name: string, items: (Card | Character)[]) => () => {
     if (this.openedDialog === name) {
       this.openedDialog = undefined;
-      this.props.presenter.closeDialog();
+      this.props.presenter.closeViewDialog();
     } else {
       this.openedDialog = name;
-      this.props.presenter.createDialog(
+      this.props.presenter.createViewDialog(
         <CardSelectorDialog
           title={this.props.translator.tr(name)}
           isCharacterCard={items[0] instanceof Character}
@@ -200,10 +200,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
 
     if (this.openedDialog === name) {
       this.openedDialog = undefined;
-      this.props.presenter.closeDialog();
+      this.props.presenter.closeViewDialog();
     } else {
       this.openedDialog = name;
-      this.props.presenter.createDialog(
+      this.props.presenter.createViewDialog(
         <CardSelectorDialog
           title={this.props.translator.tr(name)}
           isCharacterCard={player.isCharacterOutsideArea(name)}
@@ -449,17 +449,17 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         );
       }
     });
-    this.props.presenter.closeDialog();
+    this.props.presenter.closeViewDialog();
   };
 
   @mobx.action
   selectedSkin = () => {
     if (this.inProcessDialog) {
-      this.props.presenter.closeDialog();
+      this.props.presenter.closeViewDialog();
       this.inProcessDialog = false;
     } else if (this.props.skinData) {
       this.inProcessDialog = true;
-      this.props.presenter.createDialog(
+      this.props.presenter.createViewDialog(
         <SkinSelectorDialog
           translator={this.props.translator}
           imageLoader={this.props.imageLoader}
@@ -516,7 +516,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       )),
     );
 
-    const playerMarks = clientPlayer.getAllMarks();
+    const playerMarks = clientPlayer.Marks;
     for (const [markName, amount] of Object.entries(playerMarks)) {
       marks.push(<Mark amount={amount} markType={markName as MarkEnum} key={markName} />);
     }
