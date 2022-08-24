@@ -1,7 +1,6 @@
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { Sanguosha } from 'core/game/engine';
-import { Logger } from 'core/shares/libs/logger/logger';
-import { Flavor } from 'core/shares/types/host_config';
+import { Logger } from 'core/shares/libs/logger/logger'
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { createMemoryHistory } from 'history';
@@ -12,7 +11,7 @@ import { OpenningPage } from 'pages/openning/openning';
 import { ReplayRoomPage } from 'pages/room/replay_room';
 import { RoomPage } from 'pages/room/room';
 import { WaitingRoom } from 'pages/waiting_room/waiting_room';
-import { ClientConfig, ClientFlavor } from 'props/config_props';
+import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
 import { CampaignService } from 'services/campaign_service/campaign_service';
