@@ -5,7 +5,7 @@ import { Sanguosha } from 'core/game/engine';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
-import { RoomStore } from 'pages/room/room.presenter';
+import { RoomStore } from 'pages/room/room.store';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ClientCard } from 'ui/card/card';

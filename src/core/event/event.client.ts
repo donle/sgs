@@ -87,6 +87,10 @@ export interface ClientEvent extends EventUtilities {
     playersInfo: PlayerInfo[];
   };
 
+  [GameEventIdentifiers.ObserverRequestChangeEvent]: {
+    observerId: PlayerId;
+    toObserverId: PlayerId;
+  };
   [GameEventIdentifiers.PlayerEnterEvent]: {
     playerName: string;
     timestamp: number;

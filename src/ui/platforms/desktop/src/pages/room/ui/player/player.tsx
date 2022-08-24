@@ -14,7 +14,8 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
-import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
+import { RoomPresenter } from 'pages/room/room.presenter';
+import { RoomStore } from 'pages/room/room.store';
 import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
@@ -62,9 +63,9 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   PlayerRoleCard: () => JSX.Element;
 
   @mobx.observable.ref
-  mainImage: string | undefined;
+  mainImage: ImageProps | undefined;
   @mobx.observable.ref
-  sideImage: string | undefined;
+  sideImage: ImageProps | undefined;
   @mobx.observable.ref
   focusedOnPlayerHandcard: boolean = false;
   @mobx.observable.ref
@@ -312,8 +313,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         ));
   }
 
-  @mobx.action
-  async componentDidUpdate() {
+  private renderCharacterImage() {
     if (this.PlayerCharacter && this.props.player) {
       if (this.props.skinData) {
         this.skinName = getSkinName(
@@ -321,30 +321,47 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           this.props.player?.Id,
           this.props.skinData,
         ).skinName;
-        this.mainImage = (
-          await this.props.imageLoader.getCharacterSkinPlay(
+
+        this.props.imageLoader
+          .getCharacterSkinPlay(
             this.props.player?.Character.Name,
             this.props.skinData,
             this.props.player?.Id,
             this.skinName,
           )
-        ).src;
+          .then(
+            mobx.action(image => {
+              this.mainImage = image;
+            }),
+          );
       } else {
-        this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name)).src;
+        this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name).then(
+          mobx.action(image => {
+            this.mainImage = image;
+          }),
+        );
       }
       const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-      this.sideImage =
-        huashenCharacter &&
-        (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id)).src;
+
+      if (huashenCharacter) {
+        this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id).then(
+          mobx.action(image => {
+            this.sideImage = image;
+          }),
+        );
+      }
     }
+  }
+
+  async componentDidUpdate() {
     if (this.PlayerImage === undefined && this.PlayerCharacter) {
       mobx.runInAction(() => {
         this.PlayerImage = () => (
           <SwitchAvatar
-            mainImage={this.mainImage}
-            sideImage={this.sideImage}
+            mainImage={this.mainImage?.src}
+            sideImage={this.sideImage?.src}
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.player && this.props.player.Dead,
               [styles.disabled]:
@@ -458,6 +475,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       incomingMessage,
       actionTimeLimit,
     } = this.props;
+    if (this.PlayerCharacter && (!this.mainImage || this.mainImage.alt !== this.PlayerCharacter.Name)) {
+      this.renderCharacterImage();
+    }
+
     return (
       <div className={styles.player} onMouseOver={this.showPlayerName} onMouseOut={this.hidePlayerName}>
         <div

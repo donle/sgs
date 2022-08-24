@@ -3,7 +3,8 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
-import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
+import { RoomPresenter } from 'pages/room/room.presenter';
+import { RoomStore } from 'pages/room/room.store';
 import * as React from 'react';
 import { ClientCard } from 'ui/card/card';
 import styles from './move_card.module.css';

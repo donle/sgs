@@ -9,7 +9,8 @@ import { Room } from 'core/room/room';
 import { FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter, RoomStore } from '../room.presenter';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 import { BaseAction } from './base_action';
 
 export class CardResponseAction extends BaseAction {

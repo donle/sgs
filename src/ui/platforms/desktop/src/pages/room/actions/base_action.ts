@@ -7,7 +7,8 @@ import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter, RoomStore } from '../room.presenter';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 
 export abstract class BaseAction {
   public static disableSkills = (skill: Skill) => {
@@ -107,6 +108,7 @@ export abstract class BaseAction {
     this.presenter.setupCardSkillSelectionMatcher(() => false);
     this.presenter.clearSelectedCards();
     this.presenter.clearSelectedPlayers();
+    this.presenter.clearSelectionReflectAction();
   };
 
   isPlayerEnabled(player: Player): boolean {

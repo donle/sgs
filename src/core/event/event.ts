@@ -97,6 +97,7 @@ export const enum GameEventIdentifiers {
   UnhookSkillsEvent,
 
   ObserverEnterEvent,
+  ObserverRequestChangeEvent,
   BackToWaitingRoomEvent,
   PlayerReadyEvent,
   AskForChangeInitCardEvent,
@@ -215,6 +216,7 @@ export const serverActiveListenerEvents = [
 
   GameEventIdentifiers.BackToWaitingRoomEvent,
   GameEventIdentifiers.PlayerReadyEvent,
+  GameEventIdentifiers.ObserverRequestChangeEvent,
 ];
 
 export const clientAsyncEvents = [...serverActiveListenerEvents, GameEventIdentifiers.NotifyEvent];
