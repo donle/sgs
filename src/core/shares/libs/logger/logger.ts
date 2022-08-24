@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { Flavor } from 'core/shares/types/host_config';
 import { TranslationModule } from 'core/translations/translation_module';
 
