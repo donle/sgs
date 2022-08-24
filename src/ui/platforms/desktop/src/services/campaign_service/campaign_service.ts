@@ -13,7 +13,7 @@ import { LocalServerEmitter } from 'core/network/local/local_emitter.server';
 import { ServerSocket } from 'core/network/socket.server';
 import { ServerRoom } from 'core/room/room.server';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
-import { ClientLogger } from 'core/shares/libs/logger/client_logger';
+import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { ClientFlavor, ServerHostTag } from 'props/config_props';
@@ -23,7 +23,7 @@ export class CampaignService {
   private campaginRooms: {
     [K: string]: ServerRoom;
   } = {};
-  constructor(private logger: ClientLogger, private flavor: ClientFlavor) {}
+  constructor(private logger: Logger, private flavor: ClientFlavor) {}
 
   private readonly createDifferentModeGameProcessor = (
     roomInfo: {
@@ -55,7 +55,7 @@ export class CampaignService {
     callback: (evt: CreateGameListenerResponse) => void,
   ) {
     const roomId = Date.now();
-    const socket = new LocalServerEmitter((window as any).eventEmitter);
+    const socket = new LocalServerEmitter((window as any).eventEmitter, this.logger);
     const room = new ServerRoom(
       roomId,
       {

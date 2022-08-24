@@ -9,6 +9,7 @@ import { EventPacker } from 'core/event/event_packer';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
+import { Logger } from 'core/shares/libs/logger/logger';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { EventEmitterProps } from './event_emitter_props';
 import { LocalServerEmitterInterface } from './event_emitter_props';
@@ -22,7 +23,7 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
     };
   } = {} as any;
 
-  constructor(private socket: EventEmitterProps) {
+  constructor(private socket: EventEmitterProps, private logger: Logger) {
     this.socket = socket;
     serverActiveListenerEvents.forEach(identifier => {
       socket.on('client-' + identifier.toString(), (content: ClientEventFinder<typeof identifier>) => {
@@ -51,7 +52,7 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
             );
             break;
           default:
-            console.error('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
+            this.logger.error('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
         }
       });
     });

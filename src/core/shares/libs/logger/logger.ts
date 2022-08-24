@@ -1,10 +1,9 @@
-import chalk from 'chalk';
 import { Flavor } from 'core/shares/types/host_config';
 import { TranslationModule } from 'core/translations/translation_module';
 
-export class Logger {
+export abstract class Logger {
   protected translator: TranslationModule | undefined;
-  constructor(private mode: Flavor = Flavor.Dev) {}
+  constructor(protected mode: Flavor = Flavor.Dev) {}
 
   public set Translator(translator: TranslationModule) {
     this.translator = translator;
@@ -20,37 +19,11 @@ export class Logger {
     return args;
   }
 
-  info(...args: any[]) {
-    // tslint:disable-next-line: no-console
-    console.info(chalk.blueBright(...this.translate(args)));
-  }
+  abstract info(...args: any[]): void;
 
-  error(...args: any[]) {
-    // tslint:disable-next-line: no-console
-    console.error(chalk.redBright(...this.translate(args)));
-  }
+  abstract error(...args: any[]): void;
 
-  debug(...args: any[]) {
-    if (this.mode !== Flavor.Prod) {
-      // tslint:disable-next-line: no-console
-      console.log(chalk.green(...this.translate(args)));
-    }
-  }
+  abstract debug(...args: any[]): void;
 
-  async dump() {
-    process.stdin.setRawMode && process.stdin.setRawMode(true);
-    return new Promise<void>(resolve => {
-      process.stdin.resume();
-      process.stdin.once('data', data => {
-        process.stdin.setRawMode && process.stdin.setRawMode(false);
-        const command = data.toString().trim();
-        if (command === 'c') {
-          process.exit();
-        } else if (command === 'g') {
-          process.stdin.pause();
-        }
-        resolve();
-      });
-    });
-  }
+  abstract dump(): Promise<void>;
 }

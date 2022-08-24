@@ -6,20 +6,15 @@ class App {
 
   constructor() {
     this.app
-      .use(
-        express.static(path.join(__dirname, '../build/'), {
-          maxAge: '7d',
-        }),
-      )
       .get('/sgs', (req, res) => {
         res.sendfile(path.join(__dirname, '../build/home/index.html'));
       })
       .get('/', (req, res) => {
-        res.sendfile(path.join(__dirname, '../build/index.html'));
+        res.sendfile(path.join(__dirname, '../build/index.html'), { maxAge: '180d' });
       })
       .use((req, res, next) => {
         if (/\/[^?]*$/.test(req.url)) {
-          res.sendfile(path.join(__dirname, `../build/${req.url}`));
+          res.sendfile(path.join(__dirname, `../build/${req.url}`), { maxAge: '180d' });
         } else {
           next();
         }

@@ -222,7 +222,7 @@ export class Lobby extends React.Component<LobbyProps> {
             roomName,
           });
         } else {
-          console.error(error);
+          this.props.logger.error(error);
         }
       });
     } else {
@@ -237,7 +237,7 @@ export class Lobby extends React.Component<LobbyProps> {
             hostConfig,
           });
         } else {
-          console.error(error);
+          this.props.logger.error(error);
         }
       });
     }

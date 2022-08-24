@@ -1,7 +1,6 @@
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { Sanguosha } from 'core/game/engine';
-import { ClientLogger } from 'core/shares/libs/logger/client_logger';
-import { Flavor } from 'core/shares/types/host_config';
+import { Logger } from 'core/shares/libs/logger/logger'
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { createMemoryHistory } from 'history';
@@ -12,7 +11,7 @@ import { OpenningPage } from 'pages/openning/openning';
 import { ReplayRoomPage } from 'pages/room/replay_room';
 import { RoomPage } from 'pages/room/room';
 import { WaitingRoom } from 'pages/waiting_room/waiting_room';
-import { ClientConfig, ClientFlavor } from 'props/config_props';
+import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
 import { CampaignService } from 'services/campaign_service/campaign_service';
@@ -25,6 +24,7 @@ export class App extends React.PureComponent<{
   config: ClientConfig;
   electronLoader: ElectronLoader;
   translator: ClientTranslationModule;
+  logger: Logger;
 }> {
   private customHistory = createMemoryHistory();
   private skinData?: CharacterSkinInfo[];
@@ -32,10 +32,7 @@ export class App extends React.PureComponent<{
   private audioLoader = getAudioLoader(this.props.config.flavor);
   private connectionService = getConnectionService(this.props.config);
   private fakeConnectionService = getConnectionService(this.props.config, true);
-  private campaignService = new CampaignService(
-    new ClientLogger(this.props.config.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod),
-    this.props.config.flavor,
-  );
+  private campaignService = new CampaignService(this.props.logger, this.props.config.flavor);
 
   // async getSkinData() {
   //   const url = process.env.PUBLIC_URL + '/skin_infos.json';
@@ -64,7 +61,13 @@ export class App extends React.PureComponent<{
           <Route
             path={'/openning'}
             render={({ match, location, history }) => (
-              <OpenningPage config={this.props.config} match={match} location={location} history={history} />
+              <OpenningPage
+                config={this.props.config}
+                match={match}
+                location={location}
+                history={history}
+                logger={this.props.logger}
+              />
             )}
           />
           {this.props.electronLoader ? (
@@ -82,6 +85,7 @@ export class App extends React.PureComponent<{
                   electronLoader={this.props.electronLoader}
                   connectionService={this.connectionService}
                   campaignService={this.campaignService}
+                  logger={this.props.logger}
                 />
               )}
             />
@@ -89,7 +93,13 @@ export class App extends React.PureComponent<{
             <Route
               path={'/openning'}
               render={({ match, location, history }) => (
-                <OpenningPage config={this.props.config} match={match} location={location} history={history} />
+                <OpenningPage
+                  config={this.props.config}
+                  match={match}
+                  location={location}
+                  history={history}
+                  logger={this.props.logger}
+                />
               )}
             />
           )}
@@ -107,6 +117,7 @@ export class App extends React.PureComponent<{
                 config={this.props.config}
                 translator={this.props.translator}
                 connectionService={this.fakeConnectionService}
+                logger={this.props.logger}
               />
             )}
           />
@@ -123,6 +134,7 @@ export class App extends React.PureComponent<{
                 electronLoader={this.props.electronLoader}
                 config={this.props.config}
                 translator={this.props.translator}
+                logger={this.props.logger}
               />
             )}
           />
@@ -139,6 +151,7 @@ export class App extends React.PureComponent<{
                 config={this.props.config}
                 translator={this.props.translator}
                 getConnectionService={this.getConnectionService}
+                logger={this.props.logger}
               />
             )}
           />
@@ -156,6 +169,7 @@ export class App extends React.PureComponent<{
                 config={this.props.config}
                 translator={this.props.translator}
                 getConnectionService={this.getConnectionService}
+                logger={this.props.logger}
               />
             )}
           />
