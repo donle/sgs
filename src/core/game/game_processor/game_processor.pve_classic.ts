@@ -53,70 +53,44 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   async beforeGameBeginPreparation() {
-    // const human = this.room.Players.filter(player => !player.isSmartAI());
-    // for (const toId of human.map(player => player.Id)) {
-    //   const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
-    //   this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
-    //   const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId);
-    //   const cardIds = resp.cardIds;
-    //   if (cardIds !== undefined) {
-    //     const newCardIds = this.room.getCards(cardIds.length, 'top');
-    //     await this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId);
-    //     this.room.notify(
-    //       GameEventIdentifiers.MoveCardEvent,
-    //       {
-    //         infos: [
-    //           {
-    //             moveReason: CardMoveReason.CardDraw,
-    //             movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-    //             toArea: CardMoveArea.HandArea,
-    //             toId,
-    //           },
-    //         ],
-    //       },
-    //       toId,
-    //     );
-    //     this.room
-    //       .getPlayerById(toId)
-    //       .getCardIds(PlayerCardsArea.HandArea)
-    //       .push(...newCardIds);
-    //   }
-    // }
-    // const sequenceAsyncResp: Promise<void>[] = [];
-    // for (const toId of this.human.map(player => player.Id)) {
-    //   const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
-    //   this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
-    //   const asyncResp = this.room
-    //     .onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId)
-    //     .then(resp => {
-    //       const cardIds = resp.cardIds;
-    //       const toId = resp.fromId;
-    //       if (cardIds !== undefined) {
-    //         const newCardIds = this.room.getCards(cardIds.length, 'top');
-    //         this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId).then(() => {
-    //           this.room.notify(
-    //             GameEventIdentifiers.MoveCardEvent,
-    //             {
-    //               infos: [
-    //                 {
-    //                   moveReason: CardMoveReason.CardDraw,
-    //                   movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-    //                   toArea: CardMoveArea.HandArea,
-    //                   toId,
-    //                 },
-    //               ],
-    //             },
-    //             toId,
-    //           );
-    //           this.room
-    //             .getPlayerById(toId)
-    //             .getCardIds(PlayerCardsArea.HandArea)
-    //             .push(...newCardIds);
-    //         });
-    //       }
-    //     });
-    //   sequenceAsyncResp.push(asyncResp);
-    // }
+    const human = this.room.Players.filter(player => !player.isSmartAI());
+    for (const player of human) {
+      const dropCards: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+        fromArea: [PlayerCardsArea.HandArea],
+        cardAmount: [0, player.getCardIds(PlayerCardsArea.HandArea).length],
+        toId: player.Id,
+      };
+
+      this.room.notify(GameEventIdentifiers.AskForCardDropEvent, dropCards, player.Id);
+      this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, player.Id).then(resp => {
+        const { droppedCards } = resp;
+        const newCardIds = this.room.getCards(droppedCards.length, 'top');
+        player.dropCards(...droppedCards);
+        player.obtainCardIds(...newCardIds);
+
+        this.room.notify(
+          GameEventIdentifiers.MoveCardEvent,
+          {
+            infos: [
+              {
+                moveReason: CardMoveReason.CardDraw,
+                toArea: CardMoveArea.HandArea,
+                toId: player.Id,
+                movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+              },
+              {
+                moveReason: CardMoveReason.PlaceToDrawStack,
+                toArea: CardMoveArea.DrawStack,
+                fromId: player.Id,
+                movingCards: droppedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
+              },
+            ],
+          },
+          player.Id,
+        );
+      });
+    }
+
     // await Promise.all(sequenceAsyncResp);
     // this.room.shuffle();
   }

@@ -206,10 +206,6 @@ export interface ClientEvent extends EventUtilities {
     playerId: PlayerId;
     playerName: string;
   };
-  [GameEventIdentifiers.AskForChangeInitCardEvent]: {
-    fromId: PlayerId;
-    cardIds?: CardId[];
-  };
 }
 
 type PlayCardOrSkillEvent =
