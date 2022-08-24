@@ -4,7 +4,7 @@ import { Logger } from './logger';
 import { ServerLogger } from './server_logger';
 
 export const createLogger = (flavor: Flavor): Logger => {
-  if (window !== undefined) {
+  if (typeof window !== 'undefined') {
     return new ClientLogger(flavor);
   } else {
     return new ServerLogger(flavor);

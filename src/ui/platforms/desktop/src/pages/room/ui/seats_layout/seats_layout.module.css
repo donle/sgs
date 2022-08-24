@@ -34,3 +34,19 @@
     flex: auto;
     justify-content: center;
 }
+.playerCard {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.observeButton {
+    position: absolute;
+    top: 0;
+    display: none;
+}
+
+.playerCard:hover .observeButton {
+    display: inherit;
+}

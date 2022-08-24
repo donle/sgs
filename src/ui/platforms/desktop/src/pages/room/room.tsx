@@ -5,6 +5,7 @@ import { Sanguosha } from 'core/game/engine';
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomMode } from 'core/shares/types/room_props';
@@ -315,7 +316,17 @@ export class RoomPage extends React.Component<
   @mobx.action
   private readonly onSwitchSideBoard = () => (this.renderSideBoard = !this.renderSideBoard);
 
+  private readonly onChangeObserver = (player: Player) => {
+    this.socket.notify(GameEventIdentifiers.ObserverRequestChangeEvent, { observerId: this.playerId, toObserverId: player.Id });
+
+    this.presenter.setupClientPlayerId(player.Id);
+    this.props.translator.setupPlayer(player);
+    this.presenter.broadcastUIUpdate();
+  };
+
   render() {
+    const observerMode = this.roomMode === RoomMode.Observer;
+
     return (
       <div className={styles.room}>
         <Background imageLoader={this.props.imageLoader} />
@@ -346,6 +357,8 @@ export class RoomPage extends React.Component<
                 translator={this.props.translator}
                 onClick={this.store.onClickPlayer}
                 playerSelectableMatcher={this.store.playersSelectionMatcher}
+                onRequestView={this.onChangeObserver}
+                observerMode={observerMode}
               />
               {this.renderSideBoard && (
                 <div className={styles.sideBoard}>
@@ -355,7 +368,7 @@ export class RoomPage extends React.Component<
                     presenter={this.presenter}
                     translator={this.props.translator}
                     connectionService={this.connectionService}
-                    replayOrObserverMode={this.roomMode === RoomMode.Observer}
+                    replayOrObserverMode={observerMode}
                   />
                 </div>
               )}
@@ -381,7 +394,7 @@ export class RoomPage extends React.Component<
               playerSelectableMatcher={this.store.playersSelectionMatcher}
               onClickSkill={this.store.onClickSkill}
               isSkillDisabled={this.store.isSkillDisabled}
-              observerMode={this.roomMode === RoomMode.Observer}
+              observerMode={observerMode}
             />
           </div>
         )}

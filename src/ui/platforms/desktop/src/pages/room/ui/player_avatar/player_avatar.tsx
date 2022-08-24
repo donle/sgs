@@ -14,6 +14,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter } from 'pages/room/room.presenter';
 import { RoomStore } from 'pages/room/room.store';
+import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { NationalityBadge } from 'ui/badge/badge';
@@ -61,11 +62,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   @mobx.observable.ref
   private skinName: string;
   @mobx.observable.ref
-  mainImage: string | undefined;
+  mainImage: ImageProps | undefined;
   @mobx.observable.ref
-  newMainImage: string | undefined;
+  newMainImage: ImageProps | undefined;
   @mobx.observable.ref
-  sideImage: string | undefined;
+  sideImage: ImageProps | undefined;
   @mobx.observable.ref
   autoHidePlayerName: boolean = true;
   @mobx.observable.ref
@@ -332,26 +333,26 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         ));
   }
 
-  @mobx.action
   async updateMainImage() {
     if (
       this.props.presenter.ClientPlayer &&
       this.props.presenter.ClientPlayer.CharacterId !== undefined &&
       this.props.skinData
     ) {
-      this.newMainImage = (
-        await this.props.imageLoader.getCharacterSkinPlay(
+      this.props.imageLoader
+        .getCharacterSkinPlay(
           this.props.presenter.ClientPlayer.Character.Name,
           this.props.skinData,
           this.props.presenter.ClientPlayer.Id,
           this.skinName,
         )
-      ).src;
+        .then(imageProps => {
+          this.newMainImage = imageProps;
+        });
     }
   }
 
-  @mobx.action
-  async componentDidUpdate() {
+  private renderCharacterImage() {
     if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
       if (this.props.skinData) {
         this.skinName = getSkinName(
@@ -359,29 +360,41 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           this.props.presenter.ClientPlayer?.Id,
           this.props.skinData,
         ).skinName;
-        this.mainImage = (
-          await this.props.imageLoader.getCharacterSkinPlay(
+
+        this.props.imageLoader
+          .getCharacterSkinPlay(
             this.props.presenter.ClientPlayer.Character.Name,
             this.props.skinData,
             this.props.presenter.ClientPlayer.Id,
             this.skinName,
           )
-        ).src;
+          .then(
+            mobx.action(image => {
+              this.mainImage = image;
+            }),
+          );
       } else {
-        this.mainImage = (
-          await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name)
-        ).src;
+        this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name).then(
+          mobx.action(image => {
+            this.mainImage = image;
+          }),
+        );
       }
 
       const huashenCharacterId = this.props.presenter.ClientPlayer.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-      this.sideImage =
-        huashenCharacter &&
-        (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id))
-          .src;
+      if (huashenCharacter) {
+        this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id).then(
+          mobx.action(image => {
+            this.sideImage = image;
+          }),
+        );
+      }
     }
+  }
 
+  async componentDidUpdate() {
     if (
       this.PlayerImage === undefined &&
       this.props.presenter.ClientPlayer &&
@@ -390,8 +403,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       mobx.runInAction(() => {
         this.PlayerImage = () => (
           <SwitchAvatar
-            mainImage={this.mainImage}
-            sideImage={this.sideImage}
+            mainImage={this.mainImage?.src}
+            sideImage={this.sideImage?.src}
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
               [styles.disabled]:
@@ -432,24 +445,21 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       ).skinName;
     }
     this.updateMainImage();
-    mobx.autorun(() => {
-      if (this.newMainImage !== this.mainImage) {
-        this.PlayerImage = () => (
-          <SwitchAvatar
-            mainImage={this.newMainImage}
-            sideImage={this.sideImage}
-            className={classNames(styles.playerImage, {
-              [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
-              [styles.disabled]:
-                this.props.delight === false
-                  ? false
-                  : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
-                    this.props.disabled,
-            })}
-          />
-        );
-      }
-    });
+    if (this.newMainImage?.src !== this.mainImage?.src) {
+      this.PlayerImage = () => (
+        <SwitchAvatar
+          mainImage={this.newMainImage?.src}
+          sideImage={this.sideImage?.src}
+          className={classNames(styles.playerImage, {
+            [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
+            [styles.disabled]:
+              this.props.delight === false
+                ? false
+                : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) && this.props.disabled,
+          })}
+        />
+      );
+    }
     this.props.presenter.closeViewDialog();
   };
 
@@ -528,6 +538,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
+    if (character && (!this.mainImage || this.mainImage.alt !== character.Name)) {
+      this.renderCharacterImage();
+    }
+
     return (
       <>
         <div

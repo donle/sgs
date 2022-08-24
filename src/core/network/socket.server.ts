@@ -93,6 +93,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
                 content as ClientEventFinder<GameEventIdentifiers.BackToWaitingRoomEvent>,
               );
               break;
+            case GameEventIdentifiers.ObserverRequestChangeEvent:
+              this.onObserverRequestChangingView(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.ObserverRequestChangeEvent>,
+              );
+              break;
             default:
               logger.info('Not implemented active listener', identifier);
           }
@@ -229,6 +236,24 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       content.ignoreNotifiedStatus = true;
       this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
     }
+  }
+
+  private async onObserverRequestChangingView(
+    socket: IOSocketServer.Socket,
+    identifier: GameEventIdentifiers.ObserverRequestChangeEvent,
+    content: ClientEventFinder<GameEventIdentifiers.ObserverRequestChangeEvent>,
+  ) {
+    for (const player of this.room!.Players) {
+      if (this.mapPlayerIdToObservers[player.Id]?.includes(content.observerId)) {
+        this.mapPlayerIdToObservers[player.Id] = this.mapPlayerIdToObservers[player.Id].filter(
+          id => id !== content.observerId,
+        );
+        break;
+      }
+    }
+
+    this.mapPlayerIdToObservers[content.toObserverId] = this.mapPlayerIdToObservers[content.toObserverId] || [];
+    this.mapPlayerIdToObservers[content.toObserverId].push(content.observerId);
   }
 
   private async onPlayerBackingToWaitingRoom(
