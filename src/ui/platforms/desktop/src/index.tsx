@@ -1,5 +1,7 @@
 import { getClientConfig } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
+import { createLogger } from 'core/shares/libs/logger/create';
+import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
@@ -17,6 +19,7 @@ import * as serviceWorker from './serviceWorker';
 
 const mode = (process.env.REACT_APP_DEV_MODE as ClientFlavor) || ClientFlavor.Dev;
 const config = getClientConfig(mode);
+const logger = createLogger(mode === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod);
 
 if (config.flavor !== ClientFlavor.Web) {
   import('./index.module.css');
@@ -40,7 +43,7 @@ getElectronLoader(config.flavor)
   .then(() => {
     ReactDOM.render(
       <MemoryRouter>
-        <App config={config} electronLoader={electronLoader} translator={translator} />
+        <App config={config} electronLoader={electronLoader} translator={translator} logger={logger} />
       </MemoryRouter>,
       document.getElementById('root'),
     );

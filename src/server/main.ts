@@ -15,6 +15,7 @@ import { Player } from 'core/player/player';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
+import { createLogger } from 'core/shares/libs/logger/create';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
@@ -36,7 +37,7 @@ const lobbySocket = SocketIO.listen(server, {
   origins: '*:*',
 });
 server.listen(config.port);
-const logger = new Logger(mode);
+const logger = createLogger(mode);
 
 function createDifferentModeGameProcessor(gameMode: GameMode): GameProcessor {
   logger.debug('game mode is ' + gameMode);
