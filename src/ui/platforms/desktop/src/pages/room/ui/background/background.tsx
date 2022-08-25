@@ -1,12 +1,12 @@
-import { ImageLoader } from 'image_loader/image_loader';
+import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { Picture } from 'ui/picture/picture';
 import styles from './background.module.css';
 
 export type BackgroundProps = {
-  imageLoader: ImageLoader;
+  image: ImageProps;
 };
 
-export const Background = ({ imageLoader }: BackgroundProps) => {
-  return <Picture className={styles.bg} image={imageLoader.getBackgroundImage()} />;
+export const Background = ({ image }: BackgroundProps) => {
+  return <Picture className={styles.bg} image={image} />;
 };

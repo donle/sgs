@@ -222,9 +222,11 @@ export class ReplayRoomPage extends React.Component<
 
   render() {
     const { replayData } = this.props.location.state as { replayData: ReplayDataType };
+    const background = this.props.imageLoader.getBackgroundImage();
+
     return (
       <div className={styles.room}>
-        <Background imageLoader={this.props.imageLoader} />
+        <Background image={background} />
         {this.store.selectorDialog}
 
         <div className={styles.incomingConversation}>{this.store.incomingConversation}</div>

@@ -137,8 +137,19 @@ export class Sanguosha {
   public static getCardByName<T extends Card>(cardName: string): T {
     this.tryToThrowUninitializedError();
 
-    const card = Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
-    return Precondition.exists(card, `Unable to find the card by name: ${cardName}`);
+    let card = Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
+    if (card) {
+      return card;
+    } else {
+      for (const cards of this.uniquCardMaps.values()) {
+        card = cards.find(c => c.Name === cardName) as T | undefined;
+        if (card) {
+          return card;
+        }
+      }
+    }
+
+    throw new Error(`Unable to find the card by name: ${cardName}`);
   }
 
   public static getSkillGeneratedCards<T extends Card = Card>(bySkill: string): T[] {

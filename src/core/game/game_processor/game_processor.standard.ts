@@ -443,6 +443,73 @@ export class StandardGameProcessor extends GameProcessor {
       .push(...cardIds);
   }
 
+  public async beforeGameBeginPreparation() {
+    const human = this.room.Players.filter(player => !player.isSmartAI());
+    const allChangeCardActions: (() => Promise<void>)[] = [];
+
+    this.room.doNotify(
+      human.map(player => player.Id),
+      this.room.WaitingRoomInfo.roomInfo.playingTimeLimit,
+    );
+
+    for (const player of human) {
+      const fortuneCardUse: ServerEventFinder<GameEventIdentifiers.AskForFortuneCardExchangeEvent> = {
+        conversation: 'do you wanna change your handcards?',
+      };
+
+      allChangeCardActions.push(
+        async (): Promise<void> => {
+          let changeLimit = this.room.WaitingRoomInfo.roomInfo.fortuneCardsExchangeLimit || 0;
+          while (changeLimit-- > 0) {
+            this.room.notify(GameEventIdentifiers.AskForFortuneCardExchangeEvent, fortuneCardUse, player.Id);
+            const resp = await this.room.onReceivingAsyncResponseFrom(
+              GameEventIdentifiers.AskForFortuneCardExchangeEvent,
+              player.Id,
+            );
+
+            const { doChange } = resp;
+            if (!doChange) {
+              return;
+            }
+
+            const handCards = player.getCardIds(PlayerCardsArea.HandArea).slice();
+            const handCardsNum = handCards.length;
+            player.dropCards(...handCards);
+            this.room.bury(...handCards);
+
+            const newCardIds = this.room.getCards(handCardsNum, 'top');
+            player.obtainCardIds(...newCardIds);
+
+            this.room.notify(
+              GameEventIdentifiers.MoveCardEvent,
+              {
+                infos: [
+                  {
+                    moveReason: CardMoveReason.PlaceToDropStack,
+                    toArea: CardMoveArea.DropStack,
+                    fromId: player.Id,
+                    movingCards: handCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
+                  },
+                  {
+                    moveReason: CardMoveReason.CardDraw,
+                    toArea: CardMoveArea.HandArea,
+                    toId: player.Id,
+                    movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+                  },
+                ],
+                ignoreNotifiedStatus: true,
+              },
+              player.Id,
+            );
+          }
+        },
+      );
+    }
+
+    await Promise.all(allChangeCardActions.map(caller => caller()));
+    this.room.shuffle();
+  }
+
   public async gameStart(room: ServerRoom, selectableCharacters: Character[], setSelectedCharacters: () => void) {
     this.room = room;
 

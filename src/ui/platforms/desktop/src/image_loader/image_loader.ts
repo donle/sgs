@@ -51,6 +51,7 @@ export interface ImageLoader {
   getGameModeIcon(mode: GameMode): ImageProps;
   getRandomLobbyIllustration(): ImageProps;
   getLobbyBackgroundImage(): ImageProps;
+  getWaitingRoomBackgroundImage(): ImageProps;
   getLobbyButtonImage(buttonVariant: LobbyButton): ImageProps;
   getCreateRoomButtonImage(): ImageProps;
   getRoomListBackgroundImage(): ImageProps;

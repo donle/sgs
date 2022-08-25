@@ -317,7 +317,10 @@ export class RoomPage extends React.Component<
   private readonly onSwitchSideBoard = () => (this.renderSideBoard = !this.renderSideBoard);
 
   private readonly onChangeObserver = (player: Player) => {
-    this.socket.notify(GameEventIdentifiers.ObserverRequestChangeEvent, { observerId: this.playerId, toObserverId: player.Id });
+    this.socket.notify(GameEventIdentifiers.ObserverRequestChangeEvent, {
+      observerId: this.playerId,
+      toObserverId: player.Id,
+    });
 
     this.presenter.setupClientPlayerId(player.Id);
     this.props.translator.setupPlayer(player);
@@ -326,10 +329,11 @@ export class RoomPage extends React.Component<
 
   render() {
     const observerMode = this.roomMode === RoomMode.Observer;
+    const background = this.props.imageLoader.getBackgroundImage();
 
     return (
       <div className={styles.room}>
-        <Background imageLoader={this.props.imageLoader} />
+        <Background image={background} />
         {this.store.selectorDialog}
         {this.store.selectorViewDialog}
 

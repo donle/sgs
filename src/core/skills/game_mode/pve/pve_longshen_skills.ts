@@ -166,9 +166,7 @@ export class PveLongShenQiFuReward extends ActiveSkill {
         toId: event.fromId,
         byHuaShen: true,
         triggeredBySkills: [this.Name],
-        translationsMessage: TranslationPack.translationJsonPatcher(
-          'Please choose a character for get a skill',
-        ).extract(),
+        conversation: 'Please choose a character to get a skill',
       },
       event.fromId,
     );

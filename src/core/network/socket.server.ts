@@ -363,7 +363,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       this.broadcast(GameEventIdentifiers.ObserverEnterEvent, {
         joiningPlayerName: event.playerName,
         joiningPlayerId: event.playerId,
-        roomInfo: room.getRoomShortcurInfo(),
+        roomInfo: room.getRoomShortcutInfo(),
         playersInfo: room.Players.map(p => p.getPlayerShortcutInfo()),
         gameInfo: room.Info,
         translationsMessage: TranslationPack.translationJsonPatcher(

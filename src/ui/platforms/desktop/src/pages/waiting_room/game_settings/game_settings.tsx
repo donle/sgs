@@ -28,6 +28,7 @@ export type GameSettingsProps = {
   presenter: WaitingRoomPresenter;
   store: WaitingRoomStore;
   className?: string;
+  campaignSettings?: boolean;
   onSave(): void;
 };
 
@@ -189,23 +190,27 @@ export class GameSettings extends React.Component<GameSettingsProps> {
   render() {
     return (
       <div className={classNames(styles.container, this.props.className)}>
-        <div className={styles.settingsLabel}>
-          <CheckBoxGroup
-            head={this.translationMessage.gameMode()}
-            options={this.getGameModeOptions}
-            onChecked={this.onCheckedGameMode}
-            excludeSelection={true}
-          />
-        </div>
-        {this.props.store.gameSettings.gameMode === GameMode.Pve && (
-          <div className={styles.settingsLabel}>
-            <CheckBoxGroup
-              head={this.translationMessage.pveModeSelection()}
-              options={this.pvePlayersOptions}
-              onChecked={this.onCheckedPveSpecifiedGameMode}
-              excludeSelection={true}
-            />
-          </div>
+        {!this.props.campaignSettings && (
+          <>
+            <div className={styles.settingsLabel}>
+              <CheckBoxGroup
+                head={this.translationMessage.gameMode()}
+                options={this.getGameModeOptions}
+                onChecked={this.onCheckedGameMode}
+                excludeSelection={true}
+              />
+            </div>
+            {this.props.store.gameSettings.gameMode === GameMode.Pve && (
+              <div className={styles.settingsLabel}>
+                <CheckBoxGroup
+                  head={this.translationMessage.pveModeSelection()}
+                  options={this.pvePlayersOptions}
+                  onChecked={this.onCheckedPveSpecifiedGameMode}
+                  excludeSelection={true}
+                />
+              </div>
+            )}
+          </>
         )}
         <div className={styles.settingsLabel}>
           <CheckBoxGroup
@@ -251,6 +256,21 @@ export class GameSettings extends React.Component<GameSettingsProps> {
                 min={15}
                 max={300}
                 suffix={this.translationMessage.second()}
+              />
+            </div>
+            <div>
+              <Text className={styles.inputTitle} color="white" variant="semiBold" bottomSpacing={Spacing.Spacing_8}>
+                {this.translationMessage.fortuneCardExchangeLimit()}
+              </Text>
+              <Input
+                type="number"
+                value={this.props.store.gameSettings.fortuneCardsExchangeLimit?.toString()}
+                onChange={this.onChangeGameSettings('fortuneCardsExchangeLimit')}
+                disabled={!this.props.controlable}
+                transparency={0.3}
+                min={0}
+                max={3}
+                suffix={this.translationMessage.times()}
               />
             </div>
             <div>

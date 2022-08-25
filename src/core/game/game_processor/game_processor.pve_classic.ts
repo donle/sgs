@@ -52,49 +52,6 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     }
   }
 
-  async beforeGameBeginPreparation() {
-    const human = this.room.Players.filter(player => !player.isSmartAI());
-    for (const player of human) {
-      const dropCards: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-        fromArea: [PlayerCardsArea.HandArea],
-        cardAmount: [0, player.getCardIds(PlayerCardsArea.HandArea).length],
-        toId: player.Id,
-      };
-
-      this.room.notify(GameEventIdentifiers.AskForCardDropEvent, dropCards, player.Id);
-      this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, player.Id).then(resp => {
-        const { droppedCards } = resp;
-        const newCardIds = this.room.getCards(droppedCards.length, 'top');
-        player.dropCards(...droppedCards);
-        player.obtainCardIds(...newCardIds);
-
-        this.room.notify(
-          GameEventIdentifiers.MoveCardEvent,
-          {
-            infos: [
-              {
-                moveReason: CardMoveReason.CardDraw,
-                toArea: CardMoveArea.HandArea,
-                toId: player.Id,
-                movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-              },
-              {
-                moveReason: CardMoveReason.PlaceToDrawStack,
-                toArea: CardMoveArea.DrawStack,
-                fromId: player.Id,
-                movingCards: droppedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
-              },
-            ],
-          },
-          player.Id,
-        );
-      });
-    }
-
-    // await Promise.all(sequenceAsyncResp);
-    // this.room.shuffle();
-  }
-
   protected async beforeGameStartPreparation() {
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       this.room.obtainSkill(player.Id, PveClassicAi.Name),
@@ -231,9 +188,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           characterIds: candidateCharacters,
           toId: player.Id,
           byHuaShen: true,
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            'Please choose a character for get a skill',
-          ).extract(),
+          conversation: 'Please choose a character to get a skill',
           ignoreNotifiedStatus: true,
         },
         player.Id,

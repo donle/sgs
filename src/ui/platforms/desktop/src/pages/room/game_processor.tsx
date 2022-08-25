@@ -327,6 +327,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForChoosingCardWithConditionsEvent:
         await this.onHandleAskForChoosingCardWithConditionsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForFortuneCardExchangeEvent:
+        await this.onHandleAskForFortuneCardExchangeEvent(e as any, content);
+        break;
       case GameEventIdentifiers.AimEvent:
         await this.onHandleAimEvent(e as any, content);
         break;
@@ -1114,8 +1117,13 @@ export class GameClientProcessor {
       };
 
       this.store.room.broadcast(type, response);
+      this.presenter.closeIncomingConversation();
       this.presenter.broadcastUIUpdate();
     });
+
+    if (content.conversation) {
+      this.presenter.createIncomingConversation({ conversation: content.conversation, translator: this.translator });
+    }
 
     this.presenter.createDialog(
       <CharacterSelectorDialog
@@ -1143,6 +1151,39 @@ export class GameClientProcessor {
     const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(SkillUseAction.isSkillDisabled(content));
     await action.onSelect(this.translator);
+  }
+
+  protected async onHandleAskForFortuneCardExchangeEvent<T extends GameEventIdentifiers.AskForFortuneCardExchangeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    if (this.isObserver) {
+      return;
+    }
+
+    this.presenter.defineConfirmButtonActions(() => {
+      const response: ClientEventFinder<T> = {
+        doChange: true,
+        fromId: this.store.clientPlayerId,
+      };
+      this.store.room.broadcast(type, response);
+      this.presenter.closeIncomingConversation();
+    });
+    this.presenter.defineCancelButtonActions(() => {
+      const response: ClientEventFinder<T> = {
+        doChange: false,
+        fromId: this.store.clientPlayerId,
+      };
+      this.store.room.broadcast(type, response);
+      this.presenter.closeIncomingConversation();
+    });
+
+    this.presenter.enableActionButton('confirm', 'cancel');
+    this.presenter.createIncomingConversation({
+      conversation: content.conversation,
+      translator: this.translator,
+    });
+    this.presenter.broadcastUIUpdate();
   }
 
   protected onHandlePhaseStageChangeEvent<T extends GameEventIdentifiers.PhaseStageChangeEvent>(

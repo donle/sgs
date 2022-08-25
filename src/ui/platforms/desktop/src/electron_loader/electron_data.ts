@@ -8,6 +8,7 @@ export const enum ElectronData {
   RoomSettingsAllowObserver = 'RoomSettingsAllowObserver',
   RoomSettingsPlayTime = 'RoomSettingsPlayTime',
   RoomSettingsWuxiekejiTime = 'RoomSettingsWuxiekejiTime',
+  RoomSettingsFortuneCardsExchangeTime = 'RoomSettingsFortuneCardsExchangeTime',
   RoomSettingsCharacterExtensions = 'RoomSettingsCharacterExtensions',
   RoomSettingsCardExtensions = 'RoomSettingsCardExtensions',
   RoomSettingsGameMode = 'RoomSettingsGameMode',

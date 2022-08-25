@@ -730,7 +730,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     };
   }
 
-  public getRoomShortcurInfo(): RoomShortcutInfo {
+  public getRoomShortcutInfo(): RoomShortcutInfo {
     const info = this.getRoomInfo();
     return {
       ...info,

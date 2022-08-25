@@ -12,6 +12,7 @@ import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { Background } from 'pages/room/ui/background/background';
 import { SettingsDialog } from 'pages/ui/settings/settings';
 import { ServerHostTag } from 'props/config_props';
 import { LobbyButton } from 'props/game_props';
@@ -426,7 +427,7 @@ export class Lobby extends React.Component<LobbyProps> {
   render() {
     return (
       <div className={styles.lobby}>
-        <Picture image={this.backgroundImage} className={styles.background} />
+        <Background image={this.backgroundImage} />
         <div className={styles.board}>
           <div className={styles.functionBoard}>
             <div className={styles.illustration}>
