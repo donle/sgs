@@ -6,7 +6,6 @@ import {
   CardMoveArea,
   CardMovedBySpecifiedReason,
   CardMoveReason,
-  clientAsyncEvents,
   ClientEventFinder,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -179,7 +178,7 @@ export class GameClientProcessor {
   }
 
   private clearDialogs(e: GameEventIdentifiers) {
-    if (!clientAsyncEvents.includes(e)) {
+    if (serverResponsiveListenerEvents.includes(e)) {
       this.presenter.closeIncomingConversation();
       this.presenter.closeDialog();
     }
@@ -1176,6 +1175,7 @@ export class GameClientProcessor {
       };
       this.store.room.broadcast(type, response);
       this.presenter.closeIncomingConversation();
+      this.endAction();
     });
 
     this.presenter.enableActionButton('confirm', 'cancel');

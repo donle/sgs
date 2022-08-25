@@ -449,12 +449,13 @@ export class StandardGameProcessor extends GameProcessor {
 
     this.room.doNotify(
       human.map(player => player.Id),
-      this.room.WaitingRoomInfo.roomInfo.playingTimeLimit,
+      TimeLimitVariant.PlayPhase,
     );
 
     for (const player of human) {
       const fortuneCardUse: ServerEventFinder<GameEventIdentifiers.AskForFortuneCardExchangeEvent> = {
         conversation: 'do you wanna change your handcards?',
+        ignoreNotifiedStatus: true,
       };
 
       allChangeCardActions.push(
@@ -480,27 +481,25 @@ export class StandardGameProcessor extends GameProcessor {
             const newCardIds = this.room.getCards(handCardsNum, 'top');
             player.obtainCardIds(...newCardIds);
 
-            this.room.notify(
-              GameEventIdentifiers.MoveCardEvent,
-              {
-                infos: [
-                  {
-                    moveReason: CardMoveReason.PlaceToDropStack,
-                    toArea: CardMoveArea.DropStack,
-                    fromId: player.Id,
-                    movingCards: handCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
-                  },
-                  {
-                    moveReason: CardMoveReason.CardDraw,
-                    toArea: CardMoveArea.HandArea,
-                    toId: player.Id,
-                    movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-                  },
-                ],
-                ignoreNotifiedStatus: true,
-              },
-              player.Id,
-            );
+            this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
+              infos: [
+                {
+                  moveReason: CardMoveReason.PlaceToDropStack,
+                  toArea: CardMoveArea.DropStack,
+                  fromId: player.Id,
+                  movingCards: handCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
+                  engagedPlayerIds: [player.Id],
+                },
+                {
+                  moveReason: CardMoveReason.CardDraw,
+                  toArea: CardMoveArea.HandArea,
+                  toId: player.Id,
+                  movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+                  engagedPlayerIds: [player.Id],
+                },
+              ],
+              ignoreNotifiedStatus: true,
+            });
           }
         },
       );
