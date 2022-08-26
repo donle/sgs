@@ -795,4 +795,5 @@ export const UiDictionary: Word[] = [
   { source: 'do you wanna change your handcards?', target: '是否使用手氣卡？' },
   { source: 'fortune card exchange limit', target: '手氣卡次數' },
   { source: 'times', target: '次' },
+  { source: 'free to choose characters', target: '自由選將' },
 ];

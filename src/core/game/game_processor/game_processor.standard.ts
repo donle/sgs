@@ -207,7 +207,9 @@ export class StandardGameProcessor extends GameProcessor {
     selected: CharacterId[],
     filter?: (characer: Character) => boolean,
   ) {
-    if (this.room.Flavor === Flavor.Dev) {
+    const canChooseAllCharacters =
+      this.room.Flavor === Flavor.Dev || (this.room.GameInfo.campaignMode && this.room.GameInfo.allowAllCharacters);
+    if (canChooseAllCharacters) {
       return Sanguosha.getAllCharacters();
     } else {
       return Sanguosha.getRandomCharacters(selectable, selectableCharacters, selected, filter);
@@ -444,6 +446,10 @@ export class StandardGameProcessor extends GameProcessor {
   }
 
   public async beforeGameBeginPreparation() {
+    if (!this.room.WaitingRoomInfo.roomInfo.fortuneCardsExchangeLimit) {
+      return;
+    }
+
     const human = this.room.Players.filter(player => !player.isSmartAI());
     const allChangeCardActions: (() => Promise<void>)[] = [];
 

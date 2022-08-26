@@ -7,4 +7,5 @@ export const Messages = {
   enterRoomName: () => 'please enter your room name',
   enterRoomPassword: () => 'please enter your room passcode',
   enterPlayersNumber: () => 'please choose number of players',
+  allowAllCharacters: () => 'free to choose characters',
 };

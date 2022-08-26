@@ -54,6 +54,7 @@ export type GameInfo = {
   wuxiekejiTimeLimit?: number;
   fortuneCardsExchangeLimit?: number;
   allowObserver?: boolean;
+  allowAllCharacters?: boolean;
   campaignMode: boolean;
   flavor: Flavor;
   gameMode: GameMode;
@@ -72,6 +73,7 @@ export type TemporaryRoomCreationInfo = {
   wuxiekejiTimeLimit?: number;
   fortuneCardsExchangeLimit?: number;
   allowObserver?: boolean;
+  allowAllCharacters?: boolean;
   cardExtensions: GameCardExtensions[];
   characterExtensions: GameCharacterExtensions[];
   coreVersion: string;

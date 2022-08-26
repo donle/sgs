@@ -13,4 +13,5 @@ export const enum ElectronData {
   RoomSettingsCardExtensions = 'RoomSettingsCardExtensions',
   RoomSettingsGameMode = 'RoomSettingsGameMode',
   RoomSettingsDisabledCharacters = 'RoomSettingsDisabledCharacters',
+  RoomSettingsCampaignModeAllowAllCharacters = 'RoomSettingsCampaignModeAllowAllCharacters',
 }

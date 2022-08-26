@@ -2322,6 +2322,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return this.flavor;
   }
 
+  public get GameInfo() {
+    return this.gameInfo;
+  }
+
   public get WaitingRoomInfo() {
     return this.waitingRoomInfo;
   }

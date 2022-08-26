@@ -11,6 +11,7 @@ import * as mobx from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
+import { CheckBox } from 'ui/check_box/check_box';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Dialog } from 'ui/dialog/dialog';
 import { Picture } from 'ui/picture/picture';
@@ -35,6 +36,9 @@ export class CreateRoomDialog extends React.Component<{
   private roomName = this.username
     ? this.props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", this.username).extract())
     : '';
+  @mobx.observable.ref
+  private allowAllCharacters: boolean =
+    this.props.electronLoader.getData(ElectronData.RoomSettingsCampaignModeAllowAllCharacters) || false;
 
   @mobx.observable.deep
   private gameModeOptions = [
@@ -78,6 +82,7 @@ export class CreateRoomDialog extends React.Component<{
         fortuneCardsExchangeLimit:
           this.props.electronLoader.getData(ElectronData.RoomSettingsFortuneCardsExchangeTime) || 0,
         excludedCharacters: this.props.electronLoader.getData(ElectronData.RoomSettingsDisabledCharacters) || [],
+        allowAllCharacters: this.allowAllCharacters,
       },
       this.roomName,
       this.passcode,
@@ -96,6 +101,12 @@ export class CreateRoomDialog extends React.Component<{
   @mobx.action
   onNumberOfPlayersChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.numberOfPlayers = parseInt(event.target.value, 10);
+  };
+
+  @mobx.action
+  private readonly onCheckingAllCharacter = (checked: boolean) => {
+    this.allowAllCharacters = checked;
+    this.props.electronLoader.setData(ElectronData.RoomSettingsCampaignModeAllowAllCharacters, checked);
   };
 
   @mobx.action
@@ -158,6 +169,15 @@ export class CreateRoomDialog extends React.Component<{
                   options={this.gameModeOptions}
                   onChecked={this.onGameModeChecked}
                   excludeSelection={true}
+                />
+              </div>
+              <div className={styles.inputField}>
+                <CheckBox
+                  label={props.translator.tr(Messages.allowAllCharacters())}
+                  id="allAllCharacters"
+                  onChecked={this.onCheckingAllCharacter}
+                  checked={this.allowAllCharacters}
+                  disabled={this.gameModeOptions.find(o => o.checked)?.id !== GameMode.Pve}
                 />
               </div>
             </div>
