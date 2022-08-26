@@ -771,7 +771,7 @@ export const UiDictionary: Word[] = [
   { source: 'ready', target: '已準備' },
   { source: 'cancel ready', target: '取消準備' },
   { source: 'get ready', target: '準備' },
-  { source: 'enable observer', target: '允許旁觀(暫無效果)' },
+  { source: 'enable observer', target: '允許旁觀' },
   { source: '{0} time limit', target: '{0}操作時間' },
   { source: 'game mode', target: '遊戲模式' },
   { source: 'character package settings', target: '武將擴充套件包設定' },

@@ -220,6 +220,8 @@ export const serverActiveListenerEvents = [
   GameEventIdentifiers.ObserverRequestChangeEvent,
 ];
 
+export const clientAsyncEvents = [...serverActiveListenerEvents, GameEventIdentifiers.NotifyEvent];
+
 export const serverResponsiveListenerEvents = [
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
