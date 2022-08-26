@@ -5,7 +5,6 @@ import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
-import { Background } from 'pages/room/ui/background/background';
 import { Banner } from 'pages/room/ui/banner/banner';
 import { SettingsDialog } from 'pages/ui/settings/settings';
 import { ServerHostTag } from 'props/config_props';
@@ -66,8 +65,6 @@ export class HeaderBar extends React.Component<HeaderBarProps> {
   render() {
     return (
       <>
-        <Background imageLoader={this.props.imageLoader} />
-
         <Banner
           variant={this.props.variant}
           translator={this.props.translator}

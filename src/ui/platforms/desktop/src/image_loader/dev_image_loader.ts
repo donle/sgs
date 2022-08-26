@@ -83,6 +83,10 @@ export class DevImageLoader implements ImageLoader {
     return { alt: '', src: 'https://s1.ax1x.com/2020/06/20/NM7tQs.jpg' };
   }
 
+  public getWaitingRoomBackgroundImage() {
+    return { alt: '', src: `${cosRepo}/images/system/waiting_room_background.jpg` };
+  }
+
   public getEmptySeatImage() {
     return { src: `${cosRepo}/images/system/empty_seat.png`, alt: '' };
   }

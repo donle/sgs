@@ -28,6 +28,7 @@ export type GameSettingsProps = {
   presenter: WaitingRoomPresenter;
   store: WaitingRoomStore;
   className?: string;
+  campaignSettings?: boolean;
   onSave(): void;
 };
 
@@ -35,6 +36,7 @@ export type GameSettingsProps = {
 export class GameSettings extends React.Component<GameSettingsProps> {
   private translationMessage = createTranslationMessages(this.props.translator);
   private inputDebounceTimer: NodeJS.Timer | undefined;
+  private passwordInputDebounceTimer: NodeJS.Timer | undefined;
   private searchContentElementRef = React.createRef<HTMLDivElement>();
 
   @mobx.observable.ref
@@ -119,6 +121,18 @@ export class GameSettings extends React.Component<GameSettingsProps> {
     };
   }
 
+  private readonly onChangePassword = (password: string) => {
+    this.passwordInputDebounceTimer = setTimeout(() => {
+      this.props.presenter.updateGameSettings(this.props.store, {
+        ...this.props.store.gameSettings,
+        passcode: password || '',
+      });
+      this.props.onSave();
+
+      this.passwordInputDebounceTimer = undefined;
+    }, 1000);
+  };
+
   private readonly onCheckedGameMode = (checkedIds: GameMode[]) => {
     this.props.presenter.updateGameSettings(this.props.store, {
       ...this.props.store.gameSettings,
@@ -189,23 +203,27 @@ export class GameSettings extends React.Component<GameSettingsProps> {
   render() {
     return (
       <div className={classNames(styles.container, this.props.className)}>
-        <div className={styles.settingsLabel}>
-          <CheckBoxGroup
-            head={this.translationMessage.gameMode()}
-            options={this.getGameModeOptions}
-            onChecked={this.onCheckedGameMode}
-            excludeSelection={true}
-          />
-        </div>
-        {this.props.store.gameSettings.gameMode === GameMode.Pve && (
-          <div className={styles.settingsLabel}>
-            <CheckBoxGroup
-              head={this.translationMessage.pveModeSelection()}
-              options={this.pvePlayersOptions}
-              onChecked={this.onCheckedPveSpecifiedGameMode}
-              excludeSelection={true}
-            />
-          </div>
+        {!this.props.campaignSettings && (
+          <>
+            <div className={styles.settingsLabel}>
+              <CheckBoxGroup
+                head={this.translationMessage.gameMode()}
+                options={this.getGameModeOptions}
+                onChecked={this.onCheckedGameMode}
+                excludeSelection={true}
+              />
+            </div>
+            {this.props.store.gameSettings.gameMode === GameMode.Pve && (
+              <div className={styles.settingsLabel}>
+                <CheckBoxGroup
+                  head={this.translationMessage.pveModeSelection()}
+                  options={this.pvePlayersOptions}
+                  onChecked={this.onCheckedPveSpecifiedGameMode}
+                  excludeSelection={true}
+                />
+              </div>
+            )}
+          </>
         )}
         <div className={styles.settingsLabel}>
           <CheckBoxGroup
@@ -230,7 +248,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
             </Text>
             <Input
               value={this.props.store.gameSettings.passcode}
-              onChange={this.onChangeGameSettings('passcode')}
+              onChange={this.onChangePassword}
               disabled={!this.props.controlable}
               transparency={0.3}
               min={5}
@@ -268,6 +286,21 @@ export class GameSettings extends React.Component<GameSettingsProps> {
                 suffix={this.translationMessage.second()}
               />
             </div>
+          </div>
+          <div>
+            <Text className={styles.inputTitle} color="white" variant="semiBold" bottomSpacing={Spacing.Spacing_8}>
+              {this.translationMessage.fortuneCardExchangeLimit()}
+            </Text>
+            <Input
+              type="number"
+              value={this.props.store.gameSettings.fortuneCardsExchangeLimit?.toString()}
+              onChange={this.onChangeGameSettings('fortuneCardsExchangeLimit')}
+              disabled={!this.props.controlable}
+              transparency={0.3}
+              min={0}
+              max={3}
+              suffix={this.translationMessage.times()}
+            />
           </div>
         </div>
         <div className={styles.settingsLabel} ref={this.searchContentElementRef}>

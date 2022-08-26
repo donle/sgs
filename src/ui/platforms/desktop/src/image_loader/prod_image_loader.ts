@@ -31,6 +31,7 @@ import feedbackImage from './images/system/feedback.png';
 import gameLogBoardImage from './images/system/game_log_board.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
+import waitingRoomBackgroundImage from './images/system/waiting_room_background.jpg';
 
 import illustraion1 from './images/lobby/illustration1.png';
 import illustraion2 from './images/lobby/illustration2.png';
@@ -208,6 +209,9 @@ export class ProdImageLoader implements ImageLoader {
   }
   public getLobbyButtonImage(buttonVariant: LobbyButton) {
     return { src: getLobbyButtonImage(buttonVariant), alt: '' };
+  }
+  public getWaitingRoomBackgroundImage() {
+    return { src: waitingRoomBackgroundImage, alt: '' };
   }
   public getCreateRoomButtonImage() {
     return { src: createRoomImage, alt: '' };

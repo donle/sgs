@@ -190,6 +190,10 @@ export interface ClientEvent extends EventUtilities {
     selectedCards: CardId[];
     fromId: PlayerId;
   };
+  [GameEventIdentifiers.AskForFortuneCardExchangeEvent]: {
+    doChange: boolean;
+    fromId: PlayerId;
+  };
   [GameEventIdentifiers.PlayerStatusEvent]: {
     status: 'online' | 'offline' | 'quit' | 'trusted' | 'player';
     toId: PlayerId;
@@ -205,10 +209,6 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.BackToWaitingRoomEvent]: {
     playerId: PlayerId;
     playerName: string;
-  };
-  [GameEventIdentifiers.AskForChangeInitCardEvent]: {
-    fromId: PlayerId;
-    cardIds?: CardId[];
   };
 }
 

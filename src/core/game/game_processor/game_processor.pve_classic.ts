@@ -52,75 +52,6 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     }
   }
 
-  async beforeGameBeginPreparation() {
-    // const human = this.room.Players.filter(player => !player.isSmartAI());
-    // for (const toId of human.map(player => player.Id)) {
-    //   const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
-    //   this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
-    //   const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId);
-    //   const cardIds = resp.cardIds;
-    //   if (cardIds !== undefined) {
-    //     const newCardIds = this.room.getCards(cardIds.length, 'top');
-    //     await this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId);
-    //     this.room.notify(
-    //       GameEventIdentifiers.MoveCardEvent,
-    //       {
-    //         infos: [
-    //           {
-    //             moveReason: CardMoveReason.CardDraw,
-    //             movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-    //             toArea: CardMoveArea.HandArea,
-    //             toId,
-    //           },
-    //         ],
-    //       },
-    //       toId,
-    //     );
-    //     this.room
-    //       .getPlayerById(toId)
-    //       .getCardIds(PlayerCardsArea.HandArea)
-    //       .push(...newCardIds);
-    //   }
-    // }
-    // const sequenceAsyncResp: Promise<void>[] = [];
-    // for (const toId of this.human.map(player => player.Id)) {
-    //   const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
-    //   this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
-    //   const asyncResp = this.room
-    //     .onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId)
-    //     .then(resp => {
-    //       const cardIds = resp.cardIds;
-    //       const toId = resp.fromId;
-    //       if (cardIds !== undefined) {
-    //         const newCardIds = this.room.getCards(cardIds.length, 'top');
-    //         this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId).then(() => {
-    //           this.room.notify(
-    //             GameEventIdentifiers.MoveCardEvent,
-    //             {
-    //               infos: [
-    //                 {
-    //                   moveReason: CardMoveReason.CardDraw,
-    //                   movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-    //                   toArea: CardMoveArea.HandArea,
-    //                   toId,
-    //                 },
-    //               ],
-    //             },
-    //             toId,
-    //           );
-    //           this.room
-    //             .getPlayerById(toId)
-    //             .getCardIds(PlayerCardsArea.HandArea)
-    //             .push(...newCardIds);
-    //         });
-    //       }
-    //     });
-    //   sequenceAsyncResp.push(asyncResp);
-    // }
-    // await Promise.all(sequenceAsyncResp);
-    // this.room.shuffle();
-  }
-
   protected async beforeGameStartPreparation() {
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       this.room.obtainSkill(player.Id, PveClassicAi.Name),
@@ -257,9 +188,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           characterIds: candidateCharacters,
           toId: player.Id,
           byHuaShen: true,
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            'Please choose a character for get a skill',
-          ).extract(),
+          conversation: 'Please choose a character to get a skill',
           ignoreNotifiedStatus: true,
         },
         player.Id,

@@ -19,6 +19,17 @@ export const Input = (props: InputProps) => {
   const { className, onChange, value, placeholder, type, min, max, suffix, disabled, transparency } = props;
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (props.type === 'number') {
+      const value = parseInt(event.target.value, 10);
+      if (isNaN(value)) {
+        onChange?.(props.min ? props.min.toString() : '0');
+      } else if (props.min && value < props.min) {
+        onChange?.(props.min.toString());
+      } else if (props.max && value > props.max) {
+        onChange?.(props.max.toString());
+      }
+    }
+
     onChange?.(event.target.value);
   };
 

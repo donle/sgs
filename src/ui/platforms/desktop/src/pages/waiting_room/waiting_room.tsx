@@ -196,7 +196,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
 
     return (
       <div className={styles.waitingRoom}>
-        <Background imageLoader={this.props.imageLoader} />
+        <Background image={this.props.imageLoader.getWaitingRoomBackgroundImage()} />
         <HeaderBar
           {...props}
           isCampaignMode={false}

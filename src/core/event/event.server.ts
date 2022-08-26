@@ -225,6 +225,9 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.GameBeginEvent]: {};
   [GameEventIdentifiers.CircleStartEvent]: {};
   [GameEventIdentifiers.LevelBeginEvent]: {};
+  [GameEventIdentifiers.AskForFortuneCardExchangeEvent]: {
+    conversation: string | PatchedTranslationObject;
+  };
   [GameEventIdentifiers.GameOverEvent]: {
     loserIds: PlayerId[];
     winnerIds: PlayerId[];
@@ -363,6 +366,7 @@ export interface ServerEvent extends EventUtilities {
     amount: number;
     characterIds: CharacterId[];
     toId: PlayerId;
+    conversation?: string | PatchedTranslationObject;
     byHuaShen?: boolean;
   };
   [GameEventIdentifiers.AskForChoosingOptionsEvent]: {
@@ -518,9 +522,6 @@ export interface ServerEvent extends EventUtilities {
     playerName: string;
     roomInfo: TemporaryRoomCreationInfo;
     roomId: RoomId;
-  };
-  [GameEventIdentifiers.AskForChangeInitCardEvent]: {
-    toId: PlayerId;
   };
 }
 

@@ -75,6 +75,8 @@ export class CreateRoomDialog extends React.Component<{
         allowObserver: this.props.electronLoader.getData(ElectronData.RoomSettingsAllowObserver) || false,
         playingTimeLimit: this.props.electronLoader.getData(ElectronData.RoomSettingsPlayTime) || 60,
         wuxiekejiTimeLimit: this.props.electronLoader.getData(ElectronData.RoomSettingsWuxiekejiTime) || 15,
+        fortuneCardsExchangeLimit:
+          this.props.electronLoader.getData(ElectronData.RoomSettingsFortuneCardsExchangeTime) || 0,
         excludedCharacters: this.props.electronLoader.getData(ElectronData.RoomSettingsDisabledCharacters) || [],
       },
       this.roomName,

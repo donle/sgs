@@ -14,16 +14,6 @@
 .signalBar {
 }
 
-.background {
-    position: fixed;
-    align-self: center;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
-}
-
 .logo {
     margin-top: calc(gridLine * -8);
     max-width: calc(gridLine * 28);

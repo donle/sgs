@@ -796,4 +796,7 @@ export const UiDictionary: Word[] = [
     source: 'Room running with exceptions, please re-create your room',
     target: '房间出现错误，请退出房间重新创建游戏',
   },
+  { source: 'do you wanna change your handcards?', target: '是否使用手气卡？' },
+  { source: 'fortune card exchange limit', target: '手气卡次数' },
+  { source: 'times', target: '次' },
 ];

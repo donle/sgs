@@ -265,7 +265,7 @@ export const promptDescriptions: Word[] = [
     target: '請選擇一個技能獲得',
   },
   {
-    source: 'Please choose a character for get a skill',
+    source: 'Please choose a character to get a skill',
     target: '請選擇一個武將並獲得其一個技能',
   },
   {

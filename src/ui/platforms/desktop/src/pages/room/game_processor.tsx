@@ -6,7 +6,6 @@ import {
   CardMoveArea,
   CardMovedBySpecifiedReason,
   CardMoveReason,
-  clientAsyncEvents,
   ClientEventFinder,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -33,7 +32,6 @@ import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
 import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
-import { ResponsiveChangeCardAction } from './actions/responsive_change_card_action';
 import { SelectAction } from './actions/select_action';
 import { SkillUseAction } from './actions/skill_use_action';
 import { RoomPresenter } from './room.presenter';
@@ -180,7 +178,7 @@ export class GameClientProcessor {
   }
 
   private clearDialogs(e: GameEventIdentifiers) {
-    if (!clientAsyncEvents.includes(e)) {
+    if (serverResponsiveListenerEvents.includes(e)) {
       this.presenter.closeIncomingConversation();
       this.presenter.closeDialog();
     }
@@ -328,6 +326,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForChoosingCardWithConditionsEvent:
         await this.onHandleAskForChoosingCardWithConditionsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForFortuneCardExchangeEvent:
+        await this.onHandleAskForFortuneCardExchangeEvent(e as any, content);
+        break;
       case GameEventIdentifiers.AimEvent:
         await this.onHandleAimEvent(e as any, content);
         break;
@@ -399,9 +400,6 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.HookUpSkillsEvent:
         await this.onHandleHookUpSkillsEvent(e as any, content);
-        break;
-      case GameEventIdentifiers.AskForChangeInitCardEvent:
-        await this.onHandleAskForChangeInitCardEvent(e as any, content);
         break;
       case GameEventIdentifiers.UnhookSkillsEvent:
         await this.onHandleUnhookSkillsEvent(e as any, content);
@@ -675,15 +673,6 @@ export class GameClientProcessor {
     await action.onPlay(this.translator);
   }
 
-  protected async onHandleAskForChangeInitCardEvent<T extends GameEventIdentifiers.AskForChangeInitCardEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
-    if (this.store.clientPlayerId === content.toId) {
-      const action = new ResponsiveChangeCardAction(this.store.clientPlayerId, this.store, this.presenter);
-      await action.onPlay(this.translator);
-    }
-  }
   protected async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -1127,8 +1116,13 @@ export class GameClientProcessor {
       };
 
       this.store.room.broadcast(type, response);
+      this.presenter.closeIncomingConversation();
       this.presenter.broadcastUIUpdate();
     });
+
+    if (content.conversation) {
+      this.presenter.createIncomingConversation({ conversation: content.conversation, translator: this.translator });
+    }
 
     this.presenter.createDialog(
       <CharacterSelectorDialog
@@ -1156,6 +1150,40 @@ export class GameClientProcessor {
     const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(SkillUseAction.isSkillDisabled(content));
     await action.onSelect(this.translator);
+  }
+
+  protected async onHandleAskForFortuneCardExchangeEvent<T extends GameEventIdentifiers.AskForFortuneCardExchangeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    if (this.isObserver) {
+      return;
+    }
+
+    this.presenter.defineConfirmButtonActions(() => {
+      const response: ClientEventFinder<T> = {
+        doChange: true,
+        fromId: this.store.clientPlayerId,
+      };
+      this.store.room.broadcast(type, response);
+      this.presenter.closeIncomingConversation();
+    });
+    this.presenter.defineCancelButtonActions(() => {
+      const response: ClientEventFinder<T> = {
+        doChange: false,
+        fromId: this.store.clientPlayerId,
+      };
+      this.store.room.broadcast(type, response);
+      this.presenter.closeIncomingConversation();
+      this.endAction();
+    });
+
+    this.presenter.enableActionButton('confirm', 'cancel');
+    this.presenter.createIncomingConversation({
+      conversation: content.conversation,
+      translator: this.translator,
+    });
+    this.presenter.broadcastUIUpdate();
   }
 
   protected onHandlePhaseStageChangeEvent<T extends GameEventIdentifiers.PhaseStageChangeEvent>(

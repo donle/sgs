@@ -52,6 +52,7 @@ export type GameInfo = {
   excludedCharacters: CharacterId[];
   playingTimeLimit?: number;
   wuxiekejiTimeLimit?: number;
+  fortuneCardsExchangeLimit?: number;
   allowObserver?: boolean;
   campaignMode: boolean;
   flavor: Flavor;
@@ -69,6 +70,7 @@ export type TemporaryRoomCreationInfo = {
   excludedCharacters: CharacterId[];
   playingTimeLimit?: number;
   wuxiekejiTimeLimit?: number;
+  fortuneCardsExchangeLimit?: number;
   allowObserver?: boolean;
   cardExtensions: GameCardExtensions[];
   characterExtensions: GameCharacterExtensions[];

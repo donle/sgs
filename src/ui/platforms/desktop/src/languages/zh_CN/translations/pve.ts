@@ -259,7 +259,7 @@ export const eventDictionary: Word[] = [
   },
 
   {
-    source: 'Please choose a character for get a skill',
+    source: 'Please choose a character to get a skill',
     target: '请选择一个武将并获得其一个技能',
   },
 ];
