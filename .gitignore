@@ -15,7 +15,7 @@ UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 
 *.log
-log.txt
+backlog.txt
 npm-debug.log*
 
 /.idea

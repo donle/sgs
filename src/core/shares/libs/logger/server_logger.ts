@@ -25,16 +25,16 @@ export class ServerLogger extends Logger {
     // tslint:disable-next-line: no-console
     console.error(chalk.redBright(...this.translate(args)));
 
-    if (this.mode === Flavor.Prod && !window) {
+    if (this.mode === Flavor.Prod && typeof window === 'undefined') {
       if (this.fileStreamLoader === undefined) {
         this.fileStreamLoader = import('fs');
       }
 
       this.fileStreamLoader.then(fs => {
         if (!fs.existsSync(this.logFileDir)) {
-          fs.writeFileSync(this.logFileDir, `[${new Date().toISOString()}]: ${JSON.stringify(args, null, 2)}\n`);
+          fs.writeFileSync(this.logFileDir, `[${new Date().toISOString()}]: ${JSON.stringify(args)}\n`);
         } else {
-          fs.appendFileSync(this.logFileDir, `[${new Date().toISOString()}]: ${JSON.stringify(args, null, 2)}\n`);
+          fs.appendFileSync(this.logFileDir, `[${new Date().toISOString()}]: ${JSON.stringify(args)}\n`);
         }
       });
     }

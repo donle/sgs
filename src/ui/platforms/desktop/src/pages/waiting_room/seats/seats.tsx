@@ -176,12 +176,21 @@ export class Seats extends React.Component<SeatsProps> {
   };
 
   private readonly requestGameStart = () => {
+    let gameMode = this.props.store.gameSettings.gameMode;
+    if (
+      this.props.store.gameSettings.gameMode === GameMode.Pve &&
+      this.props.store.gameSettings.pveNumberOfPlayers === 5
+    ) {
+      gameMode = GameMode.PveClassic;
+    }
+
     this.props.senderService.requestGameStart({
       ...this.props.store.gameSettings,
       numberOfPlayers: this.countPlayers,
       roomName: this.props.roomName,
       coreVersion: Sanguosha.Version,
       campaignMode: false,
+      gameMode,
     });
   };
 

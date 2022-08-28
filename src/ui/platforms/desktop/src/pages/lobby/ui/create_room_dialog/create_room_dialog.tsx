@@ -54,6 +54,14 @@ export class CreateRoomDialog extends React.Component<{
     },
   ];
 
+  private getGameMode(gameMode: GameMode, defaultMode?: GameMode) {
+    if (gameMode === GameMode.Pve) {
+      return this.numberOfPlayers === 4 ? GameMode.PveClassic : GameMode.Pve;
+    }
+
+    return defaultMode || gameMode;
+  }
+
   private readonly onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -63,10 +71,7 @@ export class CreateRoomDialog extends React.Component<{
         hostPlayerId: this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
         numberOfPlayers: gameMode === GameMode.Pve ? this.numberOfPlayers : 8,
         roomName: this.roomName,
-        gameMode:
-          gameMode === GameMode.Pve
-            ? gameMode
-            : this.props.electronLoader.getData(ElectronData.RoomSettingsGameMode) || gameMode,
+        gameMode: this.getGameMode(gameMode, this.props.electronLoader.getData(ElectronData.RoomSettingsGameMode)),
         passcode: this.passcode,
         characterExtensions:
           this.props.electronLoader.getData(ElectronData.RoomSettingsCharacterExtensions) ||

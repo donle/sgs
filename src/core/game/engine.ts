@@ -275,6 +275,7 @@ export class Sanguosha {
       case GameMode.Hegemony:
       case GameMode.OneVersusTwo:
       case GameMode.Pve:
+      case GameMode.PveClassic:
       case GameMode.Standard:
       case GameMode.TwoVersusTwo:
         return [GameCardExtensions.Standard, GameCardExtensions.LegionFight];

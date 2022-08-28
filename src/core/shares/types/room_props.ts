@@ -4,6 +4,7 @@ export const enum GameMode {
   TwoVersusTwo = '2v2',
   Hegemony = 'hegemony-game',
   Pve = 'pve',
+  PveClassic = 'pve-classic',
 }
 
 export const enum RoomMode {

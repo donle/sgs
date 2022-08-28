@@ -122,11 +122,12 @@ export class GameSettings extends React.Component<GameSettingsProps> {
   }
 
   private readonly onChangePassword = (password: string) => {
+    this.props.presenter.updateGameSettings(this.props.store, {
+      ...this.props.store.gameSettings,
+      passcode: password || '',
+    });
+
     this.passwordInputDebounceTimer = setTimeout(() => {
-      this.props.presenter.updateGameSettings(this.props.store, {
-        ...this.props.store.gameSettings,
-        passcode: password || '',
-      });
       this.props.onSave();
 
       this.passwordInputDebounceTimer = undefined;

@@ -44,6 +44,8 @@ function createDifferentModeGameProcessor(gameMode: GameMode): GameProcessor {
   switch (gameMode) {
     case GameMode.Pve:
       return new PveLongshenGameProcessor(new StageProcessor(logger), logger);
+    case GameMode.PveClassic:
+      return new PveClassicGameProcessor(new StageProcessor(logger), logger);
     case GameMode.OneVersusTwo:
       return new OneVersusTwoGameProcessor(new StageProcessor(logger), logger);
     case GameMode.TwoVersusTwo:
