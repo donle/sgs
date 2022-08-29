@@ -31,6 +31,7 @@ import taomieIcon from './images/taomie.png';
 import tianrenIcon from './images/tianren.png';
 import weiIcon from './images/wei.png';
 import xueyiIcon from './images/xueyi.png';
+import yiIcon from './images/yi.png';
 import yingIcon from './images/ying.png';
 import yuqingIcon from './images/yuqing.png';
 import zhongIcon from './images/zhong.png';
@@ -80,6 +81,7 @@ const markIconMaps: {
   [MarkEnum.HouTu]: houtuIcon,
   [MarkEnum.GouChen]: gouchenIcon,
   [MarkEnum.YuQing]: yuqingIcon,
+  [MarkEnum.Yi]: yiIcon,
 
   [MarkEnum.PveJi]: pveClassicJiIcon,
   [MarkEnum.PveJian]: pveClassicJianIcon,

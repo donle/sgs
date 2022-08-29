@@ -144,6 +144,7 @@ export namespace System {
     MangQing = 'mangqing',
     ChouJue = 'choujue',
     BeiShui = 'beishui',
+    ZhuangRong = 'zhuangrong',
     PveClassicGuYong = 'pve_classic_guyong',
   }
 
@@ -219,6 +220,9 @@ export namespace System {
     },
     [AwakeningSkillApplierEnum.BeiShui]: (room: Room, player: Player) => {
       return player.Hp < 2 || player.getCardIds(PlayerCardsArea.HandArea).length < 2;
+    },
+    [AwakeningSkillApplierEnum.ZhuangRong]: (room: Room, player: Player) => {
+      return player.Hp === 1 || player.getCardIds(PlayerCardsArea.HandArea).length === 1;
     },
     [AwakeningSkillApplierEnum.PveClassicGuYong]: (room: Room, player: Player) => {
       return [MarkEnum.PveTanLang, MarkEnum.PveWenQu, MarkEnum.PveWuQu, MarkEnum.PvePoJun].every(

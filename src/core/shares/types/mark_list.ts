@@ -26,6 +26,7 @@ export const enum MarkEnum {
   HouTu = 'houtu',
   YuQing = 'yuqing',
   GouChen = 'gouchen',
+  Yi = 'yi',
   PveJian = 'pve_jian',
   PveZhi = 'pve_zhi',
   PveXi = 'pve_xi',

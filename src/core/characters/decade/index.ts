@@ -1,11 +1,20 @@
 import { Character } from 'core/characters/character';
 import { CaoXing } from './caoxing';
+import { DecadeDengZhi } from './decade_dengzhi';
+import { DecadeMiHeng } from './decade_miheng';
 import { DuanWei } from './duanwei';
 import { DuFuRen } from './dufuren';
 import { FanChou } from './fanchou';
+import { FengXi } from './fengxi';
 import { GuoSi } from './guosi';
+import { HuaXin } from './huaxin';
 import { LiangXing } from './liangxing';
+import { LiCaiWei } from './licaiwei';
 import { LiJue } from './lijue';
+import { LuYuSheng } from './luyusheng';
+import { LvLingQi } from './lvlingqi';
+import { MaMiDi } from './mamidi';
+import { MiFangFuShiRen } from './mifangfushiren';
 import { NiuJin } from './niujin';
 import { PanFeng } from './panfeng';
 import { TongYuanC } from './tongyuan';
@@ -22,12 +31,18 @@ import { ZhaoZhong } from './zhaozhong';
 
 export const DecadePackage: (index: number) => Character[] = index => [
   new NiuJin(index++),
+  new HuaXin(index++),
   new ZhangHu(index++),
   new DuFuRen(index++),
   new XiaHouJie(index++),
 
+  new DecadeDengZhi(index++),
+  new MiFangFuShiRen(index++),
+
   new XuGong(index++),
   new ZhangWen(index++),
+  new LuYuSheng(index++),
+  new FengXi(index++),
 
   new LiJue(index++),
   new GuoSi(index++),
@@ -43,4 +58,8 @@ export const DecadePackage: (index: number) => Character[] = index => [
   new TongYuanC(index++),
   new WanNianGongZhu(index++),
   new XunChen(index++),
+  new LvLingQi(index++),
+  new DecadeMiHeng(index++),
+  new LiCaiWei(index++),
+  new MaMiDi(index++),
 ];
