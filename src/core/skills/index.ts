@@ -292,6 +292,7 @@ export { GanLu } from './characters/yijiang2011/ganlu';
 export { BuYi } from './characters/yijiang2011/buyi';
 export { XuanFeng } from './characters/yijiang2011/xuanfeng';
 export { YongJin, YongJinMove } from './characters/yijiang2011/yongjin';
+export { StdXuanFeng } from './characters/yijiang2011/std_xuanfeng';
 
 export { QiCe } from './characters/yijiang2012/qice';
 export { ZhiYu } from './characters/yijiang2012/zhiyu';
@@ -451,6 +452,15 @@ export { ShiChou } from './characters/sp/shichou';
 export { ZhenWei, ZhenWeiClear } from './characters/sp/zhenwei';
 export { ZhaoLie } from './characters/sp/zhaolie';
 export { SPLiuBeiShiChou, SPLiuBeiShiChouBuff } from './characters/sp/liubei_shichou';
+export { DuanBing, DuanBingShadow } from './characters/sp/duanbing';
+export { FenXun, FenXunShadow, FenXunDiscard } from './characters/sp/fenxun';
+export { XueHen } from './characters/sp/xuehen';
+export { HuXiao, HuXiaoShadow, HuXiaoRemover } from './characters/sp/huxiao';
+export { WuJi } from './characters/sp/wuji';
+export { QiZhou } from './characters/sp/qizhou';
+export { ShanXi, ShanXiClear } from './characters/sp/shanxi';
+export { ZhuLingJiXian, ZhuLingJiXianShadow } from './characters/sp/zhuling_jixian';
+export { BaoBian } from './characters/sp/baobian';
 
 export { TuShe } from './characters/spark/tushe';
 export { LiMu, LiMuShadow } from './characters/spark/limu';
