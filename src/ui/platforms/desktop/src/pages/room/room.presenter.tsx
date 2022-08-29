@@ -336,6 +336,7 @@ export class RoomPresenter {
   defineConfirmButtonActions(handler: () => void) {
     this.store.confirmButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.confirm = false;
+      this.store.actionButtonStatus.cancel = false;
       this.store.confirmButtonAction = undefined;
       handler();
     });

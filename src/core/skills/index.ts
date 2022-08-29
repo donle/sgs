@@ -259,6 +259,9 @@ export { PingHe, PingHeShadow, PingHeSelect } from './characters/god/pinghe';
 export { DingHan } from './characters/god/dinghan';
 export { TianZuo, TianZuoShadow } from './characters/god/tianzuo';
 export { LingCe } from './characters/god/lingce';
+export { TianRen } from './characters/god/tianren';
+export { JiuFa } from './characters/god/jiufa';
+export { PingXiang, PingXiangShadow } from './characters/god/pingxiang';
 
 export { SanYao } from './characters/yijiang2011/sanyao';
 export { ZhiMan } from './characters/yijiang2011/zhiman';

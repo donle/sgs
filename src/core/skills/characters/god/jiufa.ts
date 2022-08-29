@@ -35,7 +35,7 @@ export class JiuFa extends TriggerSkill {
     owner: Player,
     event?: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
   ) {
-    return !owner.getFlag<string[]>(this.Name) || owner.getFlag<string[]>(this.Name).length < 9;
+    return !owner.getFlag<string[]>(this.Name) || owner.getFlag<string[]>(this.Name).length < 8;
   }
 
   public async onTrigger(
@@ -44,7 +44,7 @@ export class JiuFa extends TriggerSkill {
   ): Promise<boolean> {
     if (
       !room.getFlag<string[]>(skillEffectEvent.fromId, this.Name) ||
-      room.getFlag<string[]>(skillEffectEvent.fromId, this.Name).length < 9
+      room.getFlag<string[]>(skillEffectEvent.fromId, this.Name).length < 8
     ) {
       skillEffectEvent.translationsMessage = undefined;
     }
@@ -62,6 +62,7 @@ export class JiuFa extends TriggerSkill {
     const flags = room.getFlag<string[]>(skillEffectEvent.fromId, this.Name) || [];
     if (flags.length < 8) {
       flags.push(Sanguosha.getCardById(event.cardId).GeneralName);
+      room.setFlag(event.fromId, this.Name, flags, this.Name);
     } else {
       room.removeFlag(skillEffectEvent.fromId, this.Name);
 

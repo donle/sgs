@@ -1,5 +1,5 @@
 import { CardType } from 'core/cards/card';
-import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -17,11 +17,11 @@ export class TianRen extends TriggerSkill {
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
       content.infos.find(info => {
-        if (info.moveReason === CardMoveReason.CardUse) {
+        if (info.moveReason === CardMoveReason.CardUse || info.toArea !== CardMoveArea.DropStack) {
           return false;
         }
 
-        info.movingCards.find(move => {
+        return info.movingCards.find(move => {
           const card = Sanguosha.getCardById(move.card);
           return card.is(CardType.Basic) || (card.is(CardType.Trick) && !card.is(CardType.DelayedTrick));
         });
