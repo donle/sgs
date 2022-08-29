@@ -33,7 +33,7 @@ export class XuHe extends TriggerSkill {
       owner.Id === content.playerId &&
       (content.toStage === PlayerPhaseStages.PlayCardStageStart ||
         (content.toStage === PlayerPhaseStages.PlayCardStageEnd &&
-          room.getOtherPlayers(owner.Id).find(player => player.MaxHp < owner.MaxHp) === undefined))
+          !room.getOtherPlayers(owner.Id).find(player => player.MaxHp > owner.MaxHp)))
     );
   }
 
@@ -134,6 +134,34 @@ export class XuHe extends TriggerSkill {
       }
     } else {
       await room.changeMaxHp(fromId, 1);
+
+      const options = ['xuhe:draw2'];
+      room.getPlayerById(fromId).LostHp > 0 && options.unshift('xuhe:recover');
+      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        {
+          options,
+          conversation: TranslationPack.translationJsonPatcher(
+            '{0}: please choose xuhe buff options',
+            this.Name,
+          ).extract(),
+          toId: fromId,
+          triggeredBySkills: [this.Name],
+        },
+        fromId,
+        true,
+      );
+
+      response.selectedOption = response.selectedOption || options[0];
+      if (response.selectedOption === 'xuhe:recover') {
+        await room.recover({
+          toId: fromId,
+          recoveredHp: 1,
+          recoverBy: fromId,
+        });
+      } else {
+        await room.drawCards(2, fromId, 'top', fromId, this.Name);
+      }
     }
 
     return true;

@@ -1,5 +1,5 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, PlayerDyingStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
@@ -8,16 +8,12 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'liewei', description: 'liewei_description' })
 export class LieWei extends TriggerSkill {
-  isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PhaseBegin;
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>, stage?: AllStage): boolean {
     return stage === PlayerDyingStage.PlayerDying;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
-    return content.dying !== owner.Id && content.killedBy === owner.Id && owner.hasUsedSkillTimes(this.Name) < owner.Hp;
+    return room.CurrentPlayer === owner;
   }
 
   public getSkillLog(): PatchedTranslationObject {

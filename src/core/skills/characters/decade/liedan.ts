@@ -6,6 +6,7 @@ import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { ZhuangDan } from './zhuangdan';
 
 @CompulsorySkill({ name: 'liedan', description: 'liedan_description' })
 export class LieDan extends TriggerSkill {
@@ -21,7 +22,8 @@ export class LieDan extends TriggerSkill {
     return (
       ((content.playerId !== owner.Id && !room.getPlayerById(content.playerId).Dead) ||
         (content.playerId === owner.Id && owner.getMark(MarkEnum.DanLie) >= 5)) &&
-      content.toStage === PlayerPhaseStages.PrepareStageStart
+      content.toStage === PlayerPhaseStages.PrepareStageStart &&
+      !owner.getFlag<boolean>(ZhuangDan.Name)
     );
   }
 
