@@ -103,16 +103,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.dropStack = [];
 
     this.socket.emit(this);
-    this.initAIPlayers();
+    this.addAIPlayers();
   }
 
-  private initAIPlayers() {
-    if (this.gameMode === GameMode.Pve || this.gameMode === GameMode.PveClassic) {
-      const currentPlayerNum = this.players.length;
-        for (let i = 0; i < this.gameInfo.numberOfPlayers - currentPlayerNum; i++) {
-          const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
-          this.addPlayer(fakePlayer);
-        }
+  private addAIPlayers() {
+    const numOfAiPlayers = this.gameMode === GameMode.Pve ? 1 : this.gameMode === GameMode.PveClassic ? 3 : 0;
+    for (let i = 0; i < numOfAiPlayers; i++) {
+      const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
+      this.addPlayer(fakePlayer);
     }
   }
 

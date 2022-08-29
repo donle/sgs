@@ -32,13 +32,9 @@ export class CampaignService {
   ): GameProcessor => {
     switch (roomInfo.gameMode) {
       case GameMode.Pve:
-        if (roomInfo.numberOfPlayers <= 3) {
-          return new PveLongshenGameProcessor(new StageProcessor(this.logger), this.logger);
-        } else if (roomInfo.numberOfPlayers <= 5) {
-          return new PveClassicGameProcessor(new StageProcessor(this.logger), this.logger);
-        } else {
-          throw new Error('Pve Player Number Abnormal ');
-        }
+        return new PveLongshenGameProcessor(new StageProcessor(this.logger), this.logger);
+      case GameMode.PveClassic:
+        return new PveClassicGameProcessor(new StageProcessor(this.logger), this.logger);
       case GameMode.OneVersusTwo:
         return new OneVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
       case GameMode.TwoVersusTwo:
