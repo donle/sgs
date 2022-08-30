@@ -523,7 +523,7 @@ export abstract class AiLibrary {
   static sortEnemiesByRole(room: Room, from: Player) {
     let enemies = room.getOtherPlayers(from.Id).filter(other => !this.areTheyFriendly(other, from, room.Info.gameMode));
 
-    if (from.Role === PlayerRole.Renegade) {
+    if (room.Info.gameMode === GameMode.Standard && from.Role === PlayerRole.Renegade) {
       enemies = enemies.filter(enemy => enemy.Role === PlayerRole.Lord);
     }
 
@@ -555,6 +555,7 @@ export abstract class AiLibrary {
 
     switch (mode) {
       case GameMode.Pve:
+      case GameMode.PveClassic:
       case GameMode.TwoVersusTwo: {
         return playerA.Role === playerB.Role;
       }
