@@ -185,6 +185,8 @@ export const eventDictionary: Word[] = [
   },
   { source: '{0} lost {1} max hp', target: '{0} 失去了 {1} 點體力上限' },
   { source: '{0} obtained {1} max hp', target: '{0} 獲得了 {1} 點體力上限' },
+  { source: '{0} lost {1} armor', target: '{0} 失去了 {1} 點護甲' },
+  { source: '{0} obtained {1} armor', target: '{0} 獲得了 {1} 點護甲' },
   {
     source: '{0} used {1} to you, please use a {2} card',
     target: '{0} 對你使用了 {1}, 使用一張 【{2}】來響應',

@@ -620,14 +620,6 @@ export const skillAudios: Word[] = [
     target: '君且城中等候，待吾探敌虚实。',
   },
   {
-    source: '$dangmo:1',
-    target: '魔高一尺，道高一丈！',
-  },
-  {
-    source: '$dangmo:2',
-    target: '天魔祸世，吾自荡而除之！',
-  },
-  {
     source: '$shenzhuo:1',
     target: '力引强弓百斤，矢出贯手着棼！',
   },
