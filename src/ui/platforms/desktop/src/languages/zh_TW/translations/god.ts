@@ -89,6 +89,12 @@ export const characterDictionary: Word[] = [
   { source: 'pingding', target: '平定' },
   { source: 'god_fuhai', target: '覆海' },
   { source: 'pinghe', target: '馮河' },
+
+  { source: 'god_jiangwei', target: '神姜維' },
+  { source: 'tianren', target: '天任' },
+  { source: 'jiufa', target: '九伐' },
+  { source: 'pingxiang', target: '平襄' },
+  { source: '#pingxiang', target: '平襄' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -288,6 +294,21 @@ export const skillDescriptions: Word[] = [
     source: 'pinghe_description',
     target:
       '<b>鎖定技</b>，你的手牌上限基值等同於你已損失的體力值；當你受到其他角色造成的傷害時，若你有手牌且體力上限大於1，防止此傷害，你減1點體力上限並將一張手牌交給一名其他角色，令傷害來源獲得一枚“平定”標記。',
+  },
+  {
+    source: 'tianren_description',
+    target:
+      '<b>鎖定技</b>，當一張基本牌或普通錦囊牌不是因使用而置入棄牌堆後，你獲得1個“天任”標記，然後若“天任”標記數不小於X，你移去X個“天任”標記，加1點體力上限並摸兩張牌（X為你的體力上限）。',
+  },
+  {
+    source: 'jiufa_description',
+    target:
+      '當你每累計使用或打出九張不同牌名的牌後，你可以亮出牌堆頂的九張牌，然後若其中有點數相同的牌，你選擇並獲得其中每個重複點數的牌各一張。',
+  },
+  {
+    source: 'pingxiang_description',
+    target:
+      '<b>限定技</b>，出牌階段，若你的體力上限大於9，你可以減9點體力上限，然後你視為使用至多九張不計入次數限制的火【殺】。若如此做，你失去技能“九伐”且本局遊戲內你的手牌上限等於體力上限。',
   },
 ];
 
@@ -647,4 +668,6 @@ export const conversations: Word[] = [
     source: '{0}: do you want to add at least {1} targets for {2} ?',
     target: '{0}：你可以為 {2} 增加至多 {1} 名目標',
   },
+
+  { source: 'please choose one target to use fire slash', target: '請選擇【火殺】的目標' },
 ];

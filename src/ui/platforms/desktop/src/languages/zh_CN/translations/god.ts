@@ -732,4 +732,6 @@ export const conversations: Word[] = [
   },
   { source: '{0}: please choose a dinghan option', target: '{0}：请选择以下一项加入或移出定汉记录' },
   { source: '{0} shuffled 8 {1} cards into the draw stack', target: '{0} 将八张【{1}】洗入了摸牌堆' },
+
+  { source: 'please choose one target to use fire slash', target: '请选择【火杀】的目标' },
 ];
