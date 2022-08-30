@@ -7,7 +7,7 @@ import { MouYuJin } from './mou_yujin';
 
 export const StrategemPackage: (index: number) => Character[] = index => [
   new MouYuJin(index++),
-  
+
   new MouHuangZhong(index++),
 
   new MouSunQuan(index++),

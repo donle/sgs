@@ -936,7 +936,10 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleArmorChangeEvent<T extends GameEventIdentifiers.ArmorChangeEvent>(type: T, content: ServerEventFinder<T>) {
+  protected onHandleArmorChangeEvent<T extends GameEventIdentifiers.ArmorChangeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
     const player = this.store.room.getPlayerById(content.toId);
     player.changeArmor(content.amount);
     this.presenter.broadcastUIUpdate();
@@ -946,7 +949,10 @@ export class GameClientProcessor {
     this.audioService.playDamageAudio(content.damage);
   }
 
-  protected onHandleHpChangeEvent<T extends GameEventIdentifiers.HpChangeEvent>(type: T, content: ServerEventFinder<T>) {
+  protected onHandleHpChangeEvent<T extends GameEventIdentifiers.HpChangeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
     const player = this.store.room.getPlayerById(content.toId);
     player.changeHp(content.byReaon !== 'recover' ? -content.amount : content.amount);
     this.presenter.broadcastUIUpdate();
@@ -2012,18 +2018,16 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room
-      .getPlayerById(content.toId)
-      .setCardTag(content.cardTag, content.cardIds);
+    this.store.room.getPlayerById(content.toId).setCardTag(content.cardTag, content.cardIds);
   }
-  
+
   protected async onHandleRemoveCardTagEvent<T extends GameEventIdentifiers.RemoveCardTagEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.toId).removeCardTag(content.cardTag);
   }
-  
+
   protected async onHandleClearCardTagsEvent<T extends GameEventIdentifiers.ClearCardTagsEvent>(
     type: T,
     content: ServerEventFinder<T>,

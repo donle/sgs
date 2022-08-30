@@ -65,7 +65,7 @@ export class MingLuan extends TriggerSkill {
       const drawNum =
         Math.min(current.getCardIds(PlayerCardsArea.HandArea).length, 5) -
         room.getPlayerById(event.fromId).getCardIds(PlayerCardsArea.HandArea).length;
-        
+
       drawNum > 0 && (await room.drawCards(drawNum, event.fromId, 'top', event.fromId, this.Name));
     }
 

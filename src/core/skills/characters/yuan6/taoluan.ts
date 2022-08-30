@@ -24,7 +24,11 @@ export class TaoLuan extends ViewAsSkill implements OnDefineReleaseTiming {
     for (const event of records) {
       const usedCards = player.getFlag<string[]>(this.Name) || [];
       const card = Sanguosha.getCardById(event.cardId);
-      if (card.isVirtualCard() && (card as VirtualCard).findByGeneratedSkill(this.Name) && !usedCards.includes(card.GeneralName)) {
+      if (
+        card.isVirtualCard() &&
+        (card as VirtualCard).findByGeneratedSkill(this.Name) &&
+        !usedCards.includes(card.GeneralName)
+      ) {
         usedCards.push(card.GeneralName);
         room.setFlag<string[]>(player.Id, this.Name, usedCards);
       }

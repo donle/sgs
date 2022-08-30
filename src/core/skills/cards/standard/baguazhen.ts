@@ -46,9 +46,8 @@ export class BaGuaZhenSkill extends TriggerSkill {
     return (
       owner.Id === content.toId &&
       CardMatcher.match(cardMatcher, jinkMatcher) &&
-      owner
-        .getSkills<FilterSkill>('filter')
-        .find(skill => !skill.canUseCard(jinkMatcher, room, owner.Id, content)) === undefined
+      owner.getSkills<FilterSkill>('filter').find(skill => !skill.canUseCard(jinkMatcher, room, owner.Id, content)) ===
+        undefined
     );
   }
 

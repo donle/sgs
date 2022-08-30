@@ -124,10 +124,7 @@ export class FenYinShadow extends TriggerSkill implements OnDefineReleaseTiming 
       } else {
         const precolor = room.getFlag<CardColor>(event.fromId, this.GeneralName);
         if (precolor !== undefined && precolor !== card.Color) {
-          EventPacker.addMiddleware(
-            { tag: this.GeneralName, data: true },
-            unknownEvent,
-          );
+          EventPacker.addMiddleware({ tag: this.GeneralName, data: true }, unknownEvent);
         }
 
         room.getPlayerById(event.fromId).setFlag<CardColor>(this.GeneralName, card.Color);

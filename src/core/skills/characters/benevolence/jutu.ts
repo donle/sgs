@@ -77,17 +77,18 @@ export class JuTu extends TriggerSkill {
               : Algorithm.randomPick(num, room.getPlayerById(event.fromId).getPlayerCards());
         }
 
-        toPut.length > 0 && await room.moveCards({
-          movingCards: toPut.map(card => ({ card, fromArea: room.getPlayerById(event.fromId).cardFrom(card) })),
-          fromId: event.fromId,
-          toId: event.fromId,
-          toArea: CardMoveArea.OutsideArea,
-          moveReason: CardMoveReason.ActiveMove,
-          proposer: event.fromId,
-          isOutsideAreaInPublic: true,
-          toOutsideArea: this.Name,
-          triggeredBySkills: [this.Name],
-        });
+        toPut.length > 0 &&
+          (await room.moveCards({
+            movingCards: toPut.map(card => ({ card, fromArea: room.getPlayerById(event.fromId).cardFrom(card) })),
+            fromId: event.fromId,
+            toId: event.fromId,
+            toArea: CardMoveArea.OutsideArea,
+            moveReason: CardMoveReason.ActiveMove,
+            proposer: event.fromId,
+            isOutsideAreaInPublic: true,
+            toOutsideArea: this.Name,
+            triggeredBySkills: [this.Name],
+          }));
       }
     }
 

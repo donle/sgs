@@ -287,7 +287,11 @@ export abstract class Player implements PlayerInfo {
     const canUseToSomeone = room.AlivePlayers.find(player => room.CommonRules.canUseCardTo(room, this, card, player));
     if (card instanceof Card) {
       if (canUseToSomeone) {
-        return card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : card.Skill.canUse(room, this, cardId);
+        return card.is(CardType.Equip)
+          ? true
+          : onResponse
+          ? onResponse.match(card)
+          : card.Skill.canUse(room, this, cardId);
       }
     } else {
       if (canUseToSomeone) {
@@ -603,13 +607,13 @@ export abstract class Player implements PlayerInfo {
     }
 
     return (
-        unlimited ||
-        room.CommonRules.canUseCardTo(
-          room,
-          this,
-          cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
-          room.getPlayerById(target),
-        )
+      unlimited ||
+      room.CommonRules.canUseCardTo(
+        room,
+        this,
+        cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
+        room.getPlayerById(target),
+      )
     );
   }
 

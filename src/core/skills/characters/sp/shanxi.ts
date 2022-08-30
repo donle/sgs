@@ -68,7 +68,9 @@ export class ShanXi extends TriggerSkill {
     const handCardIds = to.getCardIds(PlayerCardsArea.HandArea);
     const equipCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
 
-    const { selectedCards, selectedCardsIndex } = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent>(
+    const { selectedCards, selectedCardsIndex } = await room.doAskForCommonly<
+      GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    >(
       GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
       {
         toId,

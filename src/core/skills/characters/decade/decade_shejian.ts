@@ -44,7 +44,11 @@ export class DecadeShejian extends TriggerSkill {
     return [PlayerCardsArea.HandArea];
   }
 
-  public getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>): PatchedTranslationObject {
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
+  ): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
       '{0}: do you want to discard at least 2 hand cards to use this skill to {1} ?',
       this.Name,

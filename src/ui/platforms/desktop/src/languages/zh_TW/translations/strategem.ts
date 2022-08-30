@@ -27,6 +27,4 @@ export const skillAudios: Word[] = [
   },
 ];
 
-export const promptDescriptions: Word[] = [
-  
-];
+export const promptDescriptions: Word[] = [];

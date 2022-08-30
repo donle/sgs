@@ -82,7 +82,7 @@ export class KuangBi extends ActiveSkill {
     const originalMapper = room.getFlag<KuangBiMapper>(event.fromId, this.Name) || {};
     originalMapper[event.toIds[0]] = originalMapper[event.toIds[0]] || 0;
     originalMapper[event.toIds[0]] += response.selectedCards.length;
-    
+
     room.getPlayerById(event.fromId).setFlag<KuangBiMapper>(this.Name, originalMapper);
 
     return true;

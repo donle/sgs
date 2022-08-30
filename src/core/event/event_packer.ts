@@ -190,10 +190,7 @@ export class EventPacker {
     content: ServerEventFinder<GameEventIdentifiers.ArmorChangeEvent>,
     data: number,
   ): void {
-    EventPacker.addMiddleware(
-      { tag: PrivateTagEnum.LosingAllArmorTag, data },
-      content,
-    );
+    EventPacker.addMiddleware({ tag: PrivateTagEnum.LosingAllArmorTag, data }, content);
   }
 
   public static getLosingAllArmorTag(content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): number | undefined {

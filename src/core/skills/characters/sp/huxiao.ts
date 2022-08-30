@@ -16,7 +16,9 @@ export class HuXiao extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
-    return content.fromId === owner.Id && content.damageType === DamageType.Fire && !room.getPlayerById(content.toId).Dead;
+    return (
+      content.fromId === owner.Id && content.damageType === DamageType.Fire && !room.getPlayerById(content.toId).Dead
+    );
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -47,9 +49,11 @@ export class HuXiaoShadow extends RulesBreakerSkill implements OnDefineReleaseTi
   ): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
-  
+
   public breakCardUsableTimesTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): number {
-    return (room.getFlag<PlayerId[]>(owner.Id, this.GeneralName) || []).includes(target.Id) ? INFINITE_TRIGGERING_TIMES : 0;
+    return (room.getFlag<PlayerId[]>(owner.Id, this.GeneralName) || []).includes(target.Id)
+      ? INFINITE_TRIGGERING_TIMES
+      : 0;
   }
 }
 

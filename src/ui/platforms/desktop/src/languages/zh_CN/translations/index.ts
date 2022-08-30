@@ -35,6 +35,7 @@ export {
   fireCharactersDictionary,
   forestCharactersDictionary,
   generalDictionary,
+  generatedCardsDictionary,
   godCharactersDictionary,
   mountainCharactersDictionary,
   shadowCharacterDictionary,

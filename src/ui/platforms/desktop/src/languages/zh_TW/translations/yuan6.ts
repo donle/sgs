@@ -10,7 +10,8 @@ export const characterDictionary: Word[] = [
 export const skillDescriptions: Word[] = [
   {
     source: 'taoluan_description',
-    target: '你可以将一张牌当任意基本牌或普通锦囊牌（不能为你于本局游戏内以此法使用过的牌）使用，然后你令一名其他角色选择一项：1.交给你一张与你以此法使用的牌类别不同的牌；2.令你失去1点体力，且本技能于本回合内失效。',
+    target:
+      '你可以将一张牌当任意基本牌或普通锦囊牌（不能为你于本局游戏内以此法使用过的牌）使用，然后你令一名其他角色选择一项：1.交给你一张与你以此法使用的牌类别不同的牌；2.令你失去1点体力，且本技能于本回合内失效。',
   },
 ];
 
@@ -34,4 +35,4 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please give a card to {1}, or he/she will lose 1 hp',
     target: '{0}：你可以交给 {1} 一张符合条件的牌，否则其会失去1点体力，且“滔乱”于本回合内失效',
   },
-]
+];

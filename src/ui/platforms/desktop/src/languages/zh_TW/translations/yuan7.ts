@@ -27,9 +27,7 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
-export const skillAudios: Word[] = [
-  
-];
+export const skillAudios: Word[] = [];
 
 export const promptDescriptions: Word[] = [
   {
@@ -46,4 +44,4 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose wengua options: {1} {2}',
     target: '{0}：请选择将 {1} 置于牌堆顶或牌堆底，然后你与 {2} 从牌堆另一端摸一张牌',
   },
-]
+];

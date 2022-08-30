@@ -60,7 +60,7 @@ export class BoYan extends ActiveSkill {
 @CommonSkill({ name: 's_boyan_blocker', description: 's_boyan_blocker_description' })
 export class BoYanBlocker extends FilterSkill {
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
-    return (cardId instanceof CardMatcher) || room.getPlayerById(owner).cardFrom(cardId) !== PlayerCardsArea.HandArea;
+    return cardId instanceof CardMatcher || room.getPlayerById(owner).cardFrom(cardId) !== PlayerCardsArea.HandArea;
   }
 }
 

@@ -29,9 +29,7 @@ export class JianYing extends ViewAsSkill {
       owner.canUseCard(
         room,
         new CardMatcher({
-          name: Sanguosha.getCardNameByType(
-            types => types.includes(CardType.Basic),
-          ),
+          name: Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)),
         }),
       )
     );

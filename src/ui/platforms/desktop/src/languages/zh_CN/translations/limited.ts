@@ -362,8 +362,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'renzheng_description',
-    target:
-      '<b>锁定技</b>，当有伤害被防止或其伤害值减少后，你摸两张牌。',
+    target: '<b>锁定技</b>，当有伤害被防止或其伤害值减少后，你摸两张牌。',
   },
   {
     source: 'jinjian_description',

@@ -19,7 +19,9 @@ export class PaoXiao extends RulesBreakerSkill {
   }
 
   public audioIndex(characterName?: string): number {
-    return characterName && this.RelatedCharacters.slice(1, this.RelatedCharacters.length).includes(characterName) ? 1 : 2;
+    return characterName && this.RelatedCharacters.slice(1, this.RelatedCharacters.length).includes(characterName)
+      ? 1
+      : 2;
   }
 
   public breakCardUsableTimes(cardId: CardId | CardMatcher) {

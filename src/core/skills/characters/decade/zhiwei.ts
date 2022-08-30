@@ -133,7 +133,8 @@ export class ZhiWeiChained extends TriggerSkill {
           (content as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId ===
             owner.getFlag<PlayerId>(this.GeneralName)) ||
         (stage === DamageEffectStage.AfterDamagedEffect &&
-          (content as ServerEventFinder<GameEventIdentifiers.DamageEvent>).toId === owner.getFlag<PlayerId>(this.GeneralName));
+          (content as ServerEventFinder<GameEventIdentifiers.DamageEvent>).toId ===
+            owner.getFlag<PlayerId>(this.GeneralName));
 
       canUse && owner.setFlag<AllStage>(this.Name, stage!);
 

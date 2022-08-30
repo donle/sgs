@@ -43,8 +43,8 @@ export function Armor(amount: number) {
   return function <T extends new (...args: any[]) => any>(constructor: T) {
     return class extends constructor {
       private armor: number = Math.max(Math.min(amount, UPPER_LIMIT_OF_ARMOR), 0);
-    } as any
-  }
+    } as any;
+  };
 }
 
 export abstract class Character {

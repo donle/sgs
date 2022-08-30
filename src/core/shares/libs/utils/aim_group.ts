@@ -31,7 +31,7 @@ export class AimGroupUtil {
     if (index !== -1) {
       aimGroup[AimStatus.Undone].splice(index, 1);
       aimGroup[AimStatus.Done].push(playerId);
-    } 
+    }
   }
 
   public static addTargets(

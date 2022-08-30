@@ -52,11 +52,8 @@ export class BaZhan extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const currentSkillState = room.getPlayerById(event.fromId).getSwitchSkillState(this.Name);
-    
-    if (
-      !event.toIds ||
-      (currentSkillState === SwitchSkillState.Yang && !event.cardIds)
-    ) {
+
+    if (!event.toIds || (currentSkillState === SwitchSkillState.Yang && !event.cardIds)) {
       return false;
     }
 
@@ -96,7 +93,7 @@ export class BaZhan extends ActiveSkill {
 
       response.selectedCardsIndex = response.selectedCardsIndex || [0];
       response.selectedCards = Algorithm.randomPick(response.selectedCardsIndex.length, handCards);
-      
+
       await room.moveCards({
         movingCards: response.selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
         fromId: event.toIds[0],
@@ -116,7 +113,7 @@ export class BaZhan extends ActiveSkill {
 
     if (hasHeartOrAlcohol) {
       const options = ['cancel'];
-      
+
       const to = room.getPlayerById(event.toIds[0]);
       to.LostHp > 0 && options.push('bazhan:recover');
       if (to.ChainLocked || !to.isFaceUp()) {
@@ -151,8 +148,8 @@ export class BaZhan extends ActiveSkill {
           recoverBy: event.fromId,
         });
       } else if (response.selectedOption === 'bazhan:resume') {
-        to.ChainLocked && await room.chainedOn(handler);
-        to.isFaceUp() || await room.turnOver(handler);
+        to.ChainLocked && (await room.chainedOn(handler));
+        to.isFaceUp() || (await room.turnOver(handler));
       }
     }
 

@@ -105,7 +105,10 @@ export class JinJianShadow extends TriggerSkill implements OnDefineReleaseTiming
     stage?: AllStage,
   ): boolean {
     const identifier = EventPacker.getIdentifier(content);
-    if (identifier === GameEventIdentifiers.DamageEvent && !EventPacker.getMiddleware<boolean>(this.GeneralName, content)) {
+    if (
+      identifier === GameEventIdentifiers.DamageEvent &&
+      !EventPacker.getMiddleware<boolean>(this.GeneralName, content)
+    ) {
       const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       if (
         stage === DamageEffectStage.DamageEffect

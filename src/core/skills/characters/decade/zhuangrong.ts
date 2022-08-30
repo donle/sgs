@@ -37,7 +37,7 @@ export class ZhuangRong extends TriggerSkill {
     });
 
     const diff = from.MaxHp - from.getCardIds(PlayerCardsArea.HandArea).length;
-    diff && await room.drawCards(diff, event.fromId, 'top', event.fromId, this.Name);
+    diff && (await room.drawCards(diff, event.fromId, 'top', event.fromId, this.Name));
 
     for (const skillName of this.RelatedSkills) {
       await room.obtainSkill(event.fromId, skillName);

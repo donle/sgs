@@ -467,8 +467,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'qibie_description',
-    target:
-      '当其他角色死亡后，你可以弃置所有手牌（至少一张），然后回复1点体力并摸X+1张牌（X为你以此法弃置的牌数）。',
+    target: '当其他角色死亡后，你可以弃置所有手牌（至少一张），然后回复1点体力并摸X+1张牌（X为你以此法弃置的牌数）。',
   },
 
   {

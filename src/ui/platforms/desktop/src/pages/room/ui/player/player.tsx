@@ -532,7 +532,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                     />
                   )}
                   <div className={styles.playerHp}>
-                    {player.Armor > 0 && (<Armor amount={player.Armor} />)}
+                    {player.Armor > 0 && <Armor amount={player.Armor} />}
                     <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                   </div>
                   <span

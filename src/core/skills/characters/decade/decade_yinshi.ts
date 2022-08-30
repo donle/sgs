@@ -14,11 +14,18 @@ export class DecadeYinShi extends TriggerSkill {
     return stage === DamageEffectStage.DamagedEffect || stage === JudgeEffectStage.AfterJudgeEffect;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.JudgeEvent>): boolean {
+  public canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.JudgeEvent>,
+  ): boolean {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      return damageEvent.toId === owner.Id && (!damageEvent.cardIds || Sanguosha.getCardById(damageEvent.cardIds[0]).Suit === CardSuit.NoSuit);
+      return (
+        damageEvent.toId === owner.Id &&
+        (!damageEvent.cardIds || Sanguosha.getCardById(damageEvent.cardIds[0]).Suit === CardSuit.NoSuit)
+      );
     } else if (identifier === GameEventIdentifiers.JudgeEvent) {
       const judgeEvent = content as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
       return judgeEvent.toId === owner.Id && room.isCardOnProcessing(judgeEvent.realJudgeCardId);
@@ -32,8 +39,6 @@ export class DecadeYinShi extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    
-
     return true;
   }
 }

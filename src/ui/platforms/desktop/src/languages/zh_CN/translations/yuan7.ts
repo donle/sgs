@@ -45,13 +45,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'rouxian_description',
-    target:
-      '当你受到伤害后，若场上没有角色处于濒死状态，你可以令伤害来源回复1点体力，然后其随机弃置其一张装备牌。',
+    target: '当你受到伤害后，若场上没有角色处于濒死状态，你可以令伤害来源回复1点体力，然后其随机弃置其一张装备牌。',
   },
   {
     source: 'hexian_description',
-    target:
-      '当你回复体力后，若场上没有角色处于濒死状态，你可以令一名其他角色回复1点体力，然后其随机弃置其一张装备牌。',
+    target: '当你回复体力后，若场上没有角色处于濒死状态，你可以令一名其他角色回复1点体力，然后其随机弃置其一张装备牌。',
   },
 
   {
@@ -77,8 +75,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'funan_EX_description',
-    target:
-      '当其他角色使用或打出牌响应你使用的牌时，你可以获得此牌。',
+    target: '当其他角色使用或打出牌响应你使用的牌时，你可以获得此牌。',
   },
   {
     source: 'jiexun_description',
@@ -87,9 +84,7 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
-export const skillAudios: Word[] = [
-  
-];
+export const skillAudios: Word[] = [];
 
 export const promptDescriptions: Word[] = [
   {
@@ -106,4 +101,4 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose wengua options: {1} {2}',
     target: '{0}：请选择将 {1} 置于牌堆顶或牌堆底，然后你与 {2} 从牌堆另一端摸一张牌',
   },
-]
+];

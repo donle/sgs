@@ -28,7 +28,11 @@ export class XinChiJie extends TriggerSkill {
     );
   }
 
-  public getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>): PatchedTranslationObject {
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
+  ): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
       '{0}: do you want to use this skill to {1} which {2} used?',
       this.Name,

@@ -715,7 +715,12 @@ export { YaoHu, YaoHuShadow, YaoHuDebuff } from './characters/benevolence/yaohu'
 export { HuaiBi } from './characters/benevolence/huaibi';
 export { GuYing } from './characters/benevolence/guying';
 
-export { MouLieGong, MouLieGongShadow, MouLieGongTransform, MouLieGongHandler } from './characters/strategem/mou_liegong';
+export {
+  MouLieGong,
+  MouLieGongShadow,
+  MouLieGongTransform,
+  MouLieGongHandler,
+} from './characters/strategem/mou_liegong';
 export { MouZhiHeng } from './characters/strategem/mou_zhiheng';
 export { TongYe, TongYeShadow } from './characters/strategem/tongye';
 export { MouJiuYuan } from './characters/strategem/mou_jiuyuan';

@@ -58,7 +58,8 @@ export class FuNan extends TriggerSkill {
     await room.moveCards({
       movingCards: [
         {
-          card: (cardUseOrResponseEvent.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>).cardId,
+          card: (cardUseOrResponseEvent.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>)
+            .cardId,
           fromArea: CardMoveArea.ProcessingArea,
         },
       ],
@@ -103,7 +104,7 @@ export class FuNanEX extends FuNan {
     }
 
     const responseToEvent = content.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
-    return responseToEvent.fromId === owner.Id
+    return responseToEvent.fromId === owner.Id;
   }
 
   public getSkillLog(

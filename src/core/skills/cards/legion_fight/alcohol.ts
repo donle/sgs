@@ -17,7 +17,7 @@ export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty
   private readonly recoverTag = 'recover';
 
   public canUse(room: Room, owner: Player, cardId: CardId) {
-    return room.CommonRules.canUseCard(room, owner, Sanguosha.getCardById(cardId));;
+    return room.CommonRules.canUseCard(room, owner, Sanguosha.getCardById(cardId));
   }
 
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
