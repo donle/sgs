@@ -59,8 +59,8 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
             <NationalityBadge size={size} nationality={character.Nationality} isLord={character.isLord()}>
               {translator.tr(character.Name)}
             </NationalityBadge>
-            <div className={classNames(styles.hpContainer)}>
-              {character.Armor > 0 && <Armor className={classNames(styles.characterArmor)} amount={character.Armor} />}
+            <div className={styles.hpContainer}>
+              <Armor className={styles.characterArmor} imgClassName={styles.characterArmorImage} amount={character.Armor} />
               <CharacterHp
                 character={character}
                 className={classNames(styles.characterHp, {

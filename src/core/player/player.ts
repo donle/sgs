@@ -965,7 +965,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public changeArmor(amount: number) {
-    this.Armor += amount;
+    this.armor += amount;
   }
 
   public get Hp() {

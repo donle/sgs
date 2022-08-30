@@ -168,9 +168,7 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
                 {translator.tr(character.Name)}
               </NationalityBadge>
               <div className={classNames(styles.hpContainer)}>
-                {character.Armor > 0 && (
-                  <Armor className={classNames(styles.characterArmor)} amount={character.Armor} />
-                )}
+                <Armor className={classNames(styles.characterArmor)} amount={character.Armor} />
                 <CharacterHp
                   character={character}
                   className={classNames(styles.characterHp, { [styles.small]: size === 'small' })}

@@ -1,5 +1,6 @@
 @value SanguoshaFont from '../metrics/metrics.css';
 @value gridLine from '../metrics/metrics.css';
+@value halfGridLine from '../metrics/metrics.css';
 @value textWhite from '../metrics/metrics.css';
 @value textBlack from '../metrics/metrics.css';
 @value textGreen from '../metrics/metrics.css';
@@ -28,6 +29,27 @@
     filter: brightness(0.5);
 }
 
+.hpContainer {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.characterArmor {
+    margin-right: halfGridLine;
+}
+
+.characterArmorImage {
+    max-height: calc(gridLine * 3);
+}
+
+.small .characterArmor,
+.tiny .characterArmor {
+    max-height: calc(gridLine * 2.5);
+}
+
 .characterImage {
     height: 100%;
     position: absolute;
@@ -50,8 +72,6 @@
 }
 
 .characterHp {
-    bottom: 0px;
-    right: 0;
     color: textWhite;
     font-size: calc(gridLine * 2);
     font-weight: 700;
@@ -72,9 +92,11 @@
     margin-left: -2px;
 }
 
+.characterTag {
+    position: absolute;
+}
 .characterTag,
 .characterHp {
-    position: absolute;
     z-index: 2;
 }
 .characterCard.characterSkinArea {

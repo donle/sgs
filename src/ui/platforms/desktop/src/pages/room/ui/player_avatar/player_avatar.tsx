@@ -606,9 +606,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
 
           {this.getSkillButtons()}
-          {clientPlayer && clientPlayer.Armor > 0 && <Armor amount={clientPlayer.Armor} />}
           {clientPlayer && (
-            <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
+            <>
+              <Armor amount={clientPlayer.Armor} />
+              <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
+            </>
           )}
           <div className={styles.playerTags}>
             {clientPlayer && this.getSkillTags(clientPlayer.Id)}
