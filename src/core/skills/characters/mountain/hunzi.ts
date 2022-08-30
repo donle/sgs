@@ -11,6 +11,10 @@ export class HunZi extends TriggerSkill {
     return ['yinghun', 'yingzi'];
   }
 
+  public get RelatedCharacters(): string[] {
+    return ['sunyi'];
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStageStart;
   }

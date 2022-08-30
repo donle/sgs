@@ -256,12 +256,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'qinxue_description',
     target:
-      '<b>觉醒技</b>，准备阶段，若你的手牌数与你的体力值之差不小于3（若游戏人数不小于7则改为2），你减1点体力上限，然后获得"攻心"。',
+      '<b>觉醒技</b>，准备阶段或结束阶段开始时，若你的手牌数比体力值多2或更多，你减1点体力上限，摸两张牌或回复1点体力，然后获得技能"攻心"。',
   },
-  { source: 'keji_description', target: '若你未于出牌阶段内使用或打出过【杀】，则你可以跳过弃牌阶段。' },
+  { source: 'keji_description', target: '若你未于本回合的出牌阶段内使用或打出过【杀】，则你可以跳过弃牌阶段。' },
   {
     source: 'botu_description',
-    target: '回合结束后，若你于出牌阶段内使用过四种花色的牌，则你可以获得一个额外的回合。',
+    target: '每轮限X次（X为存活角色数且至多为3），结束阶段开始时，若于本回合内进入过弃牌堆的所有牌包含四种花色，则你可以获得一个额外的回合。',
   },
   { source: 'kurou_description', target: '出牌阶段限一次，你可以弃置一张牌，然后失去1点体力。' },
   {
@@ -330,7 +330,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'wangzun_description',
-    target: '锁定技，体力值大于你的角色的准备阶段开始时，你摸一张牌，若其为主公，改为你摸两张牌且其本回合手牌上限-1。',
+    target: '<b>锁定技</b>，体力值大于你的角色的准备阶段开始时，你摸一张牌，若其为主公，改为你摸两张牌且其本回合手牌上限-1。',
   },
   {
     source: 'tongji_description',
@@ -796,7 +796,7 @@ export const skillAudios: Word[] = [
   {
     source: '$qingnang:2',
     target: '病入膏肓，需下猛药。',
-  },
+  },  
 
   {
     source: '$wushuang:1',
@@ -805,7 +805,7 @@ export const skillAudios: Word[] = [
   {
     source: '$wushuang:2',
     target: '三个齐上，也不是我的对手！',
-  },
+  }, 
   {
     source: '$liyu:1',
     target: '大丈夫相时而动。',
@@ -813,7 +813,7 @@ export const skillAudios: Word[] = [
   {
     source: '$liyu:2',
     target: '人不为已，天诛地灭。',
-  },
+  }, 
 
   {
     source: '$lijian:1',
@@ -822,7 +822,7 @@ export const skillAudios: Word[] = [
   {
     source: '$lijian:2',
     target: '这场比赛，将军可要赢哦~',
-  },
+  }, 
   {
     source: '$biyue:1',
     target: '梦蝶幻月，如沫虚妄。',
@@ -830,7 +830,7 @@ export const skillAudios: Word[] = [
   {
     source: '$biyue:2',
     target: '水映月明，芙蓉照倩影。',
-  },
+  }, 
 
   {
     source: '$yaowu:1',

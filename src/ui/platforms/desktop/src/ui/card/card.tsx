@@ -22,7 +22,7 @@ export type ClientCardProps = {
   highlight?: boolean;
   unselectable?: boolean;
   onSelected?(selected: boolean): void;
-  tag?: string;
+  tags?: string | string[];
   width?: number;
   offsetLeft?: number;
   offsetTop?: number;
@@ -99,7 +99,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   get CardComponent() {
-    const { card, translator, imageLoader, tag, highlight } = this.props;
+    const { card, translator, imageLoader, tags, highlight } = this.props;
     if (!card) {
       const cardBack = imageLoader.getCardBack();
       return (
@@ -135,7 +135,14 @@ export class ClientCard extends React.Component<ClientCardProps> {
             <img className={styles.innterFlatCardImage} src={this.realFlatCardImage} alt={card.Name} />
           </>
         )}
-        {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
+        {tags &&
+          (tags instanceof Array ? (
+            <span className={styles.cardTag}>
+              {tags.map(tag => translator.tr(tag) + (tags[tags.length - 1] === tag ? '' : ' '))}
+            </span>
+          ) : (
+            <span className={styles.cardTag}>{translator.trx(tags)}</span>
+          ))}
       </div>
     );
   }

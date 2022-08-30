@@ -151,6 +151,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.changeMaxHp.name);
   }
   //Server only
+  public async changeArmor(): Promise<void> {
+    this.throwUntouchableError(this.changeArmor.name);
+  }
+  //Server only
   public async recover(): Promise<void> {
     this.throwUntouchableError(this.recover.name);
   }

@@ -8,6 +8,14 @@ import { CompulsorySkill, FilterSkill } from 'core/skills/skill';
 
 @CompulsorySkill({ name: 'weimu', description: 'weimu_description' })
 export class WeiMu extends FilterSkill {
+  public get RelatedCharacters(): string[] {
+    return ['wangyuanji'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public canBeUsedCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, attacker?: PlayerId): boolean {
     if (cardId instanceof CardMatcher) {
       return !new CardMatcher({ suit: [CardSuit.Spade, CardSuit.Club], type: [CardType.Trick] }).match(cardId);

@@ -26,7 +26,6 @@ export const enum MarkEnum {
   HouTu = 'houtu',
   YuQing = 'yuqing',
   GouChen = 'gouchen',
-  Yi = 'yi',
   PveJian = 'pve_jian',
   PveZhi = 'pve_zhi',
   PveXi = 'pve_xi',
@@ -39,4 +38,9 @@ export const enum MarkEnum {
   PveWenQu = 'pve_wenqu',
   PveWuQu = 'pve_wuqu',
   PvePoJun = 'pve_pojun',
+  Feng = 'feng',
+  Qian = 'qian',
+  Ye = 'ye',
+  Shu = 'shu',
+  Yi = 'yi',
 }

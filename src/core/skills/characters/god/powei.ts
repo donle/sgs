@@ -249,7 +249,7 @@ export class PoWei extends TriggerSkill {
       });
 
       for (const player of room.getAlivePlayersFrom()) {
-        player.getMark(MarkEnum.Wei) > 0 && room.setMark(player.Id, MarkEnum.Wei, 0);
+        player.getMark(MarkEnum.Wei) > 0 && room.removeMark(player.Id, MarkEnum.Wei);
       }
 
       const equips = room.getPlayerById(fromId).getCardIds(PlayerCardsArea.EquipArea);

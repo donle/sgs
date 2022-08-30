@@ -1,13 +1,9 @@
+import { VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { PlayerPhase } from './stage_processor';
-
-type MovingCardType = {
-  card: CardId;
-  fromArea?: CardMoveArea | PlayerCardsArea;
-};
 
 type RecordCurrentType = 'phase' | 'round' | 'circle';
 
@@ -375,9 +371,15 @@ export class RecordAnalytics {
     }, []);
   }
   public getLostCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
-    return this.getCardLostRecord(player, current, inPhase, num).reduce<MovingCardType[]>((allCards, event) => {
+    return this.getCardLostRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       if (event.infos.length === 1) {
-        allCards.push(...event.infos[0].movingCards);
+        for (const cardInfo of event.infos[0].movingCards) {
+          if (cardInfo.asideMove) {
+            continue;
+          }
+
+          allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+        }
       } else {
         const infos = event.infos.filter(
           info =>
@@ -392,7 +394,13 @@ export class RecordAnalytics {
         );
 
         for (const info of infos) {
-          allCards.push(...info.movingCards);
+          for (const cardInfo of info.movingCards) {
+            if (cardInfo.asideMove) {
+              continue;
+            }
+
+            allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+          }
         }
       }
       return allCards;
@@ -401,14 +409,24 @@ export class RecordAnalytics {
   public getObtainedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardObtainedRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       if (event.infos.length === 1) {
-        allCards.push(...event.infos[0].movingCards.map(cardInfo => cardInfo.card));
+        for (const cardInfo of event.infos[0].movingCards) {
+          if (cardInfo.asideMove) {
+            continue;
+          }
+
+          allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+        }
       } else {
-        const infos = event.infos.filter(
-          info => event.infos.find(info => info.toId === player && info.toArea === CardMoveArea.HandArea) !== undefined,
-        );
+        const infos = event.infos.filter(info => info.toId === player && info.toArea === CardMoveArea.HandArea);
 
         for (const info of infos) {
-          allCards.push(...info.movingCards.map(cardInfo => cardInfo.card));
+          for (const cardInfo of info.movingCards) {
+            if (cardInfo.asideMove) {
+              continue;
+            }
+
+            allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+          }
         }
       }
       return allCards;
@@ -417,7 +435,13 @@ export class RecordAnalytics {
   public getDrawedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardDrawRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       if (event.infos.length === 1) {
-        allCards.push(...event.infos[0].movingCards.map(cardInfo => cardInfo.card));
+        for (const cardInfo of event.infos[0].movingCards) {
+          if (cardInfo.asideMove) {
+            continue;
+          }
+
+          allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+        }
       } else {
         const infos = event.infos.filter(
           info =>
@@ -425,7 +449,13 @@ export class RecordAnalytics {
         );
 
         for (const info of infos) {
-          allCards.push(...info.movingCards.map(cardInfo => cardInfo.card));
+          for (const cardInfo of info.movingCards) {
+            if (cardInfo.asideMove) {
+              continue;
+            }
+
+            allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+          }
         }
       }
       return allCards;
@@ -434,33 +464,54 @@ export class RecordAnalytics {
   public getDroppedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardDropRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       if (event.infos.length === 1) {
-        allCards.push(...event.infos[0].movingCards.map(cardInfo => cardInfo.card));
+        for (const cardInfo of event.infos[0].movingCards) {
+          if (cardInfo.asideMove) {
+            continue;
+          }
+
+          allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+        }
       } else {
         const infos = event.infos.filter(
           info =>
-            event.infos.find(
-              info =>
-                info.fromId === player &&
-                (info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop),
-            ) !== undefined,
+            info.fromId === player &&
+            (info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop),
         );
 
         for (const info of infos) {
-          allCards.push(...info.movingCards.map(cardInfo => cardInfo.card));
+          for (const cardInfo of info.movingCards) {
+            if (cardInfo.asideMove) {
+              continue;
+            }
+
+            allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+          }
         }
       }
       return allCards;
     }, []);
   }
   public getMovedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
-    return this.getCardMoveRecord(player, current, inPhase, num).reduce<MovingCardType[]>((allCards, event) => {
+    return this.getCardMoveRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       if (event.infos.length === 1) {
-        allCards.push(...event.infos[0].movingCards);
+        for (const cardInfo of event.infos[0].movingCards) {
+          if (cardInfo.asideMove) {
+            continue;
+          }
+
+          allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+        }
       } else {
-        const infos = event.infos.filter(info => event.infos.find(info => info.proposer === player) !== undefined);
+        const infos = event.infos.filter(info => info.proposer === player);
 
         for (const info of infos) {
-          allCards.push(...info.movingCards);
+          for (const cardInfo of info.movingCards) {
+            if (cardInfo.asideMove) {
+              continue;
+            }
+
+            allCards.push(...VirtualCard.getActualCards([cardInfo.card]));
+          }
         }
       }
       return allCards;

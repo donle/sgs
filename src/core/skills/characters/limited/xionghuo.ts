@@ -125,7 +125,7 @@ export class XiongHuoShadow extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       const playerId = (unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).playerId;
-      room.setMark(playerId, MarkEnum.BaoLi, 0);
+      room.removeMark(playerId, MarkEnum.BaoLi);
 
       const options = ['fire', 'lose', 'prey'];
       const randomOption = options[Math.floor(Math.random() * options.length)];

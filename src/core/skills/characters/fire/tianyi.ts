@@ -196,8 +196,14 @@ export class TianYiBlock extends FilterSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
-    if (!room.getFlag<boolean>(owner, TianYi.Lose)) {
+  public canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
+  ): boolean {
+    if (!room.getFlag<boolean>(owner, TianYi.Lose) || isCardResponse) {
       return true;
     }
 

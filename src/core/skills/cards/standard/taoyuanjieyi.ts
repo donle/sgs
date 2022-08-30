@@ -53,7 +53,7 @@ export class TaoYuanJieYiSkill extends ActiveSkill implements ExtralCardSkillPro
     const { toIds, cardId } = event;
     await room.recover({
       cardIds: [cardId],
-      recoveredHp: 1,
+      recoveredHp: 1 + (event.additionalRecoveredHp || 0),
       toId: Precondition.exists(toIds, 'Unknown targets in taoyuanjieyi')[0],
     });
 

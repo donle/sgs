@@ -1,8 +1,10 @@
-import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
@@ -16,13 +18,10 @@ export class MingShi extends TriggerSkill {
     return (
       content.toId === owner.Id &&
       content.fromId !== undefined &&
+      owner.getMark(MarkEnum.Qian) > 0 &&
       !room.getPlayerById(content.fromId).Dead &&
       room.getPlayerById(content.fromId).getPlayerCards().length > 0
     );
-  }
-
-  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return event.damage;
   }
 
   public async onTrigger() {
@@ -33,17 +32,42 @@ export class MingShi extends TriggerSkill {
     const { triggeredOnEvent } = event;
     const source = (triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId!;
 
-    const response = await room.askForCardDrop(
-      source,
-      1,
-      [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-      true,
-      undefined,
-      this.Name,
-    );
+    const sourcePlayer = room.getPlayerById(source);
+    const options = {
+      [PlayerCardsArea.JudgeArea]: sourcePlayer.getCardIds(PlayerCardsArea.JudgeArea),
+      [PlayerCardsArea.EquipArea]: sourcePlayer.getCardIds(PlayerCardsArea.EquipArea),
+      [PlayerCardsArea.HandArea]: sourcePlayer.getCardIds(PlayerCardsArea.HandArea),
+    };
 
-    response.droppedCards.length > 0 &&
-      (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, source, source, this.Name));
+    const chooseCardEvent = {
+      fromId: source,
+      toId: source,
+      options,
+      triggeredBySkills: [this.Name],
+    };
+
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, source, true, true);
+    if (!response) {
+      return false;
+    }
+
+    await room.dropCards(CardMoveReason.SelfDrop, [response.selectedCard!], source, source, this.Name);
+    if (Sanguosha.getCardById(response.selectedCard!).isBlack() && room.isCardInDropStack(response.selectedCard!)) {
+      await room.moveCards({
+        movingCards: [{ card: response.selectedCard!, fromArea: CardMoveArea.DropStack }],
+        toId: event.fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActivePrey,
+        proposer: event.fromId,
+        triggeredBySkills: [this.Name],
+      });
+    } else if (Sanguosha.getCardById(response.selectedCard!).isRed()) {
+      await room.recover({
+        toId: event.fromId,
+        recoveredHp: 1,
+        recoverBy: event.fromId,
+      });
+    }
 
     return true;
   }

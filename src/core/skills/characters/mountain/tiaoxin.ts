@@ -18,10 +18,6 @@ export class TiaoXin extends ActiveSkill {
     return ['sp_jiangwei', 'xiahouba'];
   }
 
-  public audioIndex(characterName?: string): number {
-    return characterName === this.RelatedCharacters[1] ? 1 : 2;
-  }
-
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     return owner.getFlag<boolean>(this.Name) ? owner.hasUsedSkillTimes(this.Name) < 2 : !owner.hasUsedSkill(this.Name);
   }

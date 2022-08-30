@@ -19,6 +19,7 @@ import { RoomStore } from 'pages/room/room.store';
 import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
+import { Armor } from 'ui/armor/armor';
 import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
 import { ClientCard } from 'ui/card/card';
 import { FlatClientCard } from 'ui/card/flat_card';
@@ -531,6 +532,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                     />
                   )}
                   <div className={styles.playerHp}>
+                    {player.Armor > 0 && (<Armor amount={player.Armor} />)}
                     <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                   </div>
                   <span

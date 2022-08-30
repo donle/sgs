@@ -16,6 +16,8 @@ export const enum JudgeMatcherEnum {
   DuLie,
   QingXi,
   ZhuiLie,
+  BingHuo,
+  XinChiJie,
 }
 
 export abstract class JudgeMatcher {
@@ -47,6 +49,10 @@ export abstract class JudgeMatcher {
         return this.QingXi(card);
       case JudgeMatcherEnum.ZhuiLie:
         return this.ZhuiLie(card);
+      case JudgeMatcherEnum.BingHuo:
+        return this.BingHuo(card);
+      case JudgeMatcherEnum.XinChiJie:
+        return this.XinChiJie(card);
       default:
         throw Precondition.UnreachableError(matcherEnum);
     }
@@ -91,5 +97,11 @@ export abstract class JudgeMatcher {
   }
   private static ZhuiLie(card: Card) {
     return card.is(CardType.Weapon) || card.is(CardType.DefenseRide) || card.is(CardType.OffenseRide);
+  }
+  private static BingHuo(card: Card) {
+    return card.isBlack();
+  }
+  private static XinChiJie(card: Card) {
+    return card.CardNumber > 6;
   }
 }

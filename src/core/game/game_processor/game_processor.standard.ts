@@ -16,6 +16,7 @@ import { MoveCardEventInfos, MovingCardProps } from 'core/event/event.server';
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import {
+  ArmorChangeStage,
   CardEffectStage,
   CardMoveStage,
   CardUseStage,
@@ -51,7 +52,7 @@ import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { DamageType } from '../game_props';
+import { DamageType, UPPER_LIMIT_OF_ARMOR } from '../game_props';
 import { GameProcessor } from './game_processor';
 
 export class StandardGameProcessor extends GameProcessor {
@@ -74,8 +75,6 @@ export class StandardGameProcessor extends GameProcessor {
   }[] = [];
   protected dumpedLastPlayerPositionIndex: number = -1;
 
-  private readonly DamageTypeTag = 'damageType';
-  private readonly BeginnerTag = 'beginnerOfTheDamage';
   protected proposalCharacters: string[] = [];
 
   constructor(protected stageProcessor: StageProcessor, protected logger: Logger) {
@@ -884,7 +883,9 @@ export class StandardGameProcessor extends GameProcessor {
       } = {};
 
       const notifierAllPlayers: PlayerId[] = [];
-      const wuxiekejiMatcher = new CardMatcher({ name: ['wuxiekeji'] });
+      const wuxiekejiMatcher = new CardMatcher({
+        name: ['wuxiekeji'].filter(cardName => !(event.disresponsiveCards || []).includes(cardName)),
+      });
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
         notifierAllPlayers.push(player.Id);
         if (
@@ -1149,6 +1150,13 @@ export class StandardGameProcessor extends GameProcessor {
           onActualExecuted,
         );
         break;
+      case GameEventIdentifiers.ArmorChangeEvent:
+        await this.onHandleArmorChangeEvent(
+          identifier as GameEventIdentifiers.ArmorChangeEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
       case GameEventIdentifiers.HpChangeEvent:
         await this.onHandleHpChangeEvent(
           identifier as GameEventIdentifiers.HpChangeEvent,
@@ -1294,52 +1302,78 @@ export class StandardGameProcessor extends GameProcessor {
               damageType,
             ).extract();
 
-        const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
-          fromId,
-          toId,
-          amount: damage,
-          byReaon: 'damage',
-          byCardIds: event.cardIds,
-        };
-        EventPacker.addMiddleware(
-          {
-            tag: this.DamageTypeTag,
-            data: event.damageType,
-          },
-          hpChangeEvent,
-        );
-        EventPacker.addMiddleware(
-          {
-            tag: this.BeginnerTag,
-            data: event.beginnerOfTheDamage,
-          },
-          hpChangeEvent,
-        );
-        EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
-        await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
-          if (hpChangeStage === HpChangeStage.HpChanging) {
-            this.room.broadcast(identifier, event);
-          }
-          return true;
-        });
-        event.beginnerOfTheDamage = hpChangeEvent.beginnerOfTheDamage;
-        EventPacker.copyPropertiesTo(hpChangeEvent, event);
-        if (EventPacker.isTerminated(event)) {
-          return;
+        let leftDamage = damage;
+        let hasBroadcasted = false;
+        if (to.Armor > 0) {
+          const armorChangeEvent: ServerEventFinder<GameEventIdentifiers.ArmorChangeEvent> = {
+            fromId,
+            toId,
+            amount: -damage,
+            leftDamage,
+            byCardIds: event.cardIds,
+            beginnerOfTheDamage: event.beginnerOfTheDamage,
+            damageType: event.damageType,
+          };
+
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.ArmorChangeEvent, armorChangeEvent);
+          await this.onHandleIncomingEvent(
+            GameEventIdentifiers.ArmorChangeEvent,
+            armorChangeEvent,
+            async armorChangeStage => {
+              if (armorChangeStage === ArmorChangeStage.ArmorChanging) {
+                this.room.broadcast(identifier, event);
+                hasBroadcasted = true;
+
+                this.room.broadcast(GameEventIdentifiers.ArmorChangeEvent, armorChangeEvent);
+              }
+              return true;
+            },
+          );
+
+          event.beginnerOfTheDamage = armorChangeEvent.beginnerOfTheDamage;
+          EventPacker.copyPropertiesTo(armorChangeEvent, event);
+
+          leftDamage = armorChangeEvent.leftDamage;
         }
 
-        const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
-          dying: to.Id,
-          killedBy: event.fromId,
-          killedByCards: event.cardIds,
-          triggeredBySkills: event.triggeredBySkills,
-        };
+        if (leftDamage > 0) {
+          const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
+            fromId,
+            toId,
+            amount: leftDamage,
+            byReaon: 'damage',
+            byCardIds: event.cardIds,
+            beginnerOfTheDamage: event.beginnerOfTheDamage,
+            damageType: event.damageType,
+          };
 
-        if (to.Hp <= 0) {
-          await this.onHandleIncomingEvent(
-            GameEventIdentifiers.PlayerDyingEvent,
-            EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
-          );
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
+          await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
+            if (hpChangeStage === HpChangeStage.HpChanging) {
+              hasBroadcasted || this.room.broadcast(identifier, event);
+              this.room.broadcast(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
+            }
+            return true;
+          });
+          event.beginnerOfTheDamage = hpChangeEvent.beginnerOfTheDamage;
+          EventPacker.copyPropertiesTo(hpChangeEvent, event);
+          if (EventPacker.isTerminated(event)) {
+            return;
+          }
+
+          const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
+            dying: to.Id,
+            killedBy: event.fromId,
+            killedByCards: event.cardIds,
+            triggeredBySkills: event.triggeredBySkills,
+          };
+
+          if (to.Hp <= 0) {
+            await this.onHandleIncomingEvent(
+              GameEventIdentifiers.PlayerDyingEvent,
+              EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
+            );
+          }
         }
       } else if (stage === DamageEffectStage.AfterDamagedEffect) {
         if (event.beginnerOfTheDamage === event.toId) {
@@ -1449,6 +1483,7 @@ export class StandardGameProcessor extends GameProcessor {
                 fromId: response.fromId,
                 cardId: response.cardId,
                 targetGroup: [[to.Id]],
+                extraUse: response.extraUse,
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
@@ -1671,7 +1706,7 @@ export class StandardGameProcessor extends GameProcessor {
       await this.room.moveCards({
         movingCards: [{ card: event.cardId, fromArea: event.customFromArea || from.cardFrom(event.cardId) }],
         toArea: CardMoveArea.ProcessingArea,
-        fromId: from.Id,
+        fromId: event.customFromId || from.Id,
         moveReason: CardMoveReason.CardUse,
       });
     }
@@ -2254,6 +2289,38 @@ export class StandardGameProcessor extends GameProcessor {
     });
   }
 
+  private async onHandleArmorChangeEvent(
+    identifier: GameEventIdentifiers.ArmorChangeEvent,
+    event: ServerEventFinder<GameEventIdentifiers.ArmorChangeEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    const to = this.room.getPlayerById(event.toId);
+    if (to.ChainLocked && event.damageType !== DamageType.Normal) {
+      await this.room.chainedOn(to.Id);
+      event.beginnerOfTheDamage = event.beginnerOfTheDamage || to.Id;
+    }
+
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === ArmorChangeStage.ArmorChanging) {
+        if (event.amount >= 0) {
+          event.amount = Math.min(UPPER_LIMIT_OF_ARMOR - to.Armor, event.amount);
+          if (event.amount < 1) {
+            EventPacker.terminate(event);
+            return;
+          }
+        } else {
+          if (event.amount === -to.Armor && event.leftDamage > 0) {
+            EventPacker.setLosingAllArmorTag(event, to.Armor);
+          }
+          event.amount = Math.max(event.amount, -to.Armor);
+        }
+
+        to.changeArmor(event.amount);
+        event.leftDamage && (event.leftDamage = event.leftDamage + event.amount);
+      }
+    });
+  }
+
   private async onHandleHpChangeEvent(
     identifier: GameEventIdentifiers.HpChangeEvent,
     event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>,
@@ -2261,13 +2328,11 @@ export class StandardGameProcessor extends GameProcessor {
   ) {
     const to = this.room.getPlayerById(event.toId);
     if (event.byReaon === 'damage') {
-      if (to.ChainLocked && EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) !== DamageType.Normal) {
+      if (to.ChainLocked && event.damageType !== DamageType.Normal) {
         await this.room.chainedOn(to.Id);
-        event.beginnerOfTheDamage = EventPacker.getMiddleware<string>(this.BeginnerTag, event) || to.Id;
+        event.beginnerOfTheDamage = event.beginnerOfTheDamage || to.Id;
       }
     }
-    EventPacker.removeMiddleware(this.DamageTypeTag, event);
-    EventPacker.removeMiddleware(this.BeginnerTag, event);
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === HpChangeStage.HpChanging) {

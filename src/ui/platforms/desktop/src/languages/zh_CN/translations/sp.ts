@@ -60,9 +60,20 @@ export const characterDictionary: Word[] = [
   { source: 'qingzhong', target: '清忠' },
   { source: 'weijing', target: '卫境' },
 
+  { source: 'ol_zhuling', target: 'OL朱灵' },
+  { source: 'zhuling_jixian', target: '急陷' },
+
   { source: 'sp_sunshangxiang', target: '蜀孙尚香' },
   { source: 'liangzhu', target: '良助' },
   { source: 'fanxiang', target: '返乡' },
+
+  { source: 'xiahouba', target: '夏侯霸' },
+  { source: 'baobian', target: '豹变' },
+
+  { source: 'guanyinping', target: '关银屏' },
+  { source: 'xuehen', target: '雪恨' },
+  { source: 'huxiao', target: '虎啸' },
+  { source: 'wuji', target: '武继' },
 
   { source: 'mayunlu', target: '马云騄' },
   { source: 'fengpo', target: '凤魄' },
@@ -102,6 +113,11 @@ export const characterDictionary: Word[] = [
   { source: 'yuxu', target: '誉虚' },
   { source: 'shijian', target: '实荐' },
 
+  { source: 'zhugejin', target: '诸葛瑾' },
+  { source: 'hongyuan', target: '弘援' },
+  { source: 'huanshi', target: '缓释' },
+  { source: 'mingzhe', target: '明哲' },
+
   { source: 'sunhao', target: '孙皓' },
   { source: 'canshi', target: '残蚀' },
   { source: '#canshi', target: '残蚀（弃牌）' },
@@ -111,6 +127,15 @@ export const characterDictionary: Word[] = [
   { source: 'zumao', target: '祖茂' },
   { source: 'yinbing', target: '引兵' },
   { source: 'juedi', target: '绝地' },
+
+  { source: 'heqi', target: '贺齐' },
+  { source: 'qizhou', target: '绮胄' },
+  { source: 'shanxi', target: '闪袭' },
+
+  { source: 'dingfeng', target: '丁奉' },
+  { source: 'duanbing', target: '短兵' },
+  { source: 'fenxun', target: '奋迅' },
+  { source: '##fenxun', target: '奋迅（弃牌）' },
 
   { source: 'sp_zhaoyun', target: '群赵云' },
   { source: 'std_longdan', target: '龙胆' },
@@ -168,6 +193,7 @@ export const characterDictionary: Word[] = [
   { source: 'beimihu', target: '卑弥呼' },
   { source: 'zongkui', target: '纵傀' },
   { source: 'guju', target: '骨疽' },
+  { source: 'guju times: {0}', target: '骨疽[{0}]' },
   { source: 'baijia', target: '拜假' },
   { source: 'sp_canshi', target: '蚕食' },
 
@@ -315,6 +341,12 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'zhuling_jixian_description',
+    target:
+      '摸牌阶段结束时，你可以视为对一名满足以下至少一项条件的角色使用一张无距离限制的【杀】，然后摸X张牌（X为其满足的条件数）：1.装备区里有防具牌；2.技能数多于你；3.未受伤。若你以此法使用的【杀】未造成伤害，你失去1点体力。',
+  },
+
+  {
     source: 'liangzhu_description',
     target: '当一名角色于其出牌阶段内回复体力后，你可以选择一项：1.你摸一张牌；2.令其摸两张牌。',
   },
@@ -322,6 +354,27 @@ export const skillDescriptions: Word[] = [
     source: 'fanxiang_description',
     target:
       '<b>觉醒技</b>，准备阶段开始时，若场上有已受伤且你发动过良助选项2令其摸牌的角色，你增加1点体力上限并回复1点体力，失去技能“良助”，获得技能“枭姬”。',
+  },
+
+  {
+    source: 'baobian_description',
+    target:
+      '<b>锁定技</b>，当你受到伤害后，根据你发动过本技能的次数，你获得相应的技能：0，“挑衅”；1，“咆哮”；2，“神速”。',
+  },
+
+  {
+    source: 'xuehen_description',
+    target:
+      '出牌阶段限一次，你可以弃置一张牌红色牌，并选择至多X名角色（X为你已损失的体力值且至少为1），横置这些角色，然后你对其中一名角色造成1点火焰伤害。',
+  },
+  {
+    source: 'huxiao_description',
+    target: '<b>锁定技</b>，当你造成火焰伤害后，受伤角色摸一张牌，然后你于本回合内对其使用牌无次数限制。',
+  },
+  {
+    source: 'wuji_description',
+    target:
+      '<b>觉醒技</b>，结束阶段开始时，若你于本回合内造成过的伤害值不少于3点，你加1点体力上限并回复1点体力，失去技能“虎啸”，然后你从场上、牌堆和弃牌堆中获得一张【青龙偃月刀】。',
   },
 
   {
@@ -397,6 +450,19 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'hongyuan_description',
+    target: '摸牌阶段，你可以少摸一张牌，然后令至多两名其他角色各摸一张牌。',
+  },
+  {
+    source: 'huanshi_description',
+    target: '当一名角色的判定牌生效前，你可以令其观看你的手牌并选择你的一张牌，然后你打出此牌代替判定牌。',
+  },
+  {
+    source: 'mingzhe_description',
+    target: '你的回合外，当你使用或打出红色牌，或当你因弃置而失去一张红色牌后，你可以摸一张牌。',
+  },
+
+  {
     source: 'yinbing_description',
     target:
       '结束阶段开始时，你可以将至少一张非基本牌置于你的武将牌上，称为“引兵”；当你受到【杀】或【决斗】造成的伤害后，你移去一张“引兵”牌。',
@@ -419,6 +485,28 @@ export const skillDescriptions: Word[] = [
   {
     source: 'guiming_description',
     target: '<b>主公技</b>，<b>锁定技</b>，你的“残蚀”中X的值增加未受伤的其他吴势力角色数。',
+  },
+
+  {
+    source: 'qizhou_description',
+    target:
+      '<b>锁定技</b>，根据你装备区里牌的花色总数，你视为拥有对应技能：不少于1，英姿；不少于2，奇袭；不少于3，旋风。',
+  },
+  {
+    source: 'shanxi_description',
+    target:
+      '出牌阶段开始时，你可以弃置一张红色基本牌，并将一名其他角色的至多X张牌置于其武将牌上（X为你的体力值），其于本回合结束时获得这些牌。',
+  },
+
+  {
+    source: 'duanbing_description',
+    target:
+      '当你使用【杀】选择目标后，你可以额外选择一名距离为1的角色为目标；当你使用【杀】指定距离为1的角色为目标后，其需连续使用两张【闪】才可抵消此【杀】。',
+  },
+  {
+    source: 'fenxun_description',
+    target:
+      '出牌阶段限一次，你可以选择一名其他角色，令你于本回合内计算至其的距离视为1。若如此做，本回合结束时，若你未对该角色造成过伤害，你弃置一张牌。',
   },
 
   {
@@ -1215,6 +1303,7 @@ export const promptDescriptions: Word[] = [
   },
   { source: 'zhaolie-dama', target: '受到非基本牌数点伤害' },
   { source: 'zhaolie-drop', target: '依次弃置非基本牌数张牌' },
+
   {
     source: '{0}: do you want to draw a card and let {1} nullify to you?',
     target: '{0}：你可以摸一张牌，然后令 {1} 对你无效',
@@ -1523,5 +1612,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to draw a card, and then give all your hand cards to {1} ?',
     target: '{0}：你可以摸一张牌，然后将所有手牌交给 {1} ，其交给你等量的牌',
+  },
+
+  {
+    source: 'xuehen: please choose a target to deal 1 fire damage',
+    target: '雪恨：请选择其中一名角色，对其造成1点火焰伤害',
   },
 ];

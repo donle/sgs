@@ -271,8 +271,14 @@ export class GameClientProcessor {
       case GameEventIdentifiers.CardDisplayEvent:
         await this.onHandleCardDisplayEvent(e as any, content);
         break;
+      case GameEventIdentifiers.ArmorChangeEvent:
+        await this.onHandleArmorChangeEvent(e as any, content);
+        break;
       case GameEventIdentifiers.DamageEvent:
         await this.onHandleDamageEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.HpChangeEvent:
+        await this.onHandleHpChangeEvent(e as any, content);
         break;
       case GameEventIdentifiers.LoseHpEvent:
         await this.onHandleLoseHpEvent(e as any, content);
@@ -406,6 +412,15 @@ export class GameClientProcessor {
       case GameEventIdentifiers.BackToWaitingRoomEvent:
         await this.BackingToWaitingRoomEvent(e as any, content);
         break;
+      case GameEventIdentifiers.SetCardTagEvent:
+        await this.onHandleSetCardTagEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.RemoveCardTagEvent:
+        await this.onHandleRemoveCardTagEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.ClearCardTagsEvent:
+        await this.onHandleClearCardTagsEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -433,7 +448,7 @@ export class GameClientProcessor {
       const skill = matchArray[1];
       const characterName = matchArray.length > 3 ? matchArray[2] : undefined;
       const index = parseInt(matchArray.length > 3 ? matchArray[3] : matchArray[2], undefined);
-      this.audioService.playSkillAudio(skill, CharacterGender.Male, index, undefined, characterName); // player's character may be undefined
+      this.audioService.playSkillAudio(skill, CharacterGender.Male, index, undefined, undefined, characterName); // player's character may be undefined
 
       const player = this.store.room.getPlayerById(content.playerId);
       this.presenter.addUserMessage(
@@ -865,6 +880,7 @@ export class GameClientProcessor {
     for (const {
       toId,
       characterId,
+      armor,
       maxHp,
       hp,
       nationality,
@@ -876,6 +892,7 @@ export class GameClientProcessor {
     } of changedProperties) {
       const player = this.store.room.getPlayerById(toId);
       characterId !== undefined && (player.CharacterId = characterId);
+      armor !== undefined && (player.Armor = armor);
       maxHp !== undefined && (player.MaxHp = maxHp);
       hp !== undefined && (player.Hp = hp);
       nationality !== undefined && (player.Nationality = nationality);
@@ -914,15 +931,24 @@ export class GameClientProcessor {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
     const skinName = getSkinName(player.Character.Name, player.Id, this.skinData).skinName;
-    this.audioService.playDeathAudio(player.Character.Name, this.skinData, skinName);
+    this.audioService.playDeathAudio(player.Character.Name, undefined, this.skinData, skinName);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
+  protected onHandleArmorChangeEvent<T extends GameEventIdentifiers.ArmorChangeEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
+    player.changeArmor(content.amount);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  protected onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
     this.audioService.playDamageAudio(content.damage);
-    player.changeHp(-content.damage);
+  }
+
+  protected onHandleHpChangeEvent<T extends GameEventIdentifiers.HpChangeEvent>(type: T, content: ServerEventFinder<T>) {
+    const player = this.store.room.getPlayerById(content.toId);
+    player.changeHp(content.byReaon !== 'recover' ? -content.amount : content.amount);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1702,6 +1728,7 @@ export class GameClientProcessor {
         skill.GeneralName,
         from.Gender,
         content.audioIndex,
+        undefined,
         this.skinData,
         from.Character.Name,
         skinName,
@@ -1979,5 +2006,28 @@ export class GameClientProcessor {
   ) {
     const { roomId, roomInfo } = content;
     this.createWaitingRoomCaller?.(roomInfo, roomId);
+  }
+
+  protected async onHandleSetCardTagEvent<T extends GameEventIdentifiers.SetCardTagEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room
+      .getPlayerById(content.toId)
+      .setCardTag(content.cardTag, content.cardIds);
+  }
+  
+  protected async onHandleRemoveCardTagEvent<T extends GameEventIdentifiers.RemoveCardTagEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).removeCardTag(content.cardTag);
+  }
+  
+  protected async onHandleClearCardTagsEvent<T extends GameEventIdentifiers.ClearCardTagsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).clearCardTags();
   }
 }

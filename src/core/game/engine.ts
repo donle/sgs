@@ -248,6 +248,8 @@ export class Sanguosha {
       GameCharacterExtensions.YiJiang2013,
       GameCharacterExtensions.YiJiang2014,
       GameCharacterExtensions.YiJiang2015,
+      GameCharacterExtensions.Yuan6,
+      GameCharacterExtensions.Yuan7,
       GameCharacterExtensions.SP,
       GameCharacterExtensions.Spark,
       GameCharacterExtensions.Decade,
@@ -255,6 +257,9 @@ export class Sanguosha {
       GameCharacterExtensions.Biographies,
       GameCharacterExtensions.Mobile,
       GameCharacterExtensions.Wisdom,
+      GameCharacterExtensions.Sincerity,
+      GameCharacterExtensions.Benevolence,
+      GameCharacterExtensions.Strategem,
       GameCharacterExtensions.Sincerity,
     ];
   }

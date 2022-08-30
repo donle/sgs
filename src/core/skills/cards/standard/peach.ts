@@ -51,7 +51,7 @@ export class PeachSkill extends ActiveSkill implements ExtralCardSkillProperty {
     const recoverContent = {
       recoverBy: event.fromId,
       toId,
-      recoveredHp: 1,
+      recoveredHp: 1 + (event.additionalRecoveredHp || 0),
       cardIds: [event.cardId],
       triggeredBySkills: [this.Name],
       translationsMessage: TranslationPack.translationJsonPatcher(

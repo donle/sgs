@@ -10,6 +10,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wushuang', description: 'wushuang_description' })
 export class WuShuang extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['lvlingqi'];
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage): boolean {
     if (stage === AimStage.AfterAim) {
       return (

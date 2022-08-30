@@ -3,20 +3,40 @@ import { Word } from 'languages';
 export const characterDictionary: Word[] = [
   { source: 'mobile', target: '手杀专属' },
 
+  { source: 'zhuling', target: '朱灵' },
+  { source: 'zhanyi', target: '战意' },
+  { source: 'zhanyi: {0}', target: '战意[{0}]' },
+  { source: '#zhanyi', target: '战意（目标弃牌）' },
+  { source: '~side_zhanyi_s', target: '战意' },
+
   { source: 'simazhao', target: '司马昭' },
   { source: 'daigong', target: '怠攻' },
   { source: 'zhaoxin', target: '昭心' },
 
+  { source: 'wangyuanji', target: '王元姬' },
+  { source: 'qianchong', target: '谦冲' },
+  { source: '#qianchong', target: '谦冲' },
+  { source: 'shangjian', target: '尚俭' },
+
   { source: 'jiakui', target: '贾逵' },
   { source: 'zhongzuo', target: '忠佐' },
   { source: 'wanlan', target: '挽澜' },
-  { source: '#wanlan', target: '挽澜' },
 
   { source: 'simashi', target: '司马师' },
   { source: 'baiyi', target: '败移' },
   { source: 'jinglve', target: '景略' },
   { source: 'sishi: {0} {1}', target: '死士[{0}{1}]' },
   { source: 'shanli', target: '擅立' },
+
+  { source: 'yanghuiyu', target: '羊徽瑜' },
+  { source: 'hongyi', target: '弘仪' },
+  { source: '#s_hongyi_debuff', target: '弘仪（判定）' },
+  { source: 'quanfeng', target: '劝封' },
+
+  { source: 'maojie', target: '毛玠' },
+  { source: 'bingqing', target: '秉清' },
+  { source: 'yingfeng', target: '迎奉' },
+  { source: 'feng', target: '奉' },
 
   { source: 'lifeng', target: '李丰' },
   { source: 'tunchu', target: '屯储' },
@@ -30,6 +50,15 @@ export const characterDictionary: Word[] = [
   { source: 'xuewei', target: '血卫' },
   { source: 'liechi', target: '烈斥' },
 
+  { source: 'hujinding', target: '胡金定' },
+  { source: 'renshi', target: '仁释' },
+  { source: 'wuyuan', target: '武缘' },
+  { source: 'huaizi', target: '怀子' },
+
+  { source: 'fuqian', target: '傅佥' },
+  { source: 'poxiang', target: '破降' },
+  { source: 'jueyong', target: '绝勇' },
+
   { source: 'lingcao', target: '凌操' },
   { source: 'dujin', target: '独进' },
 
@@ -37,10 +66,18 @@ export const characterDictionary: Word[] = [
   { source: 'yingjian', target: '影箭' },
   { source: 'shixin', target: '释衅' },
 
+  { source: 'liuzan', target: '留赞' },
+  { source: 'fenyin', target: '奋音' },
+
   { source: 'yangbiao', target: '杨彪' },
   { source: 'zhaohan', target: '昭汉' },
   { source: 'rangjie', target: '让节' },
   { source: 'mobile_yizheng', target: '义争' },
+
+  { source: 'qunsufei', target: '群苏飞' },
+  { source: 'zhengjian', target: '诤荐' },
+  { source: 'zhengjian count: {0}', target: '诤荐[{0}]' },
+  { source: 'gaoyuan', target: '告援' },
 
   { source: 'xing_ganning', target: '星甘宁' },
   { source: 'jinfan', target: '锦帆' },
@@ -49,9 +86,36 @@ export const characterDictionary: Word[] = [
   { source: 'gongsunkang', target: '公孙康' },
   { source: 'juliao', target: '据辽' },
   { source: 'taomie', target: '讨灭' },
+
+  { source: 'mayuanyi', target: '马元义' },
+  { source: 'jibing', target: '集兵' },
+  { source: 'wangjing', target: '往京' },
+  { source: 'moucuan', target: '谋篡' },
+  { source: 'binghuo', target: '兵祸' },
+
+  { source: 'yanpu', target: '阎圃' },
+  { source: 'huantu', target: '缓图' },
+  { source: '#huantu', target: '缓图（选择）' },
+  { source: 'bihuo', target: '避祸' },
+  { source: 'bihuo distance: {0}', target: '避祸+{0}' },
+
+  { source: 'xing_huangzhong', target: '星黄忠' },
+  { source: 'shidi', target: '势敌' },
+  { source: 'xing_yishi', target: '义释' },
+  { source: 'qishe', target: '骑射' },
 ];
 
 export const skillDescriptions: Word[] = [
+  {
+    source: 'zhanyi_description',
+    target:
+      '出牌阶段限一次，你可以弃置一张牌，然后失去1点体力。若你以此法弃置的牌为：基本牌，你于此阶段内可将一张基本牌当任意基本牌使用，且使用的下一张基本牌的伤害基值或回复值+1；锦囊牌，你摸三张牌，且你于此阶段内使用普通锦囊牌不可被【无懈可击】响应；装备牌，当你于此阶段内使用【杀】指定唯一目标后，其须弃置两张牌，然后你获得其中一张牌。',
+  },
+  {
+    source: 'side_zhanyi_s_description',
+    target: '你可以将一张基本牌当任意基本牌使用。',
+  },
+
   {
     source: 'daigong_description',
     target:
@@ -61,6 +125,16 @@ export const skillDescriptions: Word[] = [
     source: 'zhaoxin_description',
     target:
       '出牌阶段限一次，若X大于0，你可以将一至X张牌置于你的武将牌上，称为“望”，然后摸等量的牌（X为3减去你的“望”数之差）；你或在你攻击范围内的角色的摸牌阶段结束时，其可以获得你的一张“望”，然后你可以对其造成1点伤害。',
+  },
+
+  {
+    source: 'qianchong_description',
+    target:
+      '<b>锁定技</b>，若你装备区里有牌且均为：红色牌，你视为拥有技能“明哲”；黑色牌，你视为拥有技能“帷幕”。出牌阶段开始时，若你的装备区里的没有牌，或装备区里的牌颜色不同，你选择一种类别，于本回合内使用此类别的牌无距离和次数限制。',
+  },
+  {
+    source: 'shangjian_description',
+    target: '一名角色的结束阶段开始时，若X不大于你的体力值，你可以摸X张牌（X为你于本回合内失去过的牌数）。',
   },
 
   {
@@ -90,13 +164,35 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'hongyi_description',
+    target:
+      '出牌阶段限一次，你可以选择一名其他角色，直到你的下个回合开始前，当该角色造成伤害时，其判定，若结果为：红色，受伤角色摸一张牌；黑色，此伤害-1。',
+  },
+  {
+    source: 'quanfeng_description',
+    target:
+      '<b>限定技</b>，当其他角色死亡后，你可以失去技能“弘仪”，然后你减1点体力上限，并获得该角色武将牌上的所有技能；当你处于濒死状态时，你可以加2点体力上限，然后回复4点体力。',
+  },
+
+  {
+    source: 'bingqing_description',
+    target:
+      '当你于出牌阶段内首次使用一种花色的牌结算结束后，根据你于此阶段内使用过牌的花色数，你可以执行对应效果：两种，令一名角色摸两张牌；三种，弃置一名角色区域里的一张牌；四种，对一名其他角色造成1点伤害。',
+  },
+  {
+    source: 'yingfeng_description',
+    target:
+      '准备阶段开始时，你可以令一名没有“奉”标记的角色获得一枚“奉”标记（若场上已有“奉”标记，则改为将此“奉”标记转移给该角色）；有“奉”标记的角色使用牌无距离限制。',
+  },
+
+  {
     source: 'tunchu_description',
     target:
       '摸牌阶段，若你没有“粮”，你可以多摸两张牌，然后你可以将至少一张手牌置于你的武将牌上，称为“粮”；若你有“粮”，你不能使用【杀】。',
   },
   {
     source: 'shuliang_description',
-    target: '一名角色的结束阶段开始时，你可以移去一张“粮”，令其摸两张牌。',
+    target: '一名角色的结束阶段开始时，若其手牌数小于其体力值，你可以移去一张“粮”，令其摸两张牌。',
   },
 
   {
@@ -119,6 +215,31 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'renshi_description',
+    target: '<b>锁定技</b>，当你受到【杀】造成的伤害时，若你已受伤，你防止此伤害并获得此【杀】。',
+  },
+  {
+    source: 'wuyuan_description',
+    target:
+      '出牌阶段限一次，你可以将一张【杀】交给一名其他角色，然后你回复1点体力，其摸一张牌（若此【杀】为红色，改为摸两张牌）。若此【杀】为属性【杀】，你回复1点体力。',
+  },
+  {
+    source: 'huaizi_description',
+    target: '<b>锁定技</b>，你的手牌上限基值等同于你的体力上限。',
+  },
+
+  {
+    source: 'poxiang_description',
+    target:
+      '出牌阶段限一次，你可以将一张牌交给一名其他角色，然后你摸三张牌（这些牌于本回合内不计入你的手牌上限），移去你的所有“绝”并失去1点体力。',
+  },
+  {
+    source: 'jueyong_description',
+    target:
+      '<b>锁定技</b>，当你成为不因“绝勇”而使用的非虚拟且非转化的牌（【桃】和【酒】除外）的唯一目标时，若你的“绝”数小于你体力值的两倍，取消之，然后你将此牌置于你的武将牌上，称为“绝”；结束阶段开始时，若你有“绝”，则按“绝”的置入顺序依次由原使用者对你使用此“绝”（若原使用者已阵亡，则改为移去此“绝”）。',
+  },
+
+  {
     source: 'dujin_description',
     target: '摸牌阶段，你可以多摸X+1张牌（X为你装备区里牌数的一半，向下取整）。',
   },
@@ -130,6 +251,11 @@ export const skillDescriptions: Word[] = [
   {
     source: 'shixin_description',
     target: '<b>锁定技</b>，当你受到火焰伤害时，防止之。',
+  },
+
+  {
+    source: 'fenyin_description',
+    target: '当你于出牌阶段内使用牌时，若此牌的颜色与你于此阶段内使用过的上一张牌颜色不同，你可以摸一张牌。',
   },
 
   {
@@ -159,6 +285,17 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'zhengjian_description',
+    target:
+      '<b>锁定技</b>，结束阶段开始时，你令一名其他角色获得“荐”标记，你的下个回合开始时，你摸X张牌并移去其“荐”（X为其获得此标记后使用或打出过的牌数，至多为其体力上限且不超过5）。',
+  },
+  {
+    source: 'gaoyuan_description',
+    target:
+      '当你成为【杀】的目标时，你可以弃置一张牌，并将目标转移给一名不为此【杀】使用者且不为目标的有“荐”标记的角色。',
+  },
+
+  {
     source: 'juliao_description',
     target: '<b>锁定技</b>，其他角色计算与你的距离+X（X为存活势力数-1）。',
   },
@@ -166,6 +303,50 @@ export const skillDescriptions: Word[] = [
     source: 'taomie_description',
     target:
       '当你对其他角色造成伤害后，或其他角色对你造成伤害后，若其没有“讨灭”标记，你可以发动本技能，移去场上所有“讨灭”标记，令其获得一枚“讨灭”标记；你视为在有“讨灭”标记的其他角色的攻击范围内；当你对有“讨灭”标记的角色造成伤害时，你选择一项：1.令此伤害+1；2.获得其区域内的一张牌；3.依次执行前两项，然后于此伤害流程结算结束后移去其“讨灭”标记。',
+  },
+
+  {
+    source: 'jibing_description',
+    target:
+      '摸牌阶段，若你的“兵”少于X张（X为存活势力数），你可以将牌堆顶两张牌置于你的武将牌上，称为“兵”；你可将一张“兵”当【杀】或【闪】使用或打出。',
+  },
+  {
+    source: 'wangjing_description',
+    target: '<b>锁定技</b>，当你发动“集兵”使用或打出牌时，若对方是场上体力值最高的角色，你摸一张牌。',
+  },
+  {
+    source: 'moucuan_description',
+    target: '<b>觉醒技</b>，准备阶段开始时，若你有至少X张“兵”（X为存活势力数），你减1点体力上限，然后获得技能“兵祸”。',
+  },
+  {
+    source: 'binghuo_description',
+    target:
+      '一名角色的结束阶段开始时，若你于本回合内发动“集兵”使用或打出过“兵”，你可以令一名角色判定，若结果为黑色，你对其造成1点雷电伤害。',
+  },
+
+  {
+    source: 'huantu_description',
+    target:
+      '每轮限一次，你攻击范围内的一名角色的摸牌阶段开始前，你可以交给其一张牌，跳过此阶段。若如此做，于其本回合的下个结束阶段开始时，你选择一项：1.令其回复1点体力并摸两张牌；2.摸三张牌并交给其两张手牌。',
+  },
+  {
+    source: 'bihuo_description',
+    target:
+      '<b>限定技</b>，当一名角色脱离濒死状态后，你可以令其摸三张牌，且其他角色于本轮内计算与其的距离+X（X为存活角色数）。',
+  },
+
+  {
+    source: 'shidi_description',
+    target:
+      '<b>转换技</b>，<b>锁定技</b>，准备阶段开始时，转换为阳；结束阶段开始时，转换为阴；阳：你计算与其他角色的距离-1，你使用的黑色【杀】不可被响应。阴：其他角色计算与你的距离+1，你不可响应其他角色对你使用的红色【杀】。',
+  },
+  {
+    source: 'xing_yishi_description',
+    target: '当你对其他角色造成伤害时，你可以令此伤害-1，然后你获得其装备区里的一张牌。',
+  },
+  {
+    source: 'qishe_description',
+    target: '你可以将一张装备牌当【酒】使用；你的手牌上限+X（X为你装备区里的牌数）。',
   },
 ];
 
@@ -443,10 +624,6 @@ export const promptDescriptions: Word[] = [
     target: '{0}；请选择一名其他角色作为“血卫”的目标',
   },
 
-  {
-    source: '{0}: do you want to use this skill to {1} ?',
-    target: '{0}；你可以对 {1} 发动本技能',
-  },
   {
     source: '{0}: please choose taomie options: {1}',
     target: '{0}；请选择令此对 {1} 造成的伤害+1，或获得其 {1} 区域内的一张牌',

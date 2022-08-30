@@ -1,5 +1,5 @@
 import { BaGuaZhenSkillTrigger } from 'core/ai/skills/cards/baguazhen';
-import { CardType, VirtualCard } from 'core/cards/card';
+import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Jink } from 'core/cards/standard/jink';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -42,12 +42,13 @@ export class BaGuaZhenSkill extends TriggerSkill {
     }
 
     const { cardMatcher } = content;
-    const jinkMatcher = new CardMatcher({ name: ['jink'], type: [CardType.Basic] });
+    const jinkMatcher = new CardMatcher({ name: ['jink'] });
     return (
       owner.Id === content.toId &&
       CardMatcher.match(cardMatcher, jinkMatcher) &&
-      owner.getSkills<FilterSkill>('filter').find(skill => !skill.canUseCard(jinkMatcher, room, owner.Id, content)) ===
-        undefined
+      owner
+        .getSkills<FilterSkill>('filter')
+        .find(skill => !skill.canUseCard(jinkMatcher, room, owner.Id, content)) === undefined
     );
   }
 

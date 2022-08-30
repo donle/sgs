@@ -1,3 +1,4 @@
+import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardColor, CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -70,7 +71,7 @@ export class MinSi extends ActiveSkill {
     await room.dropCards(CardMoveReason.SelfDrop, cardIds, fromId, fromId, this.Name);
 
     const cards = await room.drawCards(cardIds.length * 2, fromId, 'top', fromId, this.Name);
-    room.setFlag<CardId[]>(fromId, this.Name, cards);
+    room.setCardTag(fromId, this.Name, VirtualCard.getActualCards(cards));
 
     return true;
   }
@@ -124,7 +125,7 @@ export class MinSiShadow extends TriggerSkill implements OnDefineReleaseTiming {
       canTrigger = phaseChangeEvent.from === PlayerPhase.PhaseFinish;
     }
 
-    return canTrigger && owner.getFlag<boolean>(this.GeneralName) !== undefined;
+    return canTrigger && owner.getCardTag(this.GeneralName) !== undefined;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -140,13 +141,16 @@ export class MinSiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     if (identifier === GameEventIdentifiers.AskForCardDropEvent) {
       const askForCardDropEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
       const player = room.getPlayerById(askForCardDropEvent.toId);
-      const cardIds = player.getFlag<CardId[]>(this.GeneralName);
+      const cardIds = player.getCardTag(this.GeneralName);
 
-      if (cardIds.length > 0) {
+      if (cardIds && cardIds.length > 0) {
         const hands = player.getCardIds(PlayerCardsArea.HandArea);
-        const minSiCards = hands.filter(
-          card => cardIds.includes(card) && Sanguosha.getCardById(card).Color === CardColor.Red,
-        );
+        const minSiCards = hands.filter(card => {
+          return (
+            cardIds.includes(VirtualCard.getActualCards([card])[0]) &&
+            Sanguosha.getCardById(card).Color === CardColor.Red
+          );
+        });
         const discardAmount = hands.length - minSiCards.length - player.getMaxCardHold(room);
 
         askForCardDropEvent.cardAmount = discardAmount;
@@ -155,7 +159,7 @@ export class MinSiShadow extends TriggerSkill implements OnDefineReleaseTiming {
           : minSiCards;
       }
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      room.removeFlag(event.fromId, this.GeneralName);
+      room.removeCardTag(event.fromId, this.GeneralName);
     }
 
     return true;
@@ -176,12 +180,12 @@ export class MinSiUnlimited extends RulesBreakerSkill implements OnDefineRelease
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
-    if (!room.getFlag<CardId[]>(owner.Id, this.GeneralName) || cardId instanceof CardMatcher) {
+    if (!room.getCardTag(owner.Id, this.GeneralName) || cardId instanceof CardMatcher) {
       return 0;
     }
 
     if (
-      room.getFlag<CardId[]>(owner.Id, this.GeneralName).includes(cardId) &&
+      room.getCardTag(owner.Id, this.GeneralName)!.includes(cardId) &&
       Sanguosha.getCardById(cardId).Color === CardColor.Black
     ) {
       return INFINITE_DISTANCE;

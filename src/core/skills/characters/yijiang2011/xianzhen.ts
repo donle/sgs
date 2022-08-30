@@ -126,8 +126,14 @@ export class XianZhenBlock extends FilterSkill implements OnDefineReleaseTiming 
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
-    if (!room.getFlag<boolean>(owner, XianZhen.Lose)) {
+  public canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
+  ) {
+    if (!room.getFlag<boolean>(owner, XianZhen.Lose) || isCardResponse) {
       return true;
     }
 

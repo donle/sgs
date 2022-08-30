@@ -1,0 +1,14 @@
+.armorLabel {
+  text-align: center;
+  background: no-repeat url('images/armor.png');
+  height: 20px;
+  width: 20px;
+}
+
+.armorText {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 3px white, 0 0 4px white, 0 0 4px white,
+      0 0 3px white;
+}

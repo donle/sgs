@@ -33,7 +33,7 @@ export class GuiCai extends TriggerSkill {
       room
         .getPlayerById(owner)
         .getSkills<FilterSkill>('filter')
-        .find(skill => !skill.canUseCard(cardId, room, owner)) === undefined
+        .find(skill => !skill.canUseCard(cardId, room, owner, undefined, true)) === undefined
     );
   }
 

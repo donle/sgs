@@ -95,7 +95,9 @@ export interface ServerEvent extends EventUtilities {
     disresponsiveList?: PlayerId[];
     unoffsetable?: PlayerId[];
     additionalDamage?: number;
+    additionalRecoveredHp?: number;
     customFromArea?: CardMoveArea;
+    customFromId?: PlayerId;
     cardIdsResponded?: CardId[];
   };
   [GameEventIdentifiers.CardEffectEvent]: {
@@ -109,7 +111,9 @@ export interface ServerEvent extends EventUtilities {
     isCancelledOut?: boolean;
     disresponsiveList?: PlayerId[];
     additionalDamage?: number;
+    additionalRecoveredHp?: number;
     cardIdsResponded?: CardId[];
+    disresponsiveCards?: string[];
   };
   [GameEventIdentifiers.AimEvent]: {
     fromId: string;
@@ -121,6 +125,7 @@ export interface ServerEvent extends EventUtilities {
     nullifiedTargets: PlayerId[];
     isFirstTarget: boolean;
     additionalDamage?: number;
+    additionalRecoveredHp?: number;
     extraUse?: boolean;
   };
   [GameEventIdentifiers.CardResponseEvent]: {
@@ -170,6 +175,15 @@ export interface ServerEvent extends EventUtilities {
     additionalMaxHp: number;
     toId: PlayerId;
   };
+  [GameEventIdentifiers.ArmorChangeEvent]: {
+    fromId?: PlayerId;
+    toId: PlayerId;
+    amount: number;
+    leftDamage: number;
+    byCardIds?: CardId[];
+    beginnerOfTheDamage?: PlayerId;
+    damageType?: DamageType;
+  };
   [GameEventIdentifiers.HpChangeEvent]: {
     fromId?: PlayerId;
     toId: PlayerId;
@@ -177,6 +191,7 @@ export interface ServerEvent extends EventUtilities {
     byReaon: 'damage' | 'lostHp' | 'recover';
     byCardIds?: CardId[];
     beginnerOfTheDamage?: PlayerId;
+    damageType?: DamageType;
   };
   [GameEventIdentifiers.DamageEvent]: {
     fromId?: PlayerId;
@@ -471,6 +486,7 @@ export interface ServerEvent extends EventUtilities {
     changedProperties: {
       toId: PlayerId;
       characterId?: CharacterId;
+      armor?: number;
       maxHp?: number;
       hp?: number;
       nationality?: CharacterNationality;
@@ -523,6 +539,18 @@ export interface ServerEvent extends EventUtilities {
     playerName: string;
     roomInfo: TemporaryRoomCreationInfo;
     roomId: RoomId;
+  };
+  [GameEventIdentifiers.SetCardTagEvent]: {
+    toId: PlayerId;
+    cardTag: string;
+    cardIds: CardId[];
+  };
+  [GameEventIdentifiers.RemoveCardTagEvent]: {
+    toId: PlayerId;
+    cardTag: string;
+  };
+  [GameEventIdentifiers.ClearCardTagsEvent]: {
+    toId: PlayerId;
   };
 }
 

@@ -37,7 +37,7 @@ export class ShenZhuo extends TriggerSkill {
       {
         options,
         conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose shenzhuo options: {1}',
+          '{0}: please choose shenzhuo options',
           this.Name,
         ).extract(),
         toId: event.fromId,
@@ -107,8 +107,14 @@ export class ShenZhuoBlock extends FilterSkill implements OnDefineReleaseTiming 
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
-    if (!room.getFlag<boolean>(owner, ShenZhuo.Block)) {
+  public canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
+  ): boolean {
+    if (!room.getFlag<boolean>(owner, ShenZhuo.Block) || isCardResponse) {
       return true;
     }
 

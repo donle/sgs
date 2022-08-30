@@ -102,6 +102,11 @@ export const enum GameEventIdentifiers {
   PlayerReadyEvent,
 
   AskForFortuneCardExchangeEvent,
+  SetCardTagEvent,
+  RemoveCardTagEvent,
+  ClearCardTagsEvent,
+
+  ArmorChangeEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
@@ -163,6 +168,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.ChangeMaxHpEvent,
   GameEventIdentifiers.DamageEvent,
   GameEventIdentifiers.RecoverEvent,
+  GameEventIdentifiers.HpChangeEvent,
   GameEventIdentifiers.JudgeEvent,
 
   GameEventIdentifiers.GameStartEvent,
@@ -206,6 +212,12 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent,
   GameEventIdentifiers.RefreshOnceSkillEvent,
   GameEventIdentifiers.BackToWaitingRoomEvent,
+
+  GameEventIdentifiers.SetCardTagEvent,
+  GameEventIdentifiers.RemoveCardTagEvent,
+  GameEventIdentifiers.ClearCardTagsEvent,
+
+  GameEventIdentifiers.ArmorChangeEvent,
 ];
 
 export const serverActiveListenerEvents = [
@@ -246,6 +258,7 @@ export const serverResponsiveListenerEvents = [
 
 export const enum CardMovedBySpecifiedReason {
   JudgeProcess = 'JudgeProcess',
+  GameRuleDrop = 'GameRuleDrop',
 }
 
 export const enum CardDrawReason {

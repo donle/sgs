@@ -97,6 +97,7 @@ export class DuoRui extends TriggerSkill implements OnDefineReleaseTiming {
           !skill.isShadowSkill() &&
           skill.SkillType !== SkillType.Awaken &&
           skill.SkillType !== SkillType.Limit &&
+          skill.SkillType !== SkillType.Quest &&
           !skill.isLordSkill() &&
           !skill.isStubbornSkill(),
       );

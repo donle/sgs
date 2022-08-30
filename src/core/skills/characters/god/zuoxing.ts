@@ -42,7 +42,15 @@ export class ZuoXing extends ViewAsSkill implements OnDefineReleaseTiming {
     return (
       room.CurrentPlayerPhase === PlayerPhase.PlayCardStage &&
       owner.getFlag<boolean>(this.Name) &&
-      !owner.hasUsedSkill(this.Name)
+      !owner.hasUsedSkill(this.Name) &&
+      owner.canUseCard(
+        room,
+        new CardMatcher({
+          name: Sanguosha.getCardNameByType(
+            types => types.includes(CardType.Trick) && !types.includes(CardType.DelayedTrick),
+          ),
+        }),
+      )
     );
   }
 

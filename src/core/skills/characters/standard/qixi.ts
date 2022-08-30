@@ -9,6 +9,14 @@ import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'qixi', description: 'qixi_description' })
 export class QiXi extends ViewAsSkill {
+  public get RelatedCharacters(): string[] {
+    return ['heqi'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public canViewAs(): string[] {
     return ['guohechaiqiao'];
   }

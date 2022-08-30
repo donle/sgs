@@ -12,7 +12,10 @@ export class QinXue extends TriggerSkill {
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStage;
+    return (
+      stage === PhaseStageChangeStage.StageChanged &&
+      [PlayerPhaseStages.PrepareStageStart, PlayerPhaseStages.FinishStageStart].includes(event.toStage)
+    );
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
@@ -31,7 +34,36 @@ export class QinXue extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     await room.changeMaxHp(skillUseEvent.fromId, -1);
-    await room.obtainSkill(skillUseEvent.fromId, 'gongxin', true);
+
+    let selectedOption = 'qinxue:draw2';
+    if (room.getPlayerById(skillUseEvent.fromId).LostHp > 0) {
+      const options = ['qinxue:draw2', 'qinxue:recover'];
+      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        {
+          options,
+          conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
+          toId: skillUseEvent.fromId,
+          triggeredBySkills: [this.Name],
+        },
+        skillUseEvent.fromId,
+      );
+
+      response.selectedOption && (selectedOption = response.selectedOption);
+    }
+
+    if (selectedOption === 'qinxue:recover') {
+      await room.recover({
+        toId: skillUseEvent.fromId,
+        recoveredHp: 1,
+        recoverBy: skillUseEvent.fromId,
+      });
+    } else {
+      await room.drawCards(2, skillUseEvent.fromId, 'top', skillUseEvent.fromId, this.Name);
+    }
+
+    await room.obtainSkill(skillUseEvent.fromId, this.RelatedSkills[0], true);
+
     return true;
   }
 }

@@ -148,13 +148,19 @@ export class AnJian extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: 'shadow_anjianPeach', description: 'shadow_anjianPeach_description' })
 export class AnJianPeach extends FilterSkill {
-  canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
+  canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
+  ) {
     const isPeachCard =
       cardId instanceof CardMatcher
         ? new CardMatcher({ name: ['peach'] }).match(cardId)
         : Sanguosha.getCardById(cardId).GeneralName === 'peach';
 
-    if (isPeachCard && room.getPlayerById(owner).hasCard(room, cardId, PlayerCardsArea.HandArea)) {
+    if (!isCardResponse && isPeachCard && room.getPlayerById(owner).hasCard(room, cardId, PlayerCardsArea.HandArea)) {
       return false;
     }
 

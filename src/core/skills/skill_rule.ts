@@ -4,7 +4,7 @@ import { SheQue } from '.';
 import { QingGangSkill } from './cards/standard/qinggang';
 import { XianZhenNullify } from './characters/yijiang2011/xianzhen';
 import { BenXi } from './characters/yijiang2014/benxi';
-import { Skill, SkillProhibitedSkill, SkillType } from './skill';
+import { Skill, SkillProhibitedSkill } from './skill';
 
 export class UniqueSkillRule {
   private constructor() {}
@@ -59,9 +59,6 @@ export class UniqueSkillRule {
       }
     }
 
-    if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {
-      return skill.SkillType !== SkillType.Compulsory && owner.hasSkill(skill.Name);
-    }
     if (owner.getFlag<boolean>('wuqian')) {
       return skill.Name === 'bazhen' || skill.Name === 'linglong';
     }

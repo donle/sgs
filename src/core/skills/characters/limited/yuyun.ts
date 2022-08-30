@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType, INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import {
@@ -70,7 +70,7 @@ export class YuYun extends TriggerSkill {
     const chosenOptions: string[] = [];
     for (let i = 0; i < room.getPlayerById(fromId).LostHp + 1; i++) {
       let secOptions = ['yuyun:draw2', 'yuyun:damage', 'yuyun:unlimited'];
-      room.getOtherPlayers(fromId).find(player => player.getCardIds().length > 0) && secOptions.push('yuyun:discard');
+      room.getOtherPlayers(fromId).find(player => player.getCardIds().length > 0) && secOptions.push('yuyun:prey');
       room
         .getOtherPlayers(fromId)
         .find(player => player.getCardIds(PlayerCardsArea.HandArea).length < Math.min(player.MaxHp, 5)) &&
@@ -144,7 +144,7 @@ export class YuYun extends TriggerSkill {
           const originalTargets = room.getFlag<PlayerId[]>(fromId, YuYun.YuYunTargets) || [];
           originalTargets.push(resp2.selectedPlayers[0]);
           room.setFlag<PlayerId[]>(fromId, YuYun.YuYunTargets, originalTargets);
-        } else if (resp.selectedOption === 'yuyun:discard') {
+        } else if (resp.selectedOption === 'yuyun:prey') {
           const to = room.getPlayerById(resp2.selectedPlayers[0]);
           const options: CardChoosingOptions = {
             [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
@@ -159,18 +159,20 @@ export class YuYun extends TriggerSkill {
             triggeredBySkills: [this.Name],
           };
 
-          const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
+          const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, false, true);
           if (!response) {
             return false;
           }
 
-          await room.dropCards(
-            CardMoveReason.PassiveDrop,
-            [response.selectedCard!],
-            chooseCardEvent.toId,
-            fromId,
-            this.Name,
-          );
+          await room.moveCards({
+            movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
+            fromId: resp2.selectedPlayers[0],
+            toId: fromId,
+            toArea: CardMoveArea.HandArea,
+            moveReason: CardMoveReason.ActivePrey,
+            proposer: fromId,
+            triggeredBySkills: [this.Name],
+          });
         } else {
           const to = room.getPlayerById(resp2.selectedPlayers[0]);
           await room.drawCards(

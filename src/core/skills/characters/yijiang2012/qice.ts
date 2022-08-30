@@ -22,7 +22,18 @@ export class QiCe extends ViewAsSkill {
   }
 
   public canUse(room: Room, owner: Player): boolean {
-    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
+    return (
+      !owner.hasUsedSkill(this.Name) &&
+      owner.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
+      owner.canUseCard(
+        room,
+        new CardMatcher({
+          name: Sanguosha.getCardNameByType(
+            types => types.includes(CardType.Trick) && !types.includes(CardType.DelayedTrick),
+          ),
+        }),
+      )
+    );
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

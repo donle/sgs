@@ -269,7 +269,7 @@ export abstract class TriggerSkill extends Skill {
 
   public abstract onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers>): Promise<boolean>;
 
-  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers>): number {
+  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers>, owner: Player): number {
     return 1;
   }
 
@@ -566,6 +566,15 @@ export abstract class GlobalRulesBreakerSkill extends RulesBreakerSkill {
   public breakWithinAttackDistance(room: Room, owner: Player, from: Player, to: Player): boolean {
     return false;
   }
+
+  public breakGlobalCardUsableDistance(
+    cardId: CardId | CardMatcher | undefined,
+    room: Room,
+    owner: Player,
+    target: Player,
+  ): number {
+    return 0;
+  }
 }
 
 export abstract class FilterSkill extends Skill {
@@ -588,6 +597,7 @@ export abstract class FilterSkill extends Skill {
     room: Room,
     owner: PlayerId,
     onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
   ): boolean {
     return true;
   }

@@ -3,13 +3,16 @@ import { BaoSanNiang } from './baosanniang';
 import { CaoChun } from './caochun';
 import { CaoShuang } from './caoshuang';
 import { ChenLin } from './chenlin';
+import { DecadeLuoTong } from './decade_luotong';
+import { FanYuFeng } from './fanyufeng';
 import { GeXuan } from './gexuan';
 import { GuoZhao } from './guozhao';
 import { JiangGan } from './jianggan';
 import { LiuBian } from './liubian';
-import { LiuZan } from './liuzan';
+import { NewLiuZan } from './new_liuzan';
 import { PanShu } from './panshu';
 import { RuanYu } from './ruanyu';
+import { SunYi } from './sunyi';
 import { WangShuang } from './wangshuang';
 import { WenYang } from './wenyang';
 import { XuRong } from './xurong';
@@ -30,10 +33,13 @@ export const LimitedPackage: (index: number) => Character[] = index => [
   new BaoSanNiang(index++),
 
   new GeXuan(index++),
-  new LiuZan(index++),
+  new NewLiuZan(index++),
   new PanShu(index++),
   new ZhouYi(index++),
+  new SunYi(index++),
+  new DecadeLuoTong(index++),
 
   new XuRong(index++),
   new LiuBian(index++),
+  new FanYuFeng(index++),
 ];
