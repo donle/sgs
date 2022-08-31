@@ -171,7 +171,12 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
     }
   }
 
-  onSelectCard(fromArea: PlayerCardsArea[], cardAmount: number | [number, number], except: CardId[] = []) {
+  onSelectCard(
+    fromArea: PlayerCardsArea[],
+    cardAmount: number | [number, number],
+    except: CardId[] = [],
+    hiddenRules?: (card: CardId) => boolean,
+  ) {
     return new Promise<CardId[]>(resolve => {
       this.presenter.highlightCards();
       if (!EventPacker.isUncancellableEvent(this.event)) {
@@ -182,6 +187,12 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         });
       } else {
         this.presenter.disableActionButton('cancel');
+      }
+
+      if (hiddenRules) {
+        this.presenter.setupClientPlayerHandardsActionsMatcher(
+          card => fromArea.includes(PlayerCardsArea.HandArea) && hiddenRules(card.Id),
+        );
       }
 
       this.presenter.setupClientPlayerCardActionsMatcher(card => {

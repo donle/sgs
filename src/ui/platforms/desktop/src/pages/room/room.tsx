@@ -384,6 +384,7 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               skinData={this.props.skinData}
               imageLoader={this.props.imageLoader}
+              handcardHiddenMatcher={this.store.clientPlayerHandcardShowMatcher}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
               outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}
               outsideCardShowMatcher={this.store.clientPlayerOutsideCardShowMatcher}

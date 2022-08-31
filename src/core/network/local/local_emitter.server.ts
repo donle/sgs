@@ -44,6 +44,9 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
           case GameEventIdentifiers.UserMessageEvent:
             this.onPlayerMessage(identifier, content as ClientEventFinder<GameEventIdentifiers.UserMessageEvent>);
             break;
+          case GameEventIdentifiers.PlayerReadyEvent:
+            this.onPlayerReady(socket, identifier, content as ClientEventFinder<GameEventIdentifiers.PlayerReadyEvent>);
+            break;
           case GameEventIdentifiers.PlayerStatusEvent:
             this.onPlayerStatusChanged(
               socket,
@@ -52,7 +55,7 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
             );
             break;
           default:
-            this.logger.error('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
+            this.logger.error('Not implemented active listener', identifier);
         }
       });
     });
@@ -67,6 +70,25 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
         }
       });
     });
+  }
+
+  private async onPlayerReady(
+    socket: EventEmitterProps,
+    identifier: GameEventIdentifiers.PlayerReadyEvent,
+    event: ClientEventFinder<typeof identifier>,
+  ) {
+    const room = this.room as ServerRoom;
+    const player = room.Players.find(player => player.Id === event.playerId);
+    if (player) {
+      player.getReady();
+    }
+
+    if (
+      room.Players.length === room.getRoomInfo().totalPlayers &&
+      room.Players.every(player => player.isSmartAI() || player.isReady())
+    ) {
+      await room.gameStart();
+    }
   }
 
   private async onPlayerMessage(
@@ -135,10 +157,6 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
       ).extract(),
       timestamp: event.timestamp,
     });
-
-    if (room.Players.length === room.getRoomInfo().totalPlayers) {
-      await room.gameStart();
-    }
   }
 
   private async onPlayerLeave(
