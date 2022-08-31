@@ -42,6 +42,7 @@ export type DashboardProps = {
   observerMode: boolean;
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
+  handcardHiddenMatcher?(card: Card): boolean;
   cardEnableMatcher?(card: Card): boolean;
   outsideCardEnableMatcher?(card: Card): boolean;
   outsideCardShowMatcher?(card: Card): boolean;
@@ -163,7 +164,10 @@ export class Dashboard extends React.Component<DashboardProps> {
   get AllClientHandCards() {
     const outsideCards = this.AvailableOutsideCards.map((cardInfo, index) => {
       const isSelected = this.props.store.selectedCards.includes(cardInfo.card.Id);
-      const isDisabled = !this.props.outsideCardEnableMatcher || !this.props.outsideCardEnableMatcher(cardInfo.card);
+      const isDisabled =
+        !this.props.outsideCardEnableMatcher ||
+        !this.props.outsideCardEnableMatcher(cardInfo.card) ||
+        this.props.handcardHiddenMatcher?.(cardInfo.card);
       return (
         <ClientCard
           imageLoader={this.props.imageLoader}
@@ -188,7 +192,10 @@ export class Dashboard extends React.Component<DashboardProps> {
       this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
         const card = Sanguosha.getCardById(cardId);
         const isSelected = this.props.store.selectedCards.includes(card.Id);
-        const isDisabled = !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card);
+        const isDisabled =
+          !this.props.cardEnableMatcher ||
+          !this.props.cardEnableMatcher(card) ||
+          this.props.handcardHiddenMatcher?.(card);
         return (
           <ClientCard
             imageLoader={this.props.imageLoader}

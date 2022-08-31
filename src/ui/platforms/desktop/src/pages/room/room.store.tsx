@@ -131,6 +131,8 @@ export class RoomStore {
   @mobx.observable.ref
   clientPlayerOutsideCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
+  clientPlayerHandcardShowMatcher: (card: Card) => boolean;
+  @mobx.observable.ref
   clientPlayerOutsideCardShowMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;

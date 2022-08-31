@@ -28,6 +28,7 @@ import renIcon from './images/ren.png';
 import switchYangIcon from './images/switch_yang.png';
 import switchYinIcon from './images/switch_yin.png';
 import taomieIcon from './images/taomie.png';
+import tianrenIcon from './images/tianren.png';
 import weiIcon from './images/wei.png';
 import xueyiIcon from './images/xueyi.png';
 import yingIcon from './images/ying.png';
@@ -67,6 +68,7 @@ const markIconMaps: {
   [MarkEnum.Ran]: ranIcon,
   [MarkEnum.Wei]: weiIcon,
   [MarkEnum.Jian]: jianIcon,
+  [MarkEnum.TianRen]: tianrenIcon,
   [MarkEnum.BaoLi]: baoliIcon,
   [MarkEnum.DanXue]: danxueIcon,
   [MarkEnum.Zhong]: zhongIcon,

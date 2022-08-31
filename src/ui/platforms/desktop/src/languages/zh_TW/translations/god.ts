@@ -89,6 +89,18 @@ export const characterDictionary: Word[] = [
   { source: 'pingding', target: '平定' },
   { source: 'god_fuhai', target: '覆海' },
   { source: 'pinghe', target: '馮河' },
+
+  { source: 'god_xunyu', target: '神荀彧' },
+  { source: 'tianzuo', target: '天佐' },
+  { source: '#tianzuo', target: '天佐' },
+  { source: 'lingce', target: '靈策' },
+  { source: 'dinghan', target: '定漢' },
+
+  { source: 'god_jiangwei', target: '神姜維' },
+  { source: 'tianren', target: '天任' },
+  { source: 'jiufa', target: '九伐' },
+  { source: 'pingxiang', target: '平襄' },
+  { source: '#pingxiang', target: '平襄' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -288,6 +300,36 @@ export const skillDescriptions: Word[] = [
     source: 'pinghe_description',
     target:
       '<b>鎖定技</b>，你的手牌上限基值等同於你已損失的體力值；當你受到其他角色造成的傷害時，若你有手牌且體力上限大於1，防止此傷害，你減1點體力上限並將一張手牌交給一名其他角色，令傷害來源獲得一枚“平定”標記。',
+  },
+  {
+    source: 'tianzuo_description',
+    target: '<b>鎖定技</b>，①遊戲開始時，將8張【奇正相生】加入牌堆；②【奇正相生】對你無效。',
+  },
+  {
+    source: 'lingce_description',
+    target:
+      '<b>鎖定技</b>，當一名角色使用非虛擬非轉化的錦囊牌時，若此牌為智囊牌、“定漢”已記錄的牌或【奇正相生】，你摸一張牌。',
+  },
+  {
+    source: 'dinghan_description',
+    target:
+      '①當你成為未被記錄的錦囊牌的目標時，你記錄此牌名，然後取消之；②回合開始時，你可以在“定漢”的記錄中增加或移出一種錦囊牌的牌名。',
+  },
+
+  {
+    source: 'tianren_description',
+    target:
+      '<b>鎖定技</b>，當一張基本牌或普通錦囊牌不是因使用而置入棄牌堆後，你獲得1個“天任”標記，然後若“天任”標記數不小於X，你移去X個“天任”標記，加1點體力上限並摸兩張牌（X為你的體力上限）。',
+  },
+  {
+    source: 'jiufa_description',
+    target:
+      '當你每累計使用或打出九張不同牌名的牌後，你可以亮出牌堆頂的九張牌，然後若其中有點數相同的牌，你選擇並獲得其中每個重複點數的牌各一張。',
+  },
+  {
+    source: 'pingxiang_description',
+    target:
+      '<b>限定技</b>，出牌階段，若你的體力上限大於9，你可以減9點體力上限，然後你視為使用至多九張不計入次數限制的火【殺】。若如此做，你失去技能“九伐”且本局遊戲內你的手牌上限等於體力上限。',
   },
 ];
 
@@ -647,4 +689,11 @@ export const conversations: Word[] = [
     source: '{0}: do you want to add at least {1} targets for {2} ?',
     target: '{0}：你可以為 {2} 增加至多 {1} 名目標',
   },
+  {
+    source: '{0} used skill {1}, which has been removed from target list of {2}',
+    target: '{0} 使用了技能【{1}】，{0} 從 {2} 的目標中移除',
+  },
+  { source: '{0}: please choose a dinghan option', target: '{0}：請選擇以下一項加入或移出定漢記錄' },
+  { source: '{0} shuffled 8 {1} cards into the draw stack', target: '{0} 將八張【{1}】洗入了摸牌堆' },
+  { source: 'please choose one target to use fire slash', target: '請選擇【火殺】的目標' },
 ];

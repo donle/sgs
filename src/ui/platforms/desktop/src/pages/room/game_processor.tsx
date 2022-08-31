@@ -94,6 +94,10 @@ export class GameClientProcessor {
   }
 
   protected record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+    if (this.isObserver) {
+      return;
+    }
+
     if (this.store.inAction && !event.ignoreNotifiedStatus) {
       this.endAction();
     }
@@ -156,14 +160,9 @@ export class GameClientProcessor {
     this.presenter.disableActionButton('cancel', 'confirm', 'finish');
 
     this.endAction();
-    this.onPlayTrustedActionTimer && clearTimeout(this.onPlayTrustedActionTimer);
   }
 
   private doTrustedAction() {
-    if (this.isObserver) {
-      return;
-    }
-
     this.onPlayTrustedActionTimer = setTimeout(
       () => this.onPlayTrustedAction(),
       this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000),
@@ -175,20 +174,13 @@ export class GameClientProcessor {
       clearTimeout(this.onPlayTrustedActionTimer);
       this.onPlayTrustedActionTimer = undefined;
     }
-    this.store.inAction && this.presenter.endAction();
+    this.presenter.endAction();
   }
 
   private clearDialogs(e: GameEventIdentifiers) {
-    if (this.isObserver) {
-      if (clientAsyncEvents.includes(e)) {
-        this.presenter.closeIncomingConversation();
-        this.presenter.closeDialog();
-      }
-    } else {
-      if (serverResponsiveListenerEvents.includes(e)) {
-        this.presenter.closeIncomingConversation();
-        this.presenter.closeDialog();
-      }
+    if (this.isObserver && clientAsyncEvents.includes(e)) {
+      this.presenter.closeIncomingConversation();
+      this.presenter.closeDialog();
     }
   }
 
@@ -196,7 +188,6 @@ export class GameClientProcessor {
     this.tryToThrowNotReadyException(e);
     this.eventFilter(e, content);
     this.record(e, content);
-    this.clearDialogs(e);
 
     switch (e) {
       case GameEventIdentifiers.UserMessageEvent:
@@ -597,7 +588,12 @@ export class GameClientProcessor {
     });
 
     const action = new SelectAction(content.toId, this.store, this.presenter, this.translator, content);
-    const selectedCards = await action.onSelectCard(content.fromArea, content.cardAmount, content.except);
+    const selectedCards = await action.onSelectCard(
+      content.fromArea,
+      content.cardAmount,
+      content.except,
+      content.hideExclusive ? cardId => content.except!.includes(cardId) : undefined,
+    );
 
     this.presenter.closeIncomingConversation();
     const event: ClientEventFinder<T> = {
@@ -1102,10 +1098,8 @@ export class GameClientProcessor {
 
       if (selectedCharacters.length > 0) {
         this.presenter.enableActionButton('confirm');
-        this.presenter.broadcastUIUpdate();
       } else {
         this.presenter.disableActionButton('confirm');
-        this.presenter.broadcastUIUpdate();
       }
     };
 
@@ -1124,8 +1118,6 @@ export class GameClientProcessor {
       };
 
       this.store.room.broadcast(type, response);
-      this.presenter.closeIncomingConversation();
-      this.presenter.broadcastUIUpdate();
     });
 
     if (content.conversation) {
@@ -1183,7 +1175,6 @@ export class GameClientProcessor {
       };
       this.store.room.broadcast(type, response);
       this.presenter.closeIncomingConversation();
-      this.endAction();
     });
 
     this.presenter.enableActionButton('confirm', 'cancel');
@@ -1660,6 +1651,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { options, conversation, toId } = content;
+
     const actionHandlers = {};
     options.forEach(option => {
       actionHandlers[option] = () => {
@@ -1683,7 +1675,6 @@ export class GameClientProcessor {
       translator: this.translator,
       conversation,
     });
-
     if (!EventPacker.isUncancellableEvent(content)) {
       this.presenter.enableActionButton('cancel');
       this.presenter.defineCancelButtonActions(() => {

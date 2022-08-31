@@ -285,6 +285,10 @@ export class RoomPresenter {
     this.store.clientPlayerCardActionsMatcher = matcher;
   }
   @mobx.action
+  setupClientPlayerHandardsActionsMatcher(matcher: (card: Card) => boolean) {
+    this.store.clientPlayerHandcardShowMatcher = matcher;
+  }
+  @mobx.action
   setupClientPlayerOutsideCardActionsMatcher(matcher: (card: Card) => boolean) {
     this.store.clientPlayerOutsideCardActionsMatcher = matcher;
   }
@@ -336,6 +340,7 @@ export class RoomPresenter {
   defineConfirmButtonActions(handler: () => void) {
     this.store.confirmButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.confirm = false;
+      this.store.actionButtonStatus.cancel = false;
       this.store.confirmButtonAction = undefined;
       handler();
     });

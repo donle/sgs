@@ -23,6 +23,7 @@ export namespace System {
     PoXi,
     JieYue,
     ChengXiang,
+    JiuFa,
   }
 
   const differentCardSuitFilterFunction = (allCards: CardId[], selected: CardId[], currentCard: CardId) => {
@@ -30,6 +31,14 @@ export namespace System {
     return (
       selected.includes(currentCard) ||
       selected.find(cardId => Sanguosha.getCardById(cardId).Suit === card.Suit) === undefined
+    );
+  };
+
+  const differentCardNumberFilterFunction = (allCards: CardId[], selected: CardId[], currentCard: CardId) => {
+    const card = Sanguosha.getCardById(currentCard);
+    return (
+      selected.includes(currentCard) ||
+      selected.find(cardId => Sanguosha.getCardById(cardId).CardNumber === card.CardNumber) === undefined
     );
   };
 
@@ -72,6 +81,7 @@ export namespace System {
     [AskForChoosingCardEventFilter.SheLie]: differentCardSuitFilterFunction,
     [AskForChoosingCardEventFilter.JieYue]: differentCardAreaFilterFunction,
     [AskForChoosingCardEventFilter.ChengXiang]: thirteenPointFilterFunction,
+    [AskForChoosingCardEventFilter.JiuFa]: differentCardNumberFilterFunction,
   };
 
   export type SideEffectSkillApplierFunc = (player: Player, room: Room, sourceId: PlayerId) => boolean;
@@ -110,6 +120,7 @@ export namespace System {
 
   export const enum SkillTagsTransformEnum {
     DingHan = 'dinghan',
+    JiuFa = 'jiufa',
   }
 
   export const enum AwakeningSkillApplierEnum {
@@ -219,5 +230,7 @@ export namespace System {
   export const SkillTagsTransformer: Record<string, (values: any[]) => (Card | Character)[]> = {
     [SkillTagsTransformEnum.DingHan]: (cardNames: string[]) =>
       cardNames.map(cardName => VirtualCard.create({ cardName, bySkill: SkillTagsTransformEnum.DingHan })),
+    [SkillTagsTransformEnum.JiuFa]: (cardNames: string[]) =>
+      cardNames.map(cardName => VirtualCard.create({ cardName, bySkill: SkillTagsTransformEnum.JiuFa })),
   };
 }

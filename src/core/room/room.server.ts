@@ -778,6 +778,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     except?: CardId[],
     bySkill?: string,
     conversation?: string | PatchedTranslationObject,
+    hideExclusive?: boolean,
   ) {
     const cannotDropIds: CardId[] = [];
     except = except || [];
@@ -801,6 +802,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         except,
         triggeredBySkills: bySkill ? [bySkill] : undefined,
         conversation,
+        hideExclusive,
       },
     );
     if (uncancellable) {
