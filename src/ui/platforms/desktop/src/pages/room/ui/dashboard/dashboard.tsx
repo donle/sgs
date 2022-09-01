@@ -164,10 +164,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   get AllClientHandCards() {
     const outsideCards = this.AvailableOutsideCards.map((cardInfo, index) => {
       const isSelected = this.props.store.selectedCards.includes(cardInfo.card.Id);
-      const isDisabled =
-        !this.props.outsideCardEnableMatcher ||
-        !this.props.outsideCardEnableMatcher(cardInfo.card) ||
-        this.props.handcardHiddenMatcher?.(cardInfo.card);
+      const isDisabled = !this.props.outsideCardEnableMatcher || !this.props.outsideCardEnableMatcher(cardInfo.card);
       return (
         <ClientCard
           imageLoader={this.props.imageLoader}
@@ -189,31 +186,34 @@ export class Dashboard extends React.Component<DashboardProps> {
     });
 
     const handcards =
-      this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
-        const card = Sanguosha.getCardById(cardId);
-        const isSelected = this.props.store.selectedCards.includes(card.Id);
-        const isDisabled =
-          !this.props.cardEnableMatcher ||
-          !this.props.cardEnableMatcher(card) ||
-          this.props.handcardHiddenMatcher?.(card);
-        return (
-          <ClientCard
-            imageLoader={this.props.imageLoader}
-            key={cardId}
-            width={this.handCardWidth}
-            offsetLeft={this.getCardXOffset(index + outsideCards.length)}
-            translator={this.props.translator}
-            onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index + outsideCards.length)}
-            onMouseLeave={this.onFocusCard(-2)}
-            card={!this.props.observerMode ? card : undefined}
-            highlight={this.props.store.highlightedCards}
-            onSelected={this.onClick(card)}
-            className={styles.handCard}
-            disabled={isDisabled}
-            selected={isSelected}
-          />
-        );
-      }) || [];
+      this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea)
+        .filter(
+          cardId =>
+            !this.props.handcardHiddenMatcher || !this.props.handcardHiddenMatcher(Sanguosha.getCardById(cardId)),
+        )
+        .map((cardId, index) => {
+          const card = Sanguosha.getCardById(cardId);
+
+          const isSelected = this.props.store.selectedCards.includes(card.Id);
+          const isDisabled = !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card);
+          return (
+            <ClientCard
+              imageLoader={this.props.imageLoader}
+              key={cardId}
+              width={this.handCardWidth}
+              offsetLeft={this.getCardXOffset(index + outsideCards.length)}
+              translator={this.props.translator}
+              onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index + outsideCards.length)}
+              onMouseLeave={this.onFocusCard(-2)}
+              card={!this.props.observerMode ? card : undefined}
+              highlight={this.props.store.highlightedCards}
+              onSelected={this.onClick(card)}
+              className={styles.handCard}
+              disabled={isDisabled}
+              selected={isSelected}
+            />
+          );
+        }) || [];
 
     return [...outsideCards, ...handcards];
   }

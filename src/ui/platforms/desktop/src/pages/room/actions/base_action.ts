@@ -106,6 +106,7 @@ export abstract class BaseAction {
     this.presenter.setupClientPlayerOutsideCardActionsMatcher(() => false);
     this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) => this.isOutsideCardShow(card));
     this.presenter.setupCardSkillSelectionMatcher(() => false);
+    this.presenter.setupClientPlayerHandardsActionsMatcher(() => false);
     this.presenter.clearSelectedCards();
     this.presenter.clearSelectedPlayers();
     this.presenter.clearSelectionReflectAction();
