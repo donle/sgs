@@ -293,10 +293,6 @@ export class RoomPresenter {
     this.store.clientPlayerOutsideCardActionsMatcher = matcher;
   }
   @mobx.action
-  setupclientPlayerOutsideCardShowMatcher(matcher: (card: Card) => boolean) {
-    this.store.clientPlayerOutsideCardShowMatcher = matcher;
-  }
-  @mobx.action
   onClickPlayerCard(handler: (card: Card, selected: boolean) => void) {
     this.store.onClickHandCardToPlay = handler;
   }
