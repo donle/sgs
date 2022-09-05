@@ -387,7 +387,6 @@ export class RoomPage extends React.Component<
               handcardHiddenMatcher={this.store.clientPlayerHandcardShowMatcher}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
               outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}
-              outsideCardShowMatcher={this.store.clientPlayerOutsideCardShowMatcher}
               onClickConfirmButton={this.store.confirmButtonAction}
               onClickCancelButton={this.store.cancelButtonAction}
               onClickFinishButton={this.store.finishButtonAction}

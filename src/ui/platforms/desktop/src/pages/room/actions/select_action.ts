@@ -210,6 +210,10 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         );
       });
       this.presenter.setupClientPlayerOutsideCardActionsMatcher(card => {
+        if (this.isCardFromParticularArea(card)) {
+          return true;
+        }
+
         if (
           !fromArea.includes(PlayerCardsArea.OutsideArea) ||
           (this.customSelector && !this.customSelector.match(card)) ||
@@ -222,20 +226,6 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
             ? this.store.selectedCards.length < cardAmount[1]
             : this.store.selectedCards.length !== cardAmount) || this.store.selectedCards.includes(card.Id)
         );
-      });
-
-      this.presenter.setupclientPlayerOutsideCardShowMatcher(card => {
-        if (this.isCardFromParticularArea(card)) {
-          return true;
-        }
-        if (
-          !fromArea.includes(PlayerCardsArea.OutsideArea) ||
-          (this.customSelector && !this.customSelector.match(card)) ||
-          except.includes(card.Id)
-        ) {
-          return false;
-        }
-        return true;
       });
 
       this.presenter.setupCardSkillSelectionMatcher(card => {

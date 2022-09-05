@@ -198,10 +198,15 @@ export class CardResponseAction extends BaseAction {
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnResponse(card, PlayerCardsArea.HandArea, new CardMatcher(this.askForEvent.cardMatcher)),
       );
-      this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
-        this.isCardEnabledOnResponse(card, PlayerCardsArea.OutsideArea, new CardMatcher(this.askForEvent.cardMatcher)),
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher(
+        (card: Card) =>
+          this.isOutsideCardShowOnResponse(card) &&
+          this.isCardEnabledOnResponse(
+            card,
+            PlayerCardsArea.OutsideArea,
+            new CardMatcher(this.askForEvent.cardMatcher),
+          ),
       );
-      this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) => this.isOutsideCardShowOnResponse(card));
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnResponse(card, PlayerCardsArea.EquipArea, new CardMatcher(this.askForEvent.cardMatcher)),
       );

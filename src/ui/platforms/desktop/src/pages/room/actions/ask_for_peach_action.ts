@@ -174,11 +174,10 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.HandArea),
       );
-      this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
-        this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.OutsideArea),
-      );
-      this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) =>
-        this.isOutsideCardShowOnSkillTriggered(card),
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher(
+        (card: Card) =>
+          this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.OutsideArea) &&
+          this.isOutsideCardShowOnSkillTriggered(card),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.EquipArea),

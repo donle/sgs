@@ -45,7 +45,6 @@ export type DashboardProps = {
   handcardHiddenMatcher?(card: Card): boolean;
   cardEnableMatcher?(card: Card): boolean;
   outsideCardEnableMatcher?(card: Card): boolean;
-  outsideCardShowMatcher?(card: Card): boolean;
   cardSkillEnableMatcher?(card: Card): boolean;
   onClick?(card: Card, selected: boolean): void;
   onClickEquipment?(card: Card, selected: boolean): void;
@@ -125,7 +124,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   }
 
   get AvailableOutsideCards() {
-    if (!this.props.outsideCardShowMatcher || !this.props.presenter.ClientPlayer) {
+    if (!this.props.outsideCardEnableMatcher || !this.props.presenter.ClientPlayer) {
       return [];
     }
 
@@ -136,7 +135,7 @@ export class Dashboard extends React.Component<DashboardProps> {
       }
       availableCards.push(
         ...cards
-          .filter(card => this.props.outsideCardShowMatcher!(Sanguosha.getCardById(card)))
+          .filter(card => this.props.outsideCardEnableMatcher!(Sanguosha.getCardById(card)))
           .map(cardId => ({
             areaName,
             card: Sanguosha.getCardById(cardId),

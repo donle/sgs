@@ -103,8 +103,7 @@ export abstract class BaseAction {
   public readonly resetActionHandlers = () => {
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => false);
-    this.presenter.setupClientPlayerOutsideCardActionsMatcher(() => false);
-    this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) => this.isOutsideCardShow(card));
+    this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) => this.isOutsideCardShow(card));
     this.presenter.setupCardSkillSelectionMatcher(() => false);
     this.presenter.setupClientPlayerHandardsActionsMatcher(() => false);
     this.presenter.clearSelectedCards();
@@ -510,13 +509,12 @@ export abstract class BaseAction {
       return;
     }
 
-    if (this.selectedSkillToPlay === undefined) {
-      this.selectedSkillToPlay = skill;
-      this.store.selectedSkill = skill;
-      this.equipSkillCardId = this.player
-        .getCardIds(PlayerCardsArea.EquipArea)
-        .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
-    }
+    this.selectedSkillToPlay = skill;
+    this.store.selectedSkill = skill;
+    this.equipSkillCardId = this.player
+      .getCardIds(PlayerCardsArea.EquipArea)
+      .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
+
     this.getTarget();
   }
   protected unselectSkill(skill: Skill) {
