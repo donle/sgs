@@ -199,6 +199,10 @@ export abstract class Skill {
   public audioIndex(characterName?: string): number {
     return 2;
   }
+
+  public dynamicDescription(owner: Player): string | PatchedTranslationObject {
+    return this.description;
+  }
 }
 
 export abstract class ResponsiveSkill extends Skill {

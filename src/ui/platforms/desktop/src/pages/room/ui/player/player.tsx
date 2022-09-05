@@ -307,7 +307,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           <div className={styles.skillInfo} key={index}>
             <div className={styles.skillItem}>
               <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
-              <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
+              <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.dynamicDescription(player!)) }} />
             </div>
           </div>
         ));
