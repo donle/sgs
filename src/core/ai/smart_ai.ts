@@ -297,7 +297,9 @@ export class SmartAI extends PlayerAI {
         return cardDrop;
       }
 
-      const holdAmount = cards.length - (cardAmount instanceof Array ? cardAmount[0] : cardAmount);
+      const holdAmount =
+        cards.length -
+        (cardAmount instanceof Array ? (content.triggeredBySkills ? cardAmount[0] : cardAmount[1]) : cardAmount);
       cards = AiLibrary.sortCardbyValue(cards);
       cardDrop.droppedCards = cards.slice(holdAmount);
     }
