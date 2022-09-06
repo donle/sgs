@@ -1,0 +1,29 @@
+{
+  "compileOnSave": false,
+  "types": ["node"],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./languages",
+    "sourceMap": false,
+    "declaration": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["dom", "dom.iterable", "ESNext", "es2018"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": false,
+    "isolatedModules": false
+  },
+  "include": ["../src/ui/platforms/desktop/src/languages"]
+}

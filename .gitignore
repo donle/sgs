@@ -29,6 +29,7 @@ dist
 node_modules
 src/node_modules
 build
+/tools/languages
 /platforms
 /plugins
 /www
