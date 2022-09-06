@@ -327,7 +327,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           <div className={styles.skillInfo} key={index}>
             <div className={styles.skillItem}>
               <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
-              <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
+              <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.dynamicDescription(presenter.ClientPlayer!)) }} />
             </div>
           </div>
         ));
