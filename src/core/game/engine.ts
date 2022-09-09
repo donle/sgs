@@ -13,14 +13,14 @@ import { coreVersion } from './version';
 
 export class Sanguosha {
   private static hasInitialized = false;
-  private static skills: {
+  protected static skills: {
     [name: string]: Skill;
   } = {};
-  private static cards: Card[];
-  private static uniquCardMaps: Map<string, Card[]> = new Map();
-  private static characters: Character[] = [];
+  protected static cards: Card[];
+  protected static uniquCardMaps: Map<string, Card[]> = new Map();
+  protected static characters: Character[] = [];
   private static version: string;
-  private static transformSkills: string[] = [];
+  protected static transformSkills: string[] = [];
   private static cardCategories: {
     [K: string]: CardType[];
   } = {} as any;
@@ -154,6 +154,14 @@ export class Sanguosha {
 
   public static getSkillGeneratedCards<T extends Card = Card>(bySkill: string): T[] {
     return (Sanguosha.uniquCardMaps.get(bySkill) || []) as T[];
+  }
+
+  public static getAllCards() {
+    return [...this.cards, ...Array.from(this.uniquCardMaps.values()).flatMap(card => card)];
+  }
+
+  public static getAllSkills() {
+    return Object.values(this.skills);
   }
 
   public static isCardGeneratedBySkill(card: Card): string | undefined {

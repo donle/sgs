@@ -309,6 +309,7 @@ export function main() {
     width: 1366,
     height: 768,
     webPreferences: {
+      webSecurity: false,
       nodeIntegration: false,
       preload: path.join(__dirname, './preload.js'),
     },

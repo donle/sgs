@@ -40,7 +40,7 @@ export class CharacterLoader {
   }
 
   private static readonly CharacterLoaders: {
-    [P in GameCharacterExtensions]: CharacterPackageLoader;
+    [P in GameCharacterExtensions]?: CharacterPackageLoader;
   } = {
     [GameCharacterExtensions.Standard]: StandardCharacterPackage,
     [GameCharacterExtensions.Wind]: WindCharacterPackage,
@@ -77,6 +77,16 @@ export class CharacterLoader {
   private loadCharacters() {
     let index = 0;
     for (const [packageName, loader] of Object.entries(CharacterLoader.CharacterLoaders)) {
+      const characters = loader(index);
+      this.characters[packageName] = characters;
+
+      index += characters.length;
+    }
+  }
+
+  public addCharacterPackage(packages: Record<string, (index: number) => Character[]>) {
+    let index = this.getAllCharacters().length;
+    for (const [packageName, loader] of Object.entries(packages)) {
       const characters = loader(index);
       this.characters[packageName] = characters;
 

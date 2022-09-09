@@ -34,12 +34,14 @@ export const enum GameCharacterExtensions {
   Wisdom = 'wisdom',
   Sincerity = 'sincerity',
   Pve = 'pve',
+  Custom = 'custom',
 }
 
 export const enum GameCardExtensions {
   Standard = 'standard',
   LegionFight = 'legion_fight',
   CharacterSkills = 'character_skills',
+  Custom = 'custom',
 }
 
 export type GameInfo = {

@@ -1,6 +1,7 @@
 import { Card } from 'core/cards/card';
 import { SkillsGeneratedCardPackage } from 'core/cards/character_skills';
 import { LegionFightCardPackage } from 'core/cards/legion_fight';
+import { CardSuit } from 'core/cards/libs/card_props';
 import { StandardCardPackage } from 'core/cards/standard';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameCardExtensions } from '../game_props';
@@ -11,7 +12,7 @@ export type CardPackages = {
 export type CardPackageLoader = (index: number) => Card[];
 
 const allPackageLoaders: {
-  [P in GameCardExtensions]: CardPackageLoader;
+  [P in GameCardExtensions]?: CardPackageLoader;
 } = {
   [GameCardExtensions.Standard]: StandardCardPackage,
   [GameCardExtensions.LegionFight]: LegionFightCardPackage,
@@ -31,6 +32,32 @@ export class CardLoader {
     let index = 1;
 
     for (const [packageName, loader] of Object.entries(allPackageLoaders)) {
+      const cards = loader(index);
+      this.cards[packageName] = [];
+      for (const card of cards) {
+        if (!card.isUniqueCard()) {
+          this.cards[packageName].push(card);
+        } else {
+          const bySkill = Precondition.exists(card.generatedBySkill(), `unknown unique card generator: ${card.Name}`);
+          const cardSet = this.uniquCards.get(bySkill);
+          if (cardSet) {
+            cardSet.push(card);
+          } else {
+            this.uniquCards.set(bySkill, [card]);
+          }
+        }
+      }
+
+      index += cards.length;
+    }
+  }
+
+  public addCardPackages(
+    cardPackage: Record<string, (index: number) => Card[]>,
+  ) {
+    let index = this.getAllCards().length;
+
+    for (const [packageName, loader] of Object.entries(cardPackage)) {
       const cards = loader(index);
       this.cards[packageName] = [];
       for (const card of cards) {
