@@ -105,7 +105,7 @@ export class JiBingShadow extends TriggerSkill {
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to put 2 cards from the top of draw stack?',
+      '{0}: do you want to put 2 cards from the top of draw stack on your general card as ‘Bing’?',
       this.GeneralName,
     ).extract();
   }

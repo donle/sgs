@@ -1,4 +1,4 @@
-import { Word } from 'languages';
+import type { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
   { source: 'god_guanyu', target: '神关羽' },
@@ -94,12 +94,6 @@ export const characterDictionary: Word[] = [
   { source: '#tianzuo', target: '天佐' },
   { source: 'lingce', target: '灵策' },
   { source: 'dinghan', target: '定汉' },
-
-  { source: 'god_jiangwei', target: '神姜维' },
-  { source: 'tianren', target: '天任' },
-  { source: 'jiufa', target: '九伐' },
-  { source: 'pingxiang', target: '平襄' },
-  { source: '#pingxiang', target: '平襄' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -311,21 +305,6 @@ export const skillDescriptions: Word[] = [
     source: 'dinghan_description',
     target:
       '当你成为未被本技能记录的锦囊牌的目标时，本技能记录此牌名，然后取消之；回合开始时，你可以在本技能的记录中增加或移除一种锦囊牌的牌名。',
-  },
-  {
-    source: 'tianren_description',
-    target:
-      '<b>锁定技</b>，当一张基本牌或普通锦囊牌不是因使用而置入弃牌堆后，你获得1个“天任”标记，然后若“天任”标记数不小于X，你移去X个“天任”标记，加1点体力上限并摸两张牌（X为你的体力上限）。',
-  },
-  {
-    source: 'jiufa_description',
-    target:
-      '当你每累计使用或打出九张不同牌名的牌后，你可以亮出牌堆顶的九张牌，然后若其中有点数相同的牌，你选择并获得其中每个重复点数的牌各一张。',
-  },
-  {
-    source: 'pingxiang_description',
-    target:
-      '<b>限定技</b>，出牌阶段，若你的体力上限大于9，你可以减9点体力上限，然后你视为使用至多九张不计入次数限制的火【杀】。若如此做，你失去技能“九伐”且本局游戏内你的手牌上限等于体力上限。',
   },
 ];
 
@@ -620,6 +599,14 @@ export const skillAudios: Word[] = [
     target: '君且城中等候，待吾探敌虚实。',
   },
   {
+    source: '$dangmo:1',
+    target: '魔高一尺，道高一丈！',
+  },
+  {
+    source: '$dangmo:2',
+    target: '天魔祸世，吾自荡而除之！',
+  },
+  {
     source: '$shenzhuo:1',
     target: '力引强弓百斤，矢出贯手着棼！',
   },
@@ -722,6 +709,4 @@ export const conversations: Word[] = [
   },
   { source: '{0}: please choose a dinghan option', target: '{0}：请选择以下一项加入或移出定汉记录' },
   { source: '{0} shuffled 8 {1} cards into the draw stack', target: '{0} 将八张【{1}】洗入了摸牌堆' },
-
-  { source: 'please choose one target to use fire slash', target: '请选择【火杀】的目标' },
 ];

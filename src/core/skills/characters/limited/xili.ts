@@ -6,6 +6,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'xili', description: 'xili_description' })
 export class XiLi extends TriggerSkill {
@@ -36,6 +37,19 @@ export class XiLi extends TriggerSkill {
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     return room.canDropCard(owner, cardId);
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+  ): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to discard a card to increase the damage to {2} which dealt by {1} by 1, then you and {1} will draw 2 cards?',
+      this.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId!)),
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

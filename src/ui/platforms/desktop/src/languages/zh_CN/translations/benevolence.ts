@@ -75,7 +75,49 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
-export const skillAudios: Word[] = [];
+export const skillAudios: Word[] = [
+  {
+    source: '$sheyi:1',
+    target: '二子不可兼顾，妾身唯保其一。',
+  },
+  {
+    source: '$sheyi:2',
+    target: '吾子虽弃亦可，前遗万物有失。',
+  },
+  {
+    source: '$tianyin:1',
+    target: '抚琴体清心远，方成自然之趣。',
+  },
+  {
+    source: '$tianyin:2',
+    target: '心怀雅正，天音自得。',
+  },
+
+  {
+    source: '$jutu:1',
+    target: '百姓安乐足矣，穷兵黩武实不可取啊。',
+  },
+  {
+    source: '$jutu:2',
+    target: '内乱初定，更应休养生息。',
+  },
+  {
+    source: '$yaohu:1',
+    target: '益州疲敝，还望贤兄相助。',
+  },
+  {
+    source: '$yaohu:2',
+    target: '内讨米贼，外拒强曹，璋无宗兄万万不可啊。',
+  },
+  {
+    source: '$huaibi:1',
+    target: '唉！吾本无罪，怀璧其罪啊。',
+  },
+  {
+    source: '$huaibi:2',
+    target: '粮草尽皆在此，宗兄自可取之。',
+  },
+];
 
 export const promptDescriptions: Word[] = [
   {
@@ -112,5 +154,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give 2 cards to {1}, or he/she will be removed from the targets of {2}',
     target: '{0}：请交给 {1} 两张牌，否则其将会从 {2} 的目标中被取消',
+  },
+
+  {
+    source: '{0}: do you want to give at least {1} card(s) to {2} to prevent the damage?',
+    target: '{0}：你可以将至少 {1} 张牌交给 {2} ，防止其此次受到的伤害',
   },
 ];

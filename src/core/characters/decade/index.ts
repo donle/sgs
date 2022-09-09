@@ -1,6 +1,9 @@
 import { Character } from 'core/characters/character';
+import { CaiMaoZhangYun } from './caimaozhangyun';
 import { CaoXing } from './caoxing';
 import { DecadeDengZhi } from './decade_dengzhi';
+import { DecadeHuangChengYan } from './decade_huangchengyan';
+import { DecadeLiuBa } from './decade_liuba';
 import { DecadeMiHeng } from './decade_miheng';
 import { DuanWei } from './duanwei';
 import { DuFuRen } from './dufuren';
@@ -35,9 +38,11 @@ export const DecadePackage: (index: number) => Character[] = index => [
   new ZhangHu(index++),
   new DuFuRen(index++),
   new XiaHouJie(index++),
+  new CaiMaoZhangYun(index++),
 
   new DecadeDengZhi(index++),
   new MiFangFuShiRen(index++),
+  new DecadeLiuBa(index++),
 
   new XuGong(index++),
   new ZhangWen(index++),
@@ -62,4 +67,5 @@ export const DecadePackage: (index: number) => Character[] = index => [
   new DecadeMiHeng(index++),
   new LiCaiWei(index++),
   new MaMiDi(index++),
+  //new DecadeHuangChengYan(index++),
 ];

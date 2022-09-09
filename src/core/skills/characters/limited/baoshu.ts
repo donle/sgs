@@ -32,7 +32,7 @@ export class BaoShu extends TriggerSkill {
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to choose at most {1} target(s) to gain 1 mark ‘Shu’ each?',
+      '{0}: do you want to choose at most {1} target(s) to gain ‘Shu’ marks each?',
       this.Name,
       owner.MaxHp,
     ).extract();
@@ -47,8 +47,10 @@ export class BaoShu extends TriggerSkill {
       return false;
     }
 
+    const markNum = room.getPlayerById(event.fromId).MaxHp + 1 - event.toIds.length;
     for (const toId of event.toIds) {
-      room.addMark(toId, MarkEnum.Shu, room.getPlayerById(event.fromId).MaxHp + 1 - event.toIds.length);
+      room.addMark(toId, MarkEnum.Shu, markNum);
+      room.getPlayerById(toId).hasShadowSkill(BaoShuBuff.Name) || (await room.obtainSkill(toId, BaoShuBuff.Name));
     }
 
     return true;

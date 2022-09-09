@@ -171,18 +171,13 @@ export const skillDescriptions: Word[] = [
   {
     source: 'quanfeng_description',
     target:
-      '<b>限定技</b>，当其他角色死亡后，你可以失去技能“弘仪”，然后你减1点体力上限，并获得该角色武将牌上的所有技能；当你处于濒死状态时，你可以加2点体力上限，然后回复4点体力。',
+      '<b>限定技</b>，当其他角色死亡后，你可以失去技能“弘仪”，然后你加1点体力上限并回复1点体力，获得该角色武将牌上的所有技能；当你处于濒死状态时，你可以加2点体力上限，然后回复4点体力。',
   },
 
   {
     source: 'bingqing_description',
     target:
-      '当你于出牌阶段内首次使用一种花色的牌结算结束后，根据你于此阶段内使用过牌的花色数，你可以执行对应效果：两种，令一名角色摸两张牌；三种，弃置一名角色区域里的一张牌；四种，对一名其他角色造成1点伤害。',
-  },
-  {
-    source: 'yingfeng_description',
-    target:
-      '准备阶段开始时，你可以令一名没有“奉”标记的角色获得一枚“奉”标记（若场上已有“奉”标记，则改为将此“奉”标记转移给该角色）；有“奉”标记的角色使用牌无距离限制。',
+      '当你于出牌阶段内首次使用一种花色的牌结算结束后，根据你于此阶段内使用过已结算结束的牌的花色数，你可以执行对应效果：两种，令一名角色摸两张牌；三种，弃置一名角色区域里的一张牌；四种，对一名其他角色造成1点伤害。',
   },
 
   {
@@ -236,7 +231,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jueyong_description',
     target:
-      '<b>锁定技</b>，当你成为不因“绝勇”而使用的非虚拟且非转化的牌（【桃】和【酒】除外）的唯一目标时，若你的“绝”数小于你体力值的两倍，取消之，然后你将此牌置于你的武将牌上，称为“绝”；结束阶段开始时，若你有“绝”，则按“绝”的置入顺序依次由原使用者对你使用此“绝”（若原使用者已阵亡，则改为移去此“绝”）。',
+      '<b>锁定技</b>，当你成为不因“绝勇”而使用的非虚拟且非转化的牌（【桃】和【酒】除外）的唯一目标时，若你的“绝”数小于你的体力值，取消之，然后你将此牌置于你的武将牌上，称为“绝”；结束阶段开始时，若你有“绝”，则按“绝”的置入顺序依次由原使用者对你使用此“绝”（若原使用者已阵亡，则改为移去此“绝”）。',
   },
 
   {
@@ -562,6 +557,181 @@ export const skillAudios: Word[] = [
     source: '$zhiman.guansuo:1',
     target: '蛮夷可抚，不可剿。',
   },
+
+  {
+    source: '$poxiang:1',
+    target: '王瓘既然假降，吾等可将计就计。',
+  },
+  {
+    source: '$poxiang:2',
+    target: '各位将军，且让小辈先行出战。',
+  },
+  {
+    source: '$jueyong:1',
+    target: '敌围何惧，有死而已！',
+  },
+  {
+    source: '$jueyong:2',
+    target: '身陷敌阵，战而弥勇！',
+  },
+
+  {
+    source: '$renshi:1',
+    target: '巾帼于乱世，只能飘零如尘。',
+  },
+  {
+    source: '$renshi:2',
+    target: '还望您可以手下留情。',
+  },
+  {
+    source: '$wuyuan:1',
+    target: '夫君，此次出征，还望您记挂妾身。',
+  },
+  {
+    source: '$wuyuan:2',
+    target: '云长，一定要平安归来啊。',
+  },
+
+  {
+    source: '$fenyin:1',
+    target: '披发亢歌，至死不休！',
+  },
+  {
+    source: '$fenyin:2',
+    target: '力不竭，战不止！',
+  },
+
+  {
+    source: '$bingqing:1',
+    target: '常怀圣言，以是自励。',
+  },
+  {
+    source: '$bingqing:2',
+    target: '身受贵宠，不忘初心。',
+  },
+
+  {
+    source: '$jibing:1',
+    target: '集荆、扬精兵，而后共举大义！。',
+  },
+  {
+    source: '$jibing:2',
+    target: '教众快快集合，不可误了大事。',
+  },
+  {
+    source: '$wangjing:1',
+    target: '联络朝中中常侍，共抗朝廷不义师！',
+  },
+  {
+    source: '$wangjing:2',
+    target: '往来京城，与众常侍密谋举事。',
+  },
+  {
+    source: '$moucuan:1',
+    target: '汉失民心，天赐良机！',
+  },
+  {
+    source: '$moucuan:2',
+    target: '天下正主，正是大贤良师！',
+  },
+
+  {
+    source: '$zhengjian:1',
+    target: '此人有雄猛逸才，还请明公观之。',
+  },
+  {
+    source: '$zhengjian:2',
+    target: '若明公得此人才，定当如虎添翼。',
+  },
+  {
+    source: '$gaoyuan:1',
+    target: '烦请告知兴霸，请他务必相助！',
+  },
+  {
+    source: '$gaoyuan:2',
+    target: '如今事急，唯有兴霸可救！',
+  },
+
+  {
+    source: '$qianchong:1',
+    target: '细行筹划，只盼能助夫君一臂之力。',
+  },
+  {
+    source: '$shangjian:1',
+    target: '如今乱世，当秉俭行之节。',
+  },
+  {
+    source: '$shangjian:2',
+    target: '百姓尚处寒饥之困，吾等不可奢费财力。',
+  },
+
+  {
+    source: '$shidi:1',
+    target: '诈败以射之，其必死矣！',
+  },
+  {
+    source: '$shidi:2',
+    target: '呃啊，中其拖刀计矣！',
+  },
+  {
+    source: '$xing_yishi:1',
+    target: '昨日释忠之恩，今吾虚射以报。',
+  },
+  {
+    source: '$xing_yishi:2',
+    target: '君刀不砍头颅，吾剑只射盔缨。',
+  },
+  {
+    source: '$qishe:1',
+    target: '诱敌之计已成，吾且拈弓搭箭。',
+  },
+  {
+    source: '$qishe:2',
+    target: '关羽即至吊桥，既已控弦，如何是好！',
+  },
+
+  {
+    source: '$hongyi:1',
+    target: '克明礼教，约束不端之行。',
+  },
+  {
+    source: '$hongyi:2',
+    target: '训成弘操，以扬正明之德。',
+  },
+  {
+    source: '$quanfeng:1',
+    target: '媛容德懿，应追谥之。',
+  },
+  {
+    source: '$quanfeng:2',
+    target: '景怀之号，方配得上前人之德。',
+  },
+
+  {
+    source: '$huantu:1',
+    target: '今群雄蜂起，主公宜外收内敛，勿为祸先。',
+  },
+  {
+    source: '$huantu:2',
+    target: '昔陈胜之事，足为今日之师，望主公熟虑。',
+  },
+  {
+    source: '$bihuo:1',
+    target: '公以败兵之身投之，功轻且恐难保身也。',
+  },
+  {
+    source: '$bihuo:2',
+    target: '公不若附之他人与相拒，然后委质，功必多。',
+  },
+
+  {
+    source: '$zhanyi:1',
+    target: '战，可以破敌。意，可以守御。',
+  },
+  {
+    source: '$zhanyi:2',
+    target: '以战养战，视敌而战。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -651,4 +821,59 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose shanli options: {1}',
     target: '{0}：请选择以下一项主公技，令 {1} 获得',
   },
+
+  {
+    source: 'zhengjian: please choose a target to gain ‘Jian’',
+    target: '诤荐：请选择一名其他角色获得“荐”标记',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to transfer the target of slash?',
+    target: '{0}：你可以弃置一张牌将此【杀】转移给一名有“荐”标记的其他角色',
+  },
+
+  {
+    source: '{0}: do you want to discard a card from the area of a player?',
+    target: '{0}：你可以弃置一名角色区域内的一张牌',
+  },
+
+  {
+    source: '{0}: do you want to put 2 cards from the top of draw stack on your general card as ‘Bing’?',
+    target: '{0}：你可以将牌堆顶两张牌置于你的武将牌上，称为“兵”',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to judge, and if the result’s color is black, you deal 1 thunder damage to the target?',
+    target: '{0}：你可以令一名角色进行判定，若结果为黑色，你对其造成1点雷电伤害',
+  },
+
+  {
+    source: '{0}: do you want to prevent the damage to {1} to prey a card from his/her equip area?',
+    target: '{0}：你可以防止对 {1} 造成的伤害，获得其装备区里的一张牌',
+  },
+
+  {
+    source: '{0}: do you want to lose skill ‘Hong Yi’ to gain {1}’s skills?',
+    target: '{0}：你可以失去“弘仪”，获得 {1} 的所有技能，然后你加1点体力上限并回复1点体力',
+  },
+  {
+    source: '{0}: do you want to gain 2 max hp and recover 4 hp?',
+    target: '{0}：你可以加2点体力上限并回复4点体力',
+  },
+
+  {
+    source: '{0}: do you want to give {1} a card to skip his/her draw phase?',
+    target: '{0}：你可以交给 {1} 一张牌，跳过其摸牌阶段',
+  },
+  {
+    source: '{0}: please choose huantu options: {1}',
+    target: '{0}：请选择以下一项，目标为 {1}',
+  },
+  { source: 'huantu:give', target: '令其回复1点体力并摸两张牌' },
+  { source: 'huantu:recover', target: '你摸三张牌然后交给其两张手牌' },
+
+  {
+    source: 'zhanyi: please choose one of these cards to gain',
+    target: '战意：请选择其中一张牌获得',
+  },  
 ];

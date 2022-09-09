@@ -22,7 +22,7 @@ export class BiHuo extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
   ): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to use {0} to {1}?',
+      '{0}: do you want to use this skill to {1} ?',
       this.Name,
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.dying)),
     ).extract();

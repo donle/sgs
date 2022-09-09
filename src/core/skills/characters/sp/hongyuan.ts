@@ -5,6 +5,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'hongyuan', description: 'hongyuan_description' })
 export class HongYuan extends TriggerSkill {
@@ -27,6 +28,13 @@ export class HongYuan extends TriggerSkill {
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     return target !== owner;
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to choose at most two targets to draw 1 card each?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

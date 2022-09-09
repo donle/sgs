@@ -1,11 +1,12 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jishe', description: 'jishe_description' })
 export class JiShe extends ActiveSkill {
@@ -83,6 +84,14 @@ export class JiSheShadow extends TriggerSkill {
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     return !room.getPlayerById(target).ChainLocked;
+  }
+
+  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to choose at most {1} targets to chain on?',
+      this.Name,
+      owner.Hp,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

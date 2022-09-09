@@ -30,6 +30,10 @@ export const characterDictionary: Word[] = [
   { source: '#shunshi', target: '顺世（摸牌+1）' },
   { source: 'shunshi points: {0}', target: '顺世[{0}]' },
 
+  { source: 'caimaozhangyun', target: '蔡瑁张允' },
+  { source: 'lianzhou', target: '连舟' },
+  { source: 'jinglan', target: '惊澜' },
+
   { source: 'mifangfushiren', target: '糜芳傅士仁' },
   { source: 'fengshi', target: '锋势' },
 
@@ -44,6 +48,10 @@ export const characterDictionary: Word[] = [
   { source: 'decade_dengzhi', target: '邓芝' },
   { source: 'jianliang', target: '简亮' },
   { source: 'weimeng', target: '危盟' },
+
+  { source: 'decade_liuba', target: 'D刘巴' },
+  { source: 'zhubi', target: '铸币' },
+  { source: 'liuzhuan', target: '流转' },
 
   { source: 'xugong', target: '许贡' },
   { source: 'biaozhao', target: '表召' },
@@ -217,6 +225,16 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'lianzhou_description',
+    target: '<b>锁定技</b>，准备阶段开始时，你横置，然后无论你是否横置，你横置任意名与你体力值相等的角色。',
+  },
+  {
+    source: 'jinglan_description',
+    target:
+      '<b>锁定技</b>，当你受到伤害后，若你的手牌数：大于体力值，你弃置三张手牌；等于体力值，你弃置一张手牌，回复1点体力；小于体力值，你受到1点火焰伤害并摸四张牌。',
+  },
+
+  {
     source: 'fengshi_description',
     target:
       '当你使用基本牌或锦囊牌指定其他角色为唯一目标后，若其手牌数小于你，你可以弃置你与其各一张牌，然后令此牌对其伤害基数+1；当你成为其他角色使用基本牌或锦囊牌的唯一目标后，若你的手牌数小于其，其可令你弃置你与其各一张牌，然后令此牌对你伤害基数+1。',
@@ -237,6 +255,17 @@ export const skillDescriptions: Word[] = [
     source: 'mingluan_description',
     target:
       '其他角色的结束阶段开始时，若有角色于本回合内回复过体力，你可以弃置一张牌，然后将手牌摸至等同于当前回合角色的手牌数（至多摸至五张）。',
+  },
+
+  {
+    source: 'zhubi_description',
+    target:
+      '当有方片牌因弃置而进入弃牌堆后，你可以从牌堆中（若牌堆中没有【无中生有】，则改为从弃牌堆中）随机将一张【无中生有】置于牌堆顶。',
+  },
+  {
+    source: 'liuzhuan_description',
+    target:
+      '<b>锁定技</b>，其他角色于其回合内使用于此回合的摸牌阶段外获得的牌不能指定你为目标，且当这些牌于本回合内进入弃牌堆后，你获得之。',
   },
 
   {
@@ -1193,4 +1222,9 @@ export const promptDescriptions: Word[] = [
   },
   { source: 'yaopei:you', target: '你回复体力' },
   { source: 'yaopei:opponent', target: '对方回复体力' },
+
+  {
+    source: '{0}: do you want to put a random ‘wu zhong sheng you’ on the top of draw dile?',
+    target: '{0}：你可以从牌堆和弃牌堆中（优先从牌堆）随机将一张【无中生有】置于牌堆顶',
+  },
 ];

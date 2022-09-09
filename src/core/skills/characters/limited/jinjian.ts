@@ -6,6 +6,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jinjian', description: 'jinjian_description' })
 export class JinJian extends TriggerSkill {
@@ -36,6 +37,23 @@ export class JinJian extends TriggerSkill {
     }
 
     return false;
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+  ): PatchedTranslationObject {
+    return owner.getFlag<AllStage>(this.JinJianStage) === DamageEffectStage.DamageEffect
+      ? TranslationPack.translationJsonPatcher(
+          '{0}: do you want to increase the damage {1} will take by 1?',
+          this.Name,
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
+        ).extract()
+      : TranslationPack.translationJsonPatcher(
+          '{0}: do you want to reduce the damage you will take by 1?',
+          this.Name,
+        ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

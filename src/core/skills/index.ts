@@ -557,6 +557,12 @@ export { YiJiao, YiJiaoHandler } from './characters/decade/yijiao';
 export { QiBie } from './characters/decade/qibie';
 export { BingJie, BingJieShadow } from './characters/decade/bingjie';
 export { ZhengDing } from './characters/decade/zhengding';
+export { LianZhou } from './characters/decade/lianzhou';
+export { JingLan } from './characters/decade/jinglan';
+export { ZhuBi } from './characters/decade/zhubi';
+export { LiuZhuan, LiuZhuanShadow, LiuZhuanProhibited, LiuZhuanRemove } from './characters/decade/liuzhuan';
+export { JieZhen, JieZhenResume } from './characters/decade/jiezhen';
+export { DecadeYinShi } from './characters/decade/decade_yinshi';
 
 export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';
@@ -626,6 +632,8 @@ export { FuZhong, FuZhongShadow } from './characters/biographies/fuzhong';
 export { KouLve } from './characters/biographies/koulve';
 export { SuiRen } from './characters/biographies/suiren';
 export { XianWei, XianWeiBuff } from './characters/biographies/xianwei';
+export { ChouTao, ChouTaoShadow } from './characters/biographies/choutao';
+export { XiangShu } from './characters/biographies/xiangshu';
 
 export { DuJin } from './characters/mobile/dujin';
 export { YingJian } from './characters/mobile/yingjian';

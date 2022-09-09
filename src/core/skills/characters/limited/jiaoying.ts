@@ -3,25 +3,18 @@ import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AllStage,
-  CardMoveStage,
-  CardUseStage,
-  PhaseChangeStage,
-  PlayerPhase,
-  StagePriority,
-} from 'core/game/stage_processor';
+import { AllStage, CardMoveStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
-import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill, CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 type JiaoYingMapper = { [playerId: string]: number };
 
-@CommonSkill({ name: 'jiaoying', description: 'jiaoying_description' })
+@CompulsorySkill({ name: 'jiaoying', description: 'jiaoying_description' })
 export class JiaoYing extends TriggerSkill {
   public static readonly UsedTimesMappers = 'jiaoying_used_times_mappers';
 
@@ -48,10 +41,12 @@ export class JiaoYing extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     for (const info of (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>).infos) {
       if (
-        info.fromId === event.fromId &&
-        info.movingCards.find(card => card.fromArea === CardMoveArea.HandArea) !== undefined &&
-        info.toId !== event.fromId &&
-        info.toArea === CardMoveArea.HandArea
+        !(
+          info.fromId === event.fromId &&
+          info.movingCards.find(card => card.fromArea === CardMoveArea.HandArea) !== undefined &&
+          info.toId !== event.fromId &&
+          info.toArea === CardMoveArea.HandArea
+        )
       ) {
         continue;
       }
@@ -61,7 +56,7 @@ export class JiaoYing extends TriggerSkill {
       if (originalColors.length < 2) {
         let hasPushed = false;
         for (const cardInfo of info.movingCards) {
-          if (cardInfo.asideMove) {
+          if (cardInfo.asideMove || cardInfo.fromArea !== CardMoveArea.HandArea) {
             continue;
           }
 
@@ -79,10 +74,12 @@ export class JiaoYing extends TriggerSkill {
         hasPushed && room.setFlag<CardColor[]>(toId, this.Name, originalColors);
       }
 
-      const originalMappers = room.getFlag<JiaoYingMapper[]>(toId, JiaoYing.UsedTimesMappers) || [];
-      originalMappers[toId] = originalMappers[toId] || 0;
-      originalMappers[toId]++;
-      room.getPlayerById(toId).setFlag<JiaoYingMapper[]>(JiaoYing.UsedTimesMappers, originalMappers);
+      const originalMappers = room.getFlag<JiaoYingMapper>(toId, JiaoYing.UsedTimesMappers) || {};
+      originalMappers[event.fromId] = originalMappers[event.fromId] || 0;
+      originalMappers[event.fromId]++;
+      room.getPlayerById(toId).setFlag<JiaoYingMapper>(JiaoYing.UsedTimesMappers, originalMappers);
+
+      console.log(toId);
 
       for (const skillName of [JiaoYingBlocker.Name, JiaoYingRemover.Name]) {
         room.getPlayerById(toId).hasShadowSkill(skillName) || (await room.obtainSkill(toId, skillName));
@@ -95,7 +92,7 @@ export class JiaoYing extends TriggerSkill {
 
 @ShadowSkill
 @PersistentSkill()
-@CommonSkill({ name: JiaoYing.Name, description: JiaoYing.Description })
+@CompulsorySkill({ name: JiaoYing.Name, description: JiaoYing.Description })
 export class JiaoYingShaodow extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(
     room: Room,
@@ -103,26 +100,18 @@ export class JiaoYingShaodow extends TriggerSkill implements OnDefineReleaseTimi
     content: ServerEventFinder<GameEventIdentifiers>,
     stage?: AllStage,
   ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
-  }
-
-  public getPriority(): StagePriority {
-    return StagePriority.High;
-  }
-
-  public isAutoTrigger(): boolean {
-    return true;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.BeforePhaseChange;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === PhaseChangeStage.PhaseChanged;
+    return stage === PhaseChangeStage.BeforePhaseChange;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     return (
       content.from === PlayerPhase.PhaseFinish &&
       !!room.getOtherPlayers(owner.Id).find(player => {
-        const jiaoYingMappers = player.getFlag<JiaoYingMapper[]>(JiaoYing.UsedTimesMappers);
+        const jiaoYingMappers = room.getFlag<JiaoYingMapper>(player.Id, JiaoYing.UsedTimesMappers);
         return jiaoYingMappers && jiaoYingMappers[owner.Id];
       })
     );
@@ -130,7 +119,7 @@ export class JiaoYingShaodow extends TriggerSkill implements OnDefineReleaseTimi
 
   public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const availableNum = room.getOtherPlayers(event.fromId).reduce<number>((sum, player) => {
-      const originalMappers = player.getFlag<JiaoYingMapper[]>(JiaoYing.UsedTimesMappers);
+      const originalMappers = player.getFlag<JiaoYingMapper>(JiaoYing.UsedTimesMappers);
       if (originalMappers && originalMappers[event.fromId] && originalMappers[event.fromId] > 0) {
         sum += originalMappers[event.fromId];
       }
@@ -251,7 +240,7 @@ export class JiaoYingRemover extends TriggerSkill implements OnDefineReleaseTimi
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {
       return (
         (content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>).fromId === owner.Id &&
-        !!owner.getFlag<JiaoYingMapper[]>(JiaoYing.UsedTimesMappers)
+        !!owner.getFlag<JiaoYingMapper>(JiaoYing.UsedTimesMappers)
       );
     }
 

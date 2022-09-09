@@ -8,7 +8,6 @@ export class MaoJie extends Character {
   constructor(id: number) {
     super(id, 'maojie', CharacterGender.Male, CharacterNationality.Wei, 3, 3, GameCharacterExtensions.Mobile, [
       ...skillLoaderInstance.getSkillsByName('bingqing'),
-      ...skillLoaderInstance.getSkillsByName('yingfeng'),
     ]);
   }
 }

@@ -5,6 +5,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { LimitSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { HongYi } from './hongyi';
 
 @LimitSkill({ name: 'quanfeng', description: 'quanfeng_description' })
@@ -29,6 +30,22 @@ export class QuanFeng extends TriggerSkill {
     }
 
     return false;
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent | GameEventIdentifiers.PlayerDyingEvent>,
+  ): PatchedTranslationObject {
+    return EventPacker.getIdentifier(event) === GameEventIdentifiers.PlayerDiedEvent
+      ? TranslationPack.translationJsonPatcher(
+          '{0}: do you want to lose skill ‘Hong Yi’ to gain {1}’s skills?',
+          this.Name,
+          TranslationPack.patchPlayerInTranslation(
+            room.getPlayerById((event as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>).playerId),
+          ),
+        ).extract()
+      : TranslationPack.translationJsonPatcher('{0}: do you want to gain 2 max hp and recover 4 hp?').extract();
   }
 
   public async onTrigger(): Promise<boolean> {

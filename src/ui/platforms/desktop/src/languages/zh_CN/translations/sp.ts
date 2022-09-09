@@ -252,7 +252,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'juesi_description',
     target:
-      '出牌阶段，你可以弃置一张【杀】，并令一名有牌的其他角色弃置一张牌，若其弃置的牌不为【杀】且其体力值不小于你，你视为对其使用一张【决斗】。',
+      '出牌阶段，你可以弃置一张【杀】，并令攻击范围内一名有牌的其他角色弃置一张牌，若其弃置的牌不为【杀】且其体力值不小于你，你视为对其使用一张【决斗】。',
   },
 
   {
@@ -1617,5 +1617,10 @@ export const promptDescriptions: Word[] = [
   {
     source: 'xuehen: please choose a target to deal 1 fire damage',
     target: '雪恨：请选择其中一名角色，对其造成1点火焰伤害',
+  },
+
+  {
+    source: '{0}: do you want to choose at most two targets to draw 1 card each?',
+    target: '{0}：你可以少摸一张牌，并令至多两名其他角色各摸一张牌',
   },
 ];

@@ -30,6 +30,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'guozhao', target: '郭照' },
   { source: 'pianchong', target: '偏宠' },
+  { source: '#pianchong', target: '偏宠' },
   { source: 'pianchong: {0}', target: '偏宠[{0}]' },
   { source: 'pianchong: {0} {1}', target: '偏宠[{0}{1}]' },
   { source: 'zunwei', target: '尊位' },
@@ -97,6 +98,8 @@ export const characterDictionary: Word[] = [
   { source: 'decade_luotong', target: 'D骆统' },
   { source: 'renzheng', target: '仁政' },
   { source: 'jinjian', target: '进谏' },
+  { source: 'jinjian+1', target: '进谏+1' },
+  { source: 'jinjian-1', target: '进谏-1' },
   { source: '#jinjian', target: '进谏' },
 
   { source: 'xurong', target: '徐荣' },
@@ -117,15 +120,12 @@ export const characterDictionary: Word[] = [
   { source: 'fanyufeng', target: '樊玉凤' },
   { source: 'bazhan', target: '把盏' },
   { source: 'jiaoying', target: '醮影' },
-
-  { source: 'fanyufeng', target: '樊玉凤' },
-  { source: 'bazhan', target: '把盏' },
-  { source: 'jiaoying', target: '醮影' },
   { source: '#jiaoying', target: '醮影（摸牌）' },
 
   { source: 'fengyu', target: '冯妤' },
   { source: 'tiqi', target: '涕泣' },
   { source: 'baoshu', target: '宝梳' },
+  { source: 'mark_shu', target: '梳' },
   { source: '#s_baoshu_buff', target: '宝梳（额外摸牌）' },
 ];
 
@@ -362,7 +362,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'renzheng_description',
-    target: '<b>锁定技</b>，当有伤害被防止或其伤害值减少后，你摸两张牌。',
+    target:
+      '<b>锁定技</b>，当有伤害被防止或其伤害值减少后，你摸两张牌。',
   },
   {
     source: 'jinjian_description',
@@ -403,7 +404,18 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jiaoying_description',
     target:
-      '<b>锁定技</b>，当其他角色获得你的手牌后，其于本回合内不能使用或打出与这些牌颜色相同的牌，且本回合结束时，。',
+      '<b>锁定技</b>，当其他角色获得你的手牌后，其于本回合内不能使用或打出与这些牌颜色相同的牌，且本回合结束时，若其于此后未使用过牌，你可令至多X名角色将手牌摸至五张（X为你于本回合内发动过本技能的次数）。',
+  },
+
+  {
+    source: 'tiqi_description',
+    target:
+      '其他角色的出牌阶段开始前，若其于本回合的摸牌阶段内的规则摸牌数之和不等于2，则你摸其超出或少于2数量的牌，然后你可令该角色于本回合内手牌上限增加或减少相同数值。',
+  },
+  {
+    source: 'baoshu_description',
+    target:
+      '准备阶段开始时，你可以令至多X名角色（X为你的体力上限）各获得Y+1枚“梳”标记并重置其武将牌（Y为X减去你以此法选择的角色数）。若如此做，这些角色于其移去其“梳”标记前的摸牌阶段，多摸其“梳”标记数的牌，然后移去其所有“梳”标记。',
   },
 ];
 
@@ -711,6 +723,124 @@ export const skillAudios: Word[] = [
     source: '$yuyun:2',
     target: '泪沾青衫，玉殒香消。',
   },
+
+  {
+    source: '$renzheng:1',
+    target: '仁政如水，可润万物。',
+  },
+  {
+    source: '$renzheng:2',
+    target: '为官一任，当造福一方。',
+  },
+  {
+    source: '$jinjian:1',
+    target: '臣代天子牧民，闻苛自当谏之。',
+  },
+  {
+    source: '$jinjian:2',
+    target: '为将者死战，为臣者死谏！',
+  },
+
+  {
+    source: '$bazhan:1',
+    target: '此酒，当配将军。',
+  },
+  {
+    source: '$bazhan:2',
+    target: '这杯酒，敬于将军。',
+  },
+  {
+    source: '$jiaoying:1',
+    target: '独酌清醮，霓裳自舞。',
+  },
+  {
+    source: '$jiaoying:2',
+    target: '醮影倩丽，何人爱怜。',
+  },
+
+  {
+    source: '$tiqi:1',
+    target: '远望中原，涕泪交流。',
+  },
+  {
+    source: '$tiqi:2',
+    target: '瞻望家乡，泣涕如雨。',
+  },
+  {
+    source: '$baoshu:1',
+    target: '明镜映梳台，黛眉衬粉面。',
+  },
+  {
+    source: '$baoshu:2',
+    target: '头作扶摇髻，首枕千金梳。',
+  },
+
+  {
+    source: '$manyi:1',
+    target: '南蛮女子，该当英勇善战。',
+  },
+  {
+    source: '$manyi:2',
+    target: '蛮族的力量，你可不要小瞧。',
+  },
+  {
+    source: '$mansi:1',
+    target: '承父母庇护，得此福气。',
+  },
+  {
+    source: '$mansi:2',
+    target: '多谢父母怜爱！',
+  },
+  {
+    source: '$souying:1',
+    target: '幽薮影单，只身勇斗。',
+  },
+  {
+    source: '$souying:2',
+    target: '蓁薮影移，险战不惧。',
+  },
+  {
+    source: '$zhanyuan:1',
+    target: '战中结缘，虽苦亦甜。',
+  },
+  {
+    source: '$zhanyuan:2',
+    target: '势不同，情相随。',
+  },
+
+  {
+    source: '$sunyi_jiaqiao:1',
+    target: '为将者，当躬冒矢石！',
+  },
+  {
+    source: '$sunyi_jiaqiao:2',
+    target: '吾承父兄之志，危又何惧？',
+  },
+  {
+    source: '$xiongyi:1',
+    target: '此仇不报，吾恨难消！',
+  },
+  {
+    source: '$xiongyi:2',
+    target: '功业未立，汝可继之！',
+  },
+
+  {
+    source: '$youyan:1',
+    target: '诱言者，为人所不齿！',
+  },
+  {
+    source: '$youyan:2',
+    target: '诱言之弊，不可不慎。',
+  },
+  {
+    source: '$zhuihuan:1',
+    target: '伤人者，追而还之！',
+  },
+  {
+    source: '$zhuihuan:2',
+    target: '追而还击，皆为因果。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -852,5 +982,57 @@ export const promptDescriptions: Word[] = [
   {
     source: 'dushi: please choose a target to gain this skill',
     target: '毒逝：请选择一名其他角色获得本技能',
+  },
+
+  {
+    source: '{0}: do you want to choose at most {1} targets to draw cards?',
+    target: '{0}：你可以令至多 {1} 名角色将手牌摸至五张',
+  },
+
+  {
+    source: '{0}: please choose bazhan options: {1}',
+    target: '{0}：请选择以下一项令 {1} 执行',
+  },
+  { source: 'bazhan:recover', target: '回复1点体力' },
+  { source: 'bazhan:resume', target: '复原武将牌' },
+
+  {
+    source: '{0}: do you want to increase the damage {1} will take by 1?',
+    target: '{0}：你可以令 {1} 本次受到的伤害+1',
+  },
+  {
+    source: '{0}: do you want to reduce the damage you will take by 1?',
+    target: '{0}：你可以令你本次受到的伤害-1',
+  },
+
+  {
+    source: '{0}: please choose tiqi options: {1}',
+    target: '{0}：你可令 {1} 于本回合内手牌上限增加或减少相同值',
+  },
+  { source: 'tiqi:increase', target: '令其手牌上限增加' },
+  { source: 'tiqi:decrease', target: '令其手牌上限减少' },
+
+  {
+    source: '{0}: do you want to choose at most {1} target(s) to gain ‘Shu’ marks each?',
+    target: '{0}：你可以选择至多 {1} 角色各获得“梳”标记',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to obtain {1} ?',
+    target: '{0}：你可以弃置一张牌获得 {1}',
+  },
+  {
+    source: '{0}: do you want to discard a card to let {1} nullify to you?',
+    target: '{0}：你可以弃置一张牌，令 {1} 对你无效',
+  },
+
+  {
+    source: 'zhanyuan: do you want to choose another male character to gain ‘Xi Li’ with him?',
+    target: '战缘：你可以选择一名其他男性角色，你与其均获得技能“系力”',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to increase the damage to {2} which dealt by {1} by 1, then you and {1} will draw 2 cards?',
+    target: '{0}：你可以弃置一张牌，令 {1} 对 {2} 造成的伤害+1，然后你与 {1} 各摸两张牌',
   },
 ];

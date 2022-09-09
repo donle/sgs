@@ -3,7 +3,7 @@ import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/ev
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
-import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -159,6 +159,16 @@ export class BingQingShadow extends TriggerSkill implements OnDefineReleaseTimin
     return content.from === PlayerPhase.PlayCardStage && stage === PhaseChangeStage.PhaseChanged;
   }
 
+  public getPriority(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
+  ): StagePriority {
+    return EventPacker.getIdentifier(event) === GameEventIdentifiers.CardUseEvent
+      ? StagePriority.High
+      : StagePriority.Medium;
+  }
+
   public isAutoTrigger(): boolean {
     return true;
   }
@@ -171,7 +181,7 @@ export class BingQingShadow extends TriggerSkill implements OnDefineReleaseTimin
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,
   ) {
-    return stage === CardUseStage.BeforeCardUseEffect || stage === PhaseChangeStage.PhaseChanged;
+    return stage === CardUseStage.CardUseFinishedEffect || stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUse(

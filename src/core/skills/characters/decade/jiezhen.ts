@@ -63,10 +63,12 @@ export class JieZhen extends ActiveSkill {
     }
     await room.obtainSkill(toId, BaZhen.Name);
 
-    const originalMappers = room.getFlag<JieZhenMapper[]>(toId, this.Name) || [];
+    const originalMappers = room.getFlag<JieZhenMapper>(toId, this.Name) || {};
     originalMappers[event.fromId] = originalMappers[event.fromId] || [];
     originalMappers[event.fromId].push(...skillsToLose);
-    room.getPlayerById(toId).setFlag<JieZhenMapper[]>(this.Name, originalMappers);
+    room.setFlag<JieZhenMapper>(toId, this.Name, originalMappers, this.Name);
+
+    room.getPlayerById(toId).hasShadowSkill(JieZhenResume.Name) || (await room.obtainSkill(toId, JieZhenResume.Name));
 
     return true;
   }
@@ -74,10 +76,10 @@ export class JieZhen extends ActiveSkill {
 
 @ShadowSkill
 @PersistentSkill()
-@CommonSkill({ name: JieZhen.Name, description: JieZhen.Description })
+@CommonSkill({ name: 's_jiezhen_resume', description: 's_jiezhen_resume_description' })
 export class JieZhenResume extends TriggerSkill implements OnDefineReleaseTiming {
   public async whenLosingSkill(room: Room, player: Player) {
-    player.removeFlag(JieZhen.Name);
+    room.removeFlag(player.Id, JieZhen.Name);
   }
 
   public isAutoTrigger(): boolean {
@@ -100,9 +102,9 @@ export class JieZhenResume extends TriggerSkill implements OnDefineReleaseTiming
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+      const jiezhenMapper = owner.getFlag<JieZhenMapper>(JieZhen.Name);
       return (
-        phaseChangeEvent.to === PlayerPhase.PhaseBegin &&
-        !!owner.getFlag<JieZhenMapper[]>(JieZhen.Name).find(mapper => mapper[phaseChangeEvent.toPlayer])
+        phaseChangeEvent.to === PlayerPhase.PhaseBegin && jiezhenMapper && !!jiezhenMapper[phaseChangeEvent.toPlayer]
       );
     } else if (identifier === GameEventIdentifiers.JudgeEvent) {
       const judgeEvent = event as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
@@ -117,13 +119,15 @@ export class JieZhenResume extends TriggerSkill implements OnDefineReleaseTiming
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    await room.loseSkill(event.fromId, BaZhen.Name);
+
     const unknownEvent = event.triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.JudgeEvent
     >;
     if (EventPacker.getIdentifier(unknownEvent) === GameEventIdentifiers.PhaseChangeEvent) {
       const toPlayer = (unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>).toPlayer;
 
-      const jiezhenMappers = room.getFlag<JieZhenMapper[]>(event.fromId, JieZhen.Name);
+      const jiezhenMappers = room.getFlag<JieZhenMapper>(event.fromId, JieZhen.Name);
       for (const skill of jiezhenMappers[toPlayer]) {
         await room.obtainSkill(event.fromId, skill);
       }
@@ -160,9 +164,9 @@ export class JieZhenResume extends TriggerSkill implements OnDefineReleaseTiming
       }
 
       delete jiezhenMappers[toPlayer];
-      jiezhenMappers.length === 0 && (await room.loseSkill(event.fromId, this.Name));
+      Object.keys(jiezhenMappers).length === 0 && (await room.loseSkill(event.fromId, this.Name));
     } else {
-      const jiezhenMappers = room.getFlag<JieZhenMapper[]>(event.fromId, JieZhen.Name);
+      const jiezhenMappers = room.getFlag<JieZhenMapper>(event.fromId, JieZhen.Name);
       if (jiezhenMappers) {
         const allUsers = Object.keys(jiezhenMappers);
         room.deadPlayerFilters(allUsers);

@@ -20,14 +20,15 @@ export class YouYan extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
-    if (owner.hasUsedSkill(this.Name)) {
+    if (owner.hasUsedSkill(this.Name) || room.CurrentPlayer !== owner) {
       return false;
     }
 
     const suitsRecorded: CardSuit[] = [];
     for (const info of event.infos) {
       if (
-        !(info.fromId !== owner.Id && [CardMoveReason.SelfDrop, CardMoveReason.PassiveDrop].includes(info.moveReason))
+        info.fromId !== owner.Id ||
+        ![CardMoveReason.SelfDrop, CardMoveReason.PassiveDrop].includes(info.moveReason)
       ) {
         continue;
       }
@@ -49,7 +50,7 @@ export class YouYan extends TriggerSkill {
       }
     }
 
-    if (suitsRecorded.length < 4) {
+    if (suitsRecorded.length > 0 && suitsRecorded.length < 4) {
       owner.setFlag<CardSuit[]>(this.Name, suitsRecorded);
       return true;
     }

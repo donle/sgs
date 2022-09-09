@@ -31,8 +31,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jiyu_description',
-    target:
-      '出牌阶段，若你有可以使用的手牌，你可以令一名有手牌的角色弃置一张手牌，然后你于此阶段内不能再使用与其弃置的牌花色相同的手牌。若其以此法弃置的牌的花色为黑桃，你翻面，其失去1点体力。',
+    target: '出牌阶段，若你有可以使用的手牌，你可以令一名有手牌的角色弃置一张手牌，然后你于此阶段内不能再使用与其弃置的牌花色相同的手牌。若其以此法弃置的牌的花色为黑桃，你翻面，其失去1点体力。',
   },
 
   {
@@ -53,7 +52,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'jishe_description',
-    target: '出牌阶段，若你的手牌上限大于0，你可以摸一张牌，然后你的手牌上限于本回合内-1。',
+    target: '出牌阶段，若你的手牌上限大于0，你可以摸一张牌，然后你的手牌上限于本回合内-1；结束阶段开始时，若你没有手牌，你可横置至多X名角色（X为你的体力值）。',
   },
   {
     source: 'lianhuo_description',
@@ -91,5 +90,29 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please give a card to {1}, or he/she will lose 1 hp',
     target: '{0}：你可以交给 {1} 一张符合条件的牌，否则其会失去1点体力，且“滔乱”于本回合内失效',
+  },
+
+  {
+    source: '{0}: do you want to choose at most {1} targets to chain on?',
+    target: '{0}：你可以横置至多 {1} 名角色',
+  },
+
+  {
+    source: '{0}: please choose duliang options: {1}',
+    target: '{0}：请为 {1} 选择以下一项',
+  },
+  { source: 'duliang:basic', target: '令其观看牌堆顶两张牌，获得其中的基本牌' },
+  { source: 'duliang:drawMore', target: '其于其下个摸牌阶段多摸一张牌' },
+
+  {
+    source: '{0}: please choose guizao options',
+    target: '{0}：请选择以下一项',
+  },
+  { source: 'guizao:draw', target: '摸一张牌' },
+  { source: 'guizao:recover', target: '回复1点体力' },
+
+  {
+    source: '{0}: please discard a hand card, {1} will gain debuff according to this card',
+    target: '{0}：请弃置一张手牌，如果弃置的是黑桃牌，则 {1} 翻面，你失去1点体力',
   },
 ];

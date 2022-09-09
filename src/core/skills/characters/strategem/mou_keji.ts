@@ -7,29 +7,34 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, FilterSkill, RulesBreakerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { DuJiang } from './dujiang';
+
+const enum MouKeJiOption {
+  Discard,
+  LoseHp,
+}
 
 @CommonSkill({ name: 'mou_keji', description: 'mou_keji_description' })
 export class MouKeJi extends ActiveSkill {
-  private readonly Options = ['mou_keji:discard', 'mou_keji:loseHp'];
+  public whenRefresh(room: Room, owner: Player): void {
+    room.removeFlag(owner.Id, this.Name);
+  }
 
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name) && (owner.Hp > 0 || owner.getPlayerCards().length > 0);
+    return (
+      (owner.hasUsedSkill(DuJiang.Name) ? !owner.hasUsedSkill(this.Name) : owner.hasUsedSkillTimes(this.Name) < 2) &&
+      (owner.Hp > 0 || owner.getPlayerCards().length > 0)
+    );
   }
 
-  public chooseOptions(room: Room, owner: Player): string[] {
-    return this.Options;
-  }
-
-  public cardFilter(
-    room: Room,
-    owner: Player,
-    cards: CardId[],
-    selectedTargets: PlayerId[],
-    cardId?: CardId,
-    selectedOption?: string,
-  ): boolean {
-    return selectedOption === this.Options[0] ? cards.length === 1 : cards.length === 0;
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+    const optionsChosen = owner.getFlag<MouKeJiOption[]>(this.Name) || [];
+    if (optionsChosen.length === 0) {
+      return cards.length < 2;
+    }
+    return owner.getFlag<MouKeJiOption[]>(this.Name)[0] === MouKeJiOption.Discard
+      ? cards.length === 0
+      : cards.length === 1;
   }
 
   public numberOfTargets() {
@@ -40,66 +45,33 @@ export class MouKeJi extends ActiveSkill {
     return false;
   }
 
-  public isAvailableCard() {
-    return true;
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    return room.canDropCard(owner, cardId);
   }
 
-  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  public availableCardAreas(): PlayerCardsArea[] {
+    return [PlayerCardsArea.HandArea];
+  }
+
+  public async onUse() {
     return true;
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const optionsChosen = room.getFlag<MouKeJiOption[]>(event.fromId, this.Name) || [];
     if (event.cardIds) {
       await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, event.fromId, event.fromId, this.Name);
       await room.changeArmor(event.fromId, 1);
+
+      optionsChosen.push(MouKeJiOption.Discard);
     } else {
       await room.loseHp(event.fromId, 1);
       await room.changeArmor(event.fromId, 2);
+
+      optionsChosen.push(MouKeJiOption.LoseHp);
     }
 
-    if (room.AlivePlayers.length < 5) {
-      return true;
-    }
-
-    if (event.cardIds) {
-      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        {
-          options: ['yes', 'no'],
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please choose mou_keji options',
-            this.Name,
-          ).extract(),
-          toId: event.fromId,
-          triggeredBySkills: [this.Name],
-        },
-        event.fromId,
-        true,
-      );
-
-      if (response.selectedOption === 'yes') {
-        await room.loseHp(event.fromId, 1);
-        await room.changeArmor(event.fromId, 2);
-      }
-    } else {
-      const response = await room.askForCardDrop(
-        event.fromId,
-        1,
-        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-        false,
-        undefined,
-        this.Name,
-        TranslationPack.translationJsonPatcher(
-          '{0}: do you want to discard a card to gain 1 armor?',
-          this.Name,
-        ).extract(),
-      );
-
-      if (response.droppedCards.length > 0) {
-        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, event.fromId, event.fromId, this.Name);
-        await room.changeArmor(event.fromId, 1);
-      }
-    }
+    room.setFlag<MouKeJiOption[]>(event.fromId, this.Name, optionsChosen);
 
     return true;
   }

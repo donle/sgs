@@ -33,7 +33,7 @@ export class JueYong extends TriggerSkill {
         !card.isVirtualCard() &&
         !content.triggeredBySkills?.includes(this.Name) &&
         !['peach', 'alcohol'].includes(card.GeneralName) &&
-        owner.getCardIds(PlayerCardsArea.OutsideArea, this.Name).length < owner.Hp * 2
+        owner.getCardIds(PlayerCardsArea.OutsideArea, this.Name).length < owner.Hp
       );
     } else if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       const phaseStageChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;

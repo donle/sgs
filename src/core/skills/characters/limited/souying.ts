@@ -10,6 +10,7 @@ import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'souying', description: 'souying_description' })
 export class SouYing extends TriggerSkill implements OnDefineReleaseTiming {
@@ -76,6 +77,20 @@ export class SouYing extends TriggerSkill implements OnDefineReleaseTiming {
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     return room.canDropCard(owner, cardId);
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
+  ): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      event.fromId === owner.Id
+        ? '{0}: do you want to discard a card to obtain {1} ?'
+        : '{0}: do you want to discard a card to let {1} nullify to you?',
+      this.Name,
+      TranslationPack.patchCardInTranslation(event.byCardId),
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

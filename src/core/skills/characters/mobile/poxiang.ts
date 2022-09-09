@@ -74,6 +74,8 @@ export class PoXiang extends ActiveSkill {
     originalCardIds.push(...cardIdsDrawn);
     room.getPlayerById(fromId).setFlag<CardId[]>(this.Name, originalCardIds);
 
+    room.setCardTag(fromId, this.Name, originalCardIds);
+
     return true;
   }
 }
@@ -149,6 +151,8 @@ export class PoXiangShadow extends TriggerSkill implements OnDefineReleaseTiming
       const phaseChangeEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
       const { fromPlayer } = phaseChangeEvent;
       room.getPlayerById(fromPlayer!).removeFlag(this.GeneralName);
+
+      room.removeCardTag(fromPlayer!, this.GeneralName);
     }
 
     return true;

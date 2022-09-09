@@ -9,6 +9,7 @@ import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { JiBing } from './jibing';
 
 @CommonSkill({ name: 'binghuo', description: 'binghuo_description' })
@@ -47,6 +48,13 @@ export class BingHuo extends TriggerSkill {
 
   public isAvailableTarget(): boolean {
     return true;
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to choose a target to judge, and if the result’s color is black, you deal 1 thunder damage to the target?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

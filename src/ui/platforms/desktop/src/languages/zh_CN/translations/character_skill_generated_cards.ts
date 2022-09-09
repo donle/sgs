@@ -1,4 +1,4 @@
-import { Word } from 'languages';
+import type { Word } from 'languages';
 
 export const cardDictionary: Word[] = [
   { source: 'qizhengxiangsheng', target: '奇正相生' },

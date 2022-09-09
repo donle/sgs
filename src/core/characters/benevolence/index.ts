@@ -8,7 +8,7 @@ export const BenevolencePackage: (index: number) => Character[] = index => [
   new CaiZhenJi(index++),
 
   new RenXuJing(index++),
-  new XiangChong(index++),
+  //new XiangChong(index++),
 
   new LiuZhang(index++),
 ];

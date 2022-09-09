@@ -41,6 +41,6 @@ export const enum MarkEnum {
   Feng = 'feng',
   Qian = 'qian',
   Ye = 'ye',
-  Shu = 'shu',
+  Shu = 'mark_shu',
   Yi = 'yi',
 }

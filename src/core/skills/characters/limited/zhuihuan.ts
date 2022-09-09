@@ -120,16 +120,16 @@ export class ZhuiHuanBuff extends TriggerSkill implements OnDefineReleaseTiming 
             await room.damage({
               fromId: event.fromId,
               toId: source,
-              damage: 1,
+              damage: 2,
               damageType: DamageType.Normal,
               triggeredBySkills: [ZhuiHuan.Name],
             });
           } else if (sourcePlayer.getCardIds(PlayerCardsArea.HandArea).length > 0) {
             let toDiscard = sourcePlayer
               .getCardIds(PlayerCardsArea.HandArea)
-              .filter(cardId => room.canDropCard(event.fromId, cardId));
+              .filter(cardId => room.canDropCard(source, cardId));
             toDiscard.length > 2 && (toDiscard = Algorithm.randomPick(2, toDiscard));
-            await room.dropCards(CardMoveReason.SelfDrop, toDiscard, event.fromId, event.fromId, ZhuiHuan.Name);
+            await room.dropCards(CardMoveReason.SelfDrop, toDiscard, source, source, ZhuiHuan.Name);
           }
         }
       }

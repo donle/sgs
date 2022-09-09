@@ -64,7 +64,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'mou_keji_description',
     target:
-      '出牌阶段限一次，你可以选择一项：1.弃置一张牌，然后获得1点护甲；2.失去1点体力，然后获得2点护甲。选择执行完毕后，若存活角色数不少于5，你可执行另外一项；你的手牌上限+X（X为你的护甲值）；若你不处于濒死状态，你不能使用【桃】。',
+      '出牌阶段每项各限一次（若你发动过“渡江”，则改为出牌阶段限一次），你可以：1.弃置一张手牌，获得1点护甲；2.失去1点体力，获得2点护甲。你的手牌上限+X（X为你的护甲值）；若你不处于濒死状态，则你不能使用【桃】。',
   },
   {
     source: 'dujiang_description',
@@ -102,4 +102,14 @@ export const skillAudios: Word[] = [
 export const promptDescriptions: Word[] = [
   { source: 'tongye:change', target: '有变' },
   { source: 'tongye:unchange', target: '不变' },
+
+  {
+    source: '{0}: do you want to discard 2 hand cards to let {1} gain {2} armor?',
+    target: '{0}：你可以弃置两张手牌，令 {1} 获得 {2} 点护甲',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to gain 1 armor?',
+    target: '{0}：你可以令一名其他角色获得1点护甲',
+  },
 ];

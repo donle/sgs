@@ -7,14 +7,10 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'huanshi', description: 'huanshi_description' })
 export class HuanShi extends TriggerSkill {
-  public get RelatedCharacters(): string[] {
-    return ['wangyuanji'];
-  }
-
   public audioIndex(characterName?: string) {
     return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
   }
@@ -25,6 +21,18 @@ export class HuanShi extends TriggerSkill {
 
   public canUse(room: Room, owner: Player): boolean {
     return owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>,
+  ): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to use this skill to {1} ?',
+      this.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

@@ -1,6 +1,6 @@
 import { Card, CardType } from 'core/cards/card';
 import { Player } from 'core/player/player';
-import { SheQue } from '.';
+import { DuJiang, SheQue, YangWei } from '.';
 import { QingGangSkill } from './cards/standard/qinggang';
 import { XianZhenNullify } from './characters/yijiang2011/xianzhen';
 import { BenXi } from './characters/yijiang2014/benxi';
@@ -27,6 +27,8 @@ export class UniqueSkillRule {
       case XianZhenNullify.Name:
       case BenXi.Name:
       case SheQue.Name:
+      case YangWei.Name:
+      case DuJiang.Name:
         return !card.is(CardType.Shield);
       default:
         return true;

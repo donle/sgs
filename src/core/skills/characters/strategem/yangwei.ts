@@ -6,6 +6,7 @@ import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
 import {
   AllStage,
+  CardUseStage,
   PhaseChangeStage,
   PhaseStageChangeStage,
   PlayerPhase,
@@ -98,20 +99,35 @@ export class YangWeiRemover extends TriggerSkill implements OnDefineReleaseTimin
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === PhaseChangeStage.PhaseChanged;
+    return stage !== PhaseStageChangeStage.StageChanged;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === PhaseStageChangeStage.StageChanged || stage === PhaseChangeStage.PhaseChanged;
+    return (
+      stage === CardUseStage.BeforeCardUseEffect ||
+      stage === PhaseStageChangeStage.StageChanged ||
+      stage === PhaseChangeStage.PhaseChanged
+    );
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.PhaseChangeEvent>,
+    event: ServerEventFinder<
+      | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.PhaseStageChangeEvent
+      | GameEventIdentifiers.PhaseChangeEvent
+    >,
   ): boolean {
     const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
+    if (identifier === GameEventIdentifiers.CardUseEvent) {
+      const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      return (
+        cardUseEvent.fromId === owner.Id &&
+        Sanguosha.getCardById(cardUseEvent.cardId).GeneralName === 'slash' &&
+        owner.getFlag<boolean>(this.GeneralName)
+      );
+    } else if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       const phaseStageChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
       return (
         phaseStageChangeEvent.playerId === owner.Id &&
@@ -137,9 +153,15 @@ export class YangWeiRemover extends TriggerSkill implements OnDefineReleaseTimin
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const unknownEvent = event.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.PhaseChangeEvent
+      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.PhaseChangeEvent
     >;
-    if (EventPacker.getIdentifier(unknownEvent) === GameEventIdentifiers.PhaseStageChangeEvent) {
+
+    const identifier = EventPacker.getIdentifier(unknownEvent);
+    if (identifier === GameEventIdentifiers.CardUseEvent) {
+      const cardUseEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      cardUseEvent.triggeredBySkills = cardUseEvent.triggeredBySkills || [];
+      cardUseEvent.triggeredBySkills.push(this.GeneralName); 
+    } else if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       room.removeFlag(event.fromId, this.GeneralName);
     } else {
       room.getPlayerById(event.fromId).removeFlag(this.Name);

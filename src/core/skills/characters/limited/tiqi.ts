@@ -7,10 +7,14 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'tiqi', description: 'tiqi_description' })
 export class TiQi extends TriggerSkill {
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return stage === PhaseChangeStage.BeforePhaseChange;
   }
@@ -25,7 +29,7 @@ export class TiQi extends TriggerSkill {
       return false;
     }
 
-    const records = room.Analytics.getRecordEvents<GameEventIdentifiers.DrawCardEvent>(
+    const drawnNum = room.Analytics.getRecordEvents<GameEventIdentifiers.DrawCardEvent>(
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.DrawCardEvent &&
         event.fromId === content.toPlayer &&
@@ -33,21 +37,15 @@ export class TiQi extends TriggerSkill {
       undefined,
       'round',
       [PlayerPhase.DrawCardStage],
-    );
-    if (records[records.length - 1].drawAmount !== 2) {
-      owner.setFlag<number>(this.Name, records[records.length - 1].drawAmount);
+    ).reduce<number>((sum, event) => {
+      return sum + event.drawAmount;
+    }, 0);
+    if (drawnNum !== 2) {
+      owner.setFlag<number>(this.Name, drawnNum);
       return true;
     }
 
     return false;
-  }
-
-  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
-    return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to draw {1} card(s)?',
-      this.Name,
-      owner.getFlag<number>(this.Name),
-    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -105,14 +103,6 @@ export class TiQiRemover extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public async whenLosingSkill(room: Room, player: Player) {
-    room.syncGameCommonRules(player.Id, user => {
-      const extraHold = user.getInvisibleMark(TiQi.Name);
-      user.removeInvisibleMark(TiQi.Name);
-      room.CommonRules.addAdditionalHoldCardNumber(user, -extraHold);
-    });
-  }
-
   public isAutoTrigger(): boolean {
     return true;
   }
@@ -134,6 +124,12 @@ export class TiQiRemover extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    room.syncGameCommonRules(event.fromId, user => {
+      const extraHold = user.getInvisibleMark(TiQi.Name);
+      user.removeInvisibleMark(TiQi.Name);
+      room.CommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+    });
+
     await room.loseSkill(event.fromId, this.Name);
 
     return true;

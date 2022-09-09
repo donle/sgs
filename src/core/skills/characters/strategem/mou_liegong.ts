@@ -35,7 +35,7 @@ export class MouLieGong extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
   ): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to use {0} to {1}?',
+      '{0}: do you want to use this skill to {1} ?',
       this.Name,
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
     ).extract();

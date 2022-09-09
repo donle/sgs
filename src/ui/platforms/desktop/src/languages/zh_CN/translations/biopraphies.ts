@@ -11,6 +11,10 @@ export const characterDictionary: Word[] = [
   { source: 'caoanmin', target: '曹安民' },
   { source: 'xianwei', target: '险卫' },
 
+  { source: 'yanrou', target: '阎柔' },
+  { source: 'choutao', target: '仇讨' },
+  { source: 'xiangshu', target: '襄戍' },
+
   { source: 'xushao', target: '许劭' },
   { source: 'pingjian', target: '评荐' },
   { source: '#pingjian', target: '评荐' },
@@ -50,6 +54,22 @@ export const skillDescriptions: Word[] = [
     source: 'xianwei_description',
     target:
       '<b>锁定技</b>，准备阶段开始时，你废除一个装备栏并摸等同于你未废除的装备栏数的牌，然后你令一名其他角色使用牌堆里的第一张与你废除装备栏对应副类别相同的装备牌（若牌堆中没有则改为其摸一张牌）。然后若你的所有装备栏均已废除，你加2点体力上限，且于本局游戏剩余时间内，你视为处于所有其他角色的攻击范围内，所有其他角色均视为处于你的攻击范围内。',
+  },
+
+  {
+    source: 'xianwei_description: {0}',
+    target: '<b>锁定技</b>，你的当前体力值为：{0}。',
+  },
+
+  {
+    source: 'choutao_description',
+    target:
+      '当你使用【杀】指定第一个目标后，或当你成为其他角色使用【杀】的目标后，你可以弃置使用者的一张牌，令此【杀】不可被抵消。然后若使用者为你，则此【杀】不计入次数。',
+  },
+  {
+    source: 'xiangshu_description',
+    target:
+      '<b>限定技</b>，结束阶段开始时，若X大于0，你可以令一名已受伤的角色回复X点体力并摸X张牌（X为你于本回合内造成过的伤害值，且至多为5）。',
   },
 
   {
@@ -292,5 +312,20 @@ export const promptDescriptions: Word[] = [
   {
     source: 'xianwei: please choose a target to use equip from draw pile',
     target: '险卫：请选择一名其他角色随机使用牌堆中一张与你废除装备栏对应的装备牌',
+  },
+
+  {
+    source: '{0}: do you want to discard a card from {1} to set {2} Unoffsetable?',
+    target: '{0}：你可以弃置 {1} 的一张牌，令 {2} 不可被抵消',
+  },
+  {
+    source:
+      '{0}: do you want to discard a card from {1} to set {2} Unoffsetable and restore your limit of using slash?',
+    target: '{0}：你可以弃置 {1} 的一张牌，令 {2} 不可被抵消，且不计入次数',
+  },
+
+  {
+    source: '{0}: do you want to choose a wounded target to recover {1} hp and draw {1} cards?',
+    target: '{0}：你可以令一名已受伤的角色回复 {1} 点体力并摸 {1} 张牌',
   },
 ];

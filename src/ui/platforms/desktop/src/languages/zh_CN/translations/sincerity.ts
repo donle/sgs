@@ -17,6 +17,8 @@ export const characterDictionary: Word[] = [
   { source: 'mifuren', target: '糜夫人' },
   { source: 'guixiu', target: '闺秀' },
   { source: 'qingyu', target: '清玉' },
+  { source: 'qingyu:succeeded', target: '清玉[成功]' },
+  { source: 'qingyu:failed', target: '清玉[失败]' },
   { source: 'xuancun', target: '悬存' },
 
   { source: 'wangfuzhaolei', target: '王甫赵累' },
@@ -231,6 +233,23 @@ export const skillAudios: Word[] = [
     source: '$lirang:2',
     target: '施之以礼，还之以德。',
   },
+
+  {
+    source: '$xin_yinju:1',
+    target: '伐吴者，兴师劳民，徒而无动，万望陛下三思！',
+  },
+  {
+    source: '$xin_yinju:2',
+    target: '今当屯田罢兵，徐图吴蜀。安能急躁冒进乎？',
+  },
+  {
+    source: '$xin_chijie:1',
+    target: '节度在此，诸将莫要轻进。',
+  },
+  {
+    source: '$xin_chijie:2',
+    target: '吾奉天子明诏，整肃六军。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -242,5 +261,29 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target to gain 1 ‘Yi’?',
     target: '{0}：你可以令一名其他角色获得一枚“义”',
+  },
+
+  {
+    source: '{0}: do you want to let {1} draw 2 card(s) additionally?',
+    target: '{0}：你可以令 {1} 多摸两张牌',
+  },
+  {
+    source: 'lirang: you can choose at most 2 cards of these cards to gain',
+    target: '礼让：你可以获得其中至多两张牌',
+  },
+
+  {
+    source: '{0}: do you want to let {1} draws {2} card(s)?',
+    target: '{0}：你可以令 {1} 摸 {2} 张牌',
+  },
+
+  {
+    source: '{0}: please use a slash to {1} , or you will skip your next play card phase and drop card phase',
+    target: '{0}：请对 {1} 使用一张【杀】，否则跳过你下回合的出牌阶段和弃牌阶段',
+  },
+
+  {
+    source: '{0}: do you want to use this skill to {1} which {2} used?',
+    target: '{0}：你可以对 {2} 使用的 {1} 发动本技能',
   },
 ];

@@ -7,7 +7,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 @Armor(1)
 export class MouHuaXiong extends Character {
   constructor(id: number) {
-    super(id, 'mou_huaxiong', CharacterGender.Male, CharacterNationality.Qun, 4, 4, GameCharacterExtensions.Strategem, [
+    super(id, 'mou_huaxiong', CharacterGender.Male, CharacterNationality.Qun, 3, 4, GameCharacterExtensions.Strategem, [
       skillLoaderInstance.getSkillByName('mou_yaowu'),
       ...skillLoaderInstance.getSkillsByName('yangwei'),
     ]);
