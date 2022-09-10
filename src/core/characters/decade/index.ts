@@ -2,7 +2,7 @@ import { Character } from 'core/characters/character';
 import { CaiMaoZhangYun } from './caimaozhangyun';
 import { CaoXing } from './caoxing';
 import { DecadeDengZhi } from './decade_dengzhi';
-import { DecadeHuangChengYan } from './decade_huangchengyan';
+//import { DecadeHuangChengYan } from './decade_huangchengyan';
 import { DecadeLiuBa } from './decade_liuba';
 import { DecadeMiHeng } from './decade_miheng';
 import { DuanWei } from './duanwei';
