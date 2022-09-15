@@ -28,6 +28,8 @@ export abstract class ElectronLoader {
     ) => void,
   ): void;
 
+  public abstract loadCustomScrtip(): Promise<string>;
+
   public async getGameLog() {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://gitee.com/api/v5/repos/doublebit/PicTest/releases/latest');

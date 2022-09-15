@@ -18,8 +18,9 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 const mode = (process.env.REACT_APP_DEV_MODE as ClientFlavor) || ClientFlavor.Dev;
+const flavor = mode === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod;
 const config = getClientConfig(mode);
-const logger = createLogger(mode === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod);
+const logger = createLogger(flavor);
 
 if (config.flavor !== ClientFlavor.Web) {
   import('./index.module.css');
@@ -39,6 +40,15 @@ getElectronLoader(config.flavor)
     );
     emojiLoader(translator);
     Sanguosha.initialize();
+
+    return loader.loadCustomScrtip();
+  })
+  .then(rawScript => {
+    if (rawScript) {
+      // tslint:disable-next-line: no-eval
+      eval(rawScript);
+      Sanguosha.initialize((module as any)?.load);
+    }
   })
   .then(() => {
     ReactDOM.render(

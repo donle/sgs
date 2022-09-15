@@ -5,6 +5,8 @@ export const enum ElectronData {
   MainVolume = 'mainVolume',
   Language = 'language',
 
+  GetCustomScript = 'getCustomScript',
+
   RoomSettingsAllowObserver = 'RoomSettingsAllowObserver',
   RoomSettingsPlayTime = 'RoomSettingsPlayTime',
   RoomSettingsWuxiekejiTime = 'RoomSettingsWuxiekejiTime',

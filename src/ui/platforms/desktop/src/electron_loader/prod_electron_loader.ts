@@ -7,6 +7,7 @@ import {
   GAME_EVENT_FLOW,
   GAME_EVENT_FLOW_REFRESH,
   GET_ALL_DATA,
+  LOAD_CUSTOM_SCRIPT,
   READ_REPLAY,
   REQUEST_CORE_VERSION,
   SAVE_REPLAY,
@@ -143,6 +144,15 @@ export class ProdElectronLoader extends ElectronLoader {
       this.ipcRenderer.on(READ_REPLAY, (saveData: ReplayDataType | undefined) => {
         resovle(saveData);
       });
+    });
+  }
+
+  public async loadCustomScrtip(): Promise<string> {
+    return new Promise<string>(r => {
+      this.ipcRenderer.send(LOAD_CUSTOM_SCRIPT);
+      this.ipcRenderer.on(LOAD_CUSTOM_SCRIPT, (rawScript: string) => {
+        return rawScript;
+      })
     });
   }
 

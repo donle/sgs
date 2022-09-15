@@ -23,6 +23,8 @@ export const DO_UPDATE = 'doUpdate';
 export const REQUEST_CORE_VERSION = 'requestCoreVersion';
 export const RESTART_CLIENT = 'restartClient';
 
+export const LOAD_CUSTOM_SCRIPT = 'loadCustomScript';
+
 const ElectronData = {
   Language: 'language',
 };
@@ -42,6 +44,12 @@ function formatFlavor(flavor: string | undefined): Flavor {
 const flavor = formatFlavor(process.env.NODE_ENV);
 class AppWindow {
   public static readonly GameReleaseApi = 'https://gitee.com/api/v5/repos/doublebit/PicTest/releases/latest';
+  public static readonly HomePath =
+    process.platform === 'darwin' || process.platform === 'linux'
+      ? path.join(os.homedir(), 'sgs')
+      : process.platform === 'win32'
+      ? app.getPath('exe')
+      : '';
   public static onReady(callbackFn: () => void) {
     app.on('ready', callbackFn);
   }
@@ -119,6 +127,16 @@ class AppWindow {
 
     ipcMain.on(GAME_EVENT_FLOW_REFRESH, () => {
       this.replay.clear();
+    });
+
+    ipcMain.on(LOAD_CUSTOM_SCRIPT, () => {
+      const customScriptDir = path.join(AppWindow.HomePath, './custom');
+      if (!fs.existsSync(customScriptDir)) {
+        ipcMain.emit(LOAD_CUSTOM_SCRIPT, '');
+      } else {
+        const rawScript = fs.readFileSync(path.join(AppWindow.HomePath, './custom', './diy.js'), 'utf-8');
+        ipcMain.emit(LOAD_CUSTOM_SCRIPT, rawScript);
+      }
     });
 
     ipcMain.on(SAVE_REPLAY, async () => {
@@ -262,8 +280,6 @@ async function downloadFile(
   currentDownload: number,
   totalDownloads: number,
 ) {
-  const appPath = app.getPath('exe');
-
   let totalSize = 0;
   let currentSize = 0;
   syncUpdateStatusTimer = setInterval(() => {
@@ -281,7 +297,7 @@ async function downloadFile(
   });
 
   return new Promise<void>(resolve => {
-    const downloadFile = fs.createWriteStream(path.join(appPath, '../update', downloadInfo.name));
+    const downloadFile = fs.createWriteStream(path.join(AppWindow.HomePath, '../update', downloadInfo.name));
     dataStream.pipe(downloadFile);
     dataStream.on('data', res => {
       currentSize += res.length;
@@ -343,8 +359,7 @@ async function mergeFiles(downloadDir: string) {
 }
 
 async function beforeLaunchOnWindows() {
-  const appPath = app.getPath('exe');
-  const updateFolder = path.join(appPath, '../update');
+  const updateFolder = path.join(AppWindow.HomePath, '../update');
   if (!fs.existsSync(updateFolder)) {
     fs.mkdirSync(updateFolder);
     return;
@@ -358,7 +373,7 @@ async function beforeLaunchOnWindows() {
 
     await Extract(updateZipFile, { dir: updateFolder });
 
-    const destDirectory = path.join(appPath, '../resources/app.asar');
+    const destDirectory = path.join(AppWindow.HomePath, '../resources/app.asar');
     const updateFile = path.join(updateFolder, './app.asar.bak');
     fs.copyFileSync(updateFile, destDirectory);
 
@@ -370,9 +385,8 @@ async function beforeLaunchOnWindows() {
 }
 
 async function beforeLaunchOnMac() {
-  const homePath = path.join(os.homedir(), 'sgs');
-  if (!fs.existsSync(homePath)) {
-    fs.mkdirSync(homePath);
+  if (!fs.existsSync(AppWindow.HomePath)) {
+    fs.mkdirSync(AppWindow.HomePath);
   }
   // Auto update is not available on Mac
 }

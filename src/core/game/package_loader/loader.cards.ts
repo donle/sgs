@@ -1,7 +1,6 @@
 import { Card } from 'core/cards/card';
 import { SkillsGeneratedCardPackage } from 'core/cards/character_skills';
 import { LegionFightCardPackage } from 'core/cards/legion_fight';
-import { CardSuit } from 'core/cards/libs/card_props';
 import { StandardCardPackage } from 'core/cards/standard';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameCardExtensions } from '../game_props';

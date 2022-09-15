@@ -22,8 +22,8 @@ export interface AudioService {
   playRoomBGM(): void;
   playLobbyBGM(): void;
   playGameStartAudio(): void;
-  changeGameVolume(): void;
-  changeBGMVolume(): void;
+  changeGameVolume(volume?: number): void;
+  changeBGMVolume(volume?: number): void;
   playQuickChatAudio(index: number, gender: CharacterGender): void;
   stop(): void;
 }
@@ -168,20 +168,20 @@ class AudioPlayerService implements AudioService {
     }
   }
 
-  public changeBGMVolume() {
+  public changeBGMVolume(volume?: number) {
     const volumeString: string = this.electronLoader.getData(ElectronData.MainVolume);
-    if (!volumeString) {
+    if (volume === undefined || !volumeString) {
       return;
     }
 
     for (const audio of Object.values(this.audioManager)) {
       if (audio.getAttribute('type') === 'bgm') {
-        audio.volume = this.getFixedVolume(volumeString);
+        audio.volume = volume ?? this.getFixedVolume(volumeString);
       }
     }
   }
 
-  public changeGameVolume() {
+  public changeGameVolume(volume?: number) {
     const volumeString: string = this.electronLoader.getData(ElectronData.GameVolume);
     if (!volumeString) {
       return;
@@ -189,7 +189,7 @@ class AudioPlayerService implements AudioService {
 
     for (const audio of Object.values(this.audioManager)) {
       if (audio.getAttribute('type') === 'game') {
-        audio.volume = this.getFixedVolume(volumeString);
+        audio.volume = volume ?? this.getFixedVolume(volumeString);
       }
     }
   }

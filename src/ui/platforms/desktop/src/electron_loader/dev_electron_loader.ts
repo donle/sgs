@@ -54,4 +54,9 @@ export class DevElectronLoader extends ElectronLoader {
   }
   // tslint:disable-next-line:no-empty
   public whenUpdate() {}
+
+  // tslint:disable-next-line:no-empty
+  public async loadCustomScrtip(): Promise<string> {
+    return Promise.resolve('');
+  }
 }

@@ -12,7 +12,6 @@ import { SkillLoader } from './package_loader/loader.skills';
 import { coreVersion } from './version';
 
 export class Sanguosha {
-  private static hasInitialized = false;
   protected static skills: {
     [name: string]: Skill;
   } = {};
@@ -37,12 +36,12 @@ export class Sanguosha {
     Precondition.assert(!!Sanguosha.skills && !!Sanguosha.cards && !!Sanguosha.characters, 'Uninitialized game engine');
   }
 
-  public static initialize() {
-    if (this.hasInitialized) {
-      return;
+  public static async initialize(externalModuleLoader?: (api: any) => void) {
+    if (externalModuleLoader) {
+      const { OpenAPI } = await import('core/apis/open_api');
+      externalModuleLoader(OpenAPI);
     }
 
-    this.hasInitialized = true;
     for (const skill of SkillLoader.getInstance().getAllSkills()) {
       Sanguosha.skills[skill.Name] = skill;
       if (skill instanceof TransformSkill) {

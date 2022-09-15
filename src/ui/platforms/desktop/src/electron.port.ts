@@ -10,3 +10,5 @@ export const READ_REPLAY = 'readReplay';
 export const DO_UPDATE = 'doUpdate';
 export const REQUEST_CORE_VERSION = 'requestCoreVersion';
 export const RESTART_CLIENT = 'restartClient';
+
+export const LOAD_CUSTOM_SCRIPT = 'loadCustomScript';
