@@ -210,9 +210,9 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         );
       });
       this.presenter.setupClientPlayerOutsideCardActionsMatcher(card => {
-        if (this.isCardFromParticularArea(card)) {
-          return true;
-        }
+        // if (this.isCardFromParticularArea(card)) {
+        //   return true;
+        // }
 
         if (
           !fromArea.includes(PlayerCardsArea.OutsideArea) ||

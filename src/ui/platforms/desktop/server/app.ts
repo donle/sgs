@@ -7,14 +7,21 @@ class App {
   constructor() {
     this.app
       .get('/sgs', (req, res) => {
-        res.sendfile(path.join(__dirname, '../build/home/index.html'));
+        res.sendfile(path.join(__dirname, '../build/index.html'));
       })
       .get('/', (req, res) => {
-        res.sendfile(path.join(__dirname, '../build/index.html'), { maxAge: '180d' });
+        res.sendfile(path.join(__dirname, '../build/home/index.html'), { maxAge: '180d' });
+      })
+      .use((req, res, next) => {
+        if (/\/cdn\/[^?]*$/.test(req.url)) {
+          res.sendfile(path.join(__dirname, `../build/cdn_assets/${req.url.replace('/cdn', '')}`), { maxAge: '180d', status: 301 });
+        } else {
+          next();
+        }
       })
       .use((req, res, next) => {
         if (/\/[^?]*$/.test(req.url)) {
-          res.sendfile(path.join(__dirname, `../build/${req.url}`), { maxAge: '180d' });
+          res.sendfile(path.join(__dirname, `../build/${req.url}`), { maxAge: '180d', status: 301 });
         } else {
           next();
         }
