@@ -3,7 +3,7 @@ import { Sanguosha } from 'core/game/engine';
 import { CharacterSkinInfo } from 'skins/skins';
 import { AudioLoader } from './audio_loader';
 
-const giteeRepo: string = 'http://doublebit.gitee.io/pictest/backup_remote';
+const baseHost: string = '/cdn';
 const cosRepo: string = 'https://sgs-static-1256205614.cos.ap-nanjing.myqcloud.com/backup_remote';
 
 export class DevAudioLoader implements AudioLoader {
@@ -47,13 +47,13 @@ export class DevAudioLoader implements AudioLoader {
       characterName = skill.RelatedCharacters.includes(characterName) ? '.' + characterName : '';
     }
 
-    return `${giteeRepo}/audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`;
+    return `${baseHost}/audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`;
   }
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
-    return `${cosRepo}/audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`;
+    return `${baseHost}/audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`;
   }
   async getDeathAudio(characterName: string): Promise<string> {
-    return `${cosRepo}/audios/characters/${characterName}.mp3`;
+    return `${baseHost}/audios/characters/${characterName}.mp3`;
   }
 
   async getCharacterSkinAudio(

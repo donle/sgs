@@ -25,6 +25,7 @@ npm-debug.log*
 /.versions
 /.vscode
 /coverage
+cdn_assets
 dist
 node_modules
 src/node_modules

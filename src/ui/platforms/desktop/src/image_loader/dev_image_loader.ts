@@ -11,7 +11,7 @@ import { getSkillButtonImages } from './dev_button_image_loader';
 import { getLobbyButtonImage } from './dev_button_image_loader';
 import { ImageLoader } from './image_loader';
 
-const giteeRepo: string = 'http://doublebit.gitee.io/pictest/backup_remote';
+const baseHost: string = '/cdn';
 const cosRepo: string = 'https://sgs-static-1256205614.cos.ap-nanjing.myqcloud.com/backup_remote';
 
 const gameModeIcons = {
@@ -37,14 +37,14 @@ export class DevImageLoader implements ImageLoader {
     skinName?: string,
   ) {
     return {
-      src: `${giteeRepo}/images/characters/${characterName}.png`,
+      src: `${baseHost}/images/characters/${characterName}.png`,
       alt: characterName,
     };
   }
 
   public async getCharacterImage(characterName: string) {
     return {
-      src: `${giteeRepo}/images/characters/${characterName}.png`,
+      src: `${baseHost}/images/characters/${characterName}.png`,
       alt: characterName,
     };
   }
