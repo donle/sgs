@@ -726,6 +726,10 @@ export const conversations: Word[] = [
   },
 
   {
+    source: '{0}: do you want to add at least {1} targets for {2} ?',
+    target: '{0}：你可以为 {2} 增加至多 {1} 名目标',
+  },
+  {
     source: '{0} used skill {1}, which has been removed from target list of {2}',
     target: '{0} 使用了技能【{1}】，{0} 从 {2} 的目标中移除',
   },

@@ -19,6 +19,7 @@ export const characterDictionary: Word[] = [
   { source: 'qingyu', target: '清玉' },
   { source: 'qingyu:succeeded', target: '清玉[成功]' },
   { source: 'qingyu:failed', target: '清玉[失败]' },
+  { source: 'cunsi damage: {0}', target: '存嗣[{0}]' },
   { source: 'xuancun', target: '悬存' },
 
   { source: 'wangfuzhaolei', target: '王甫赵累' },

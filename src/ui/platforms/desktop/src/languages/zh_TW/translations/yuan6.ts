@@ -92,4 +92,8 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please give a card to {1}, or he/she will lose 1 hp',
     target: '{0}：你可以交給 {1} 一張符合條件的牌，否則其會失去1點體力，且“滔亂”於本回合內失效',
   },
+  {
+    source: 'duliang: {0}',
+    target: '督糧[{0}]',
+  },
 ];

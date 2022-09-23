@@ -1609,4 +1609,12 @@ export const promptDescriptions: Word[] = [
     source: 'xuehen: please choose a target to deal 1 fire damage',
     target: '雪恨：請選擇其中一名角色，對其造成1點火焰傷害',
   },
+  {
+    source: '{0}: do you want to choose a target with 1 distance between you to be the target of {1}?',
+    target: '{0}: 選擇一名與你距離為1的一名名角色成為 {1} 的目標',
+  },
+  {
+    source: '{0}: please choose zhenwei options: {1} {2}',
+    target: '{0}: 請選擇: {1} {2}',
+  },
 ];

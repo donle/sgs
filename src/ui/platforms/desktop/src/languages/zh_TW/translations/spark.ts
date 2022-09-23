@@ -290,4 +290,12 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to choose another player to let him drop a hand card from you?',
     target: '{0}：你可以令一名其他角色棄置你一張手牌',
   },
+  {
+    source: '{0}: do you want to give {1} to another player with the number of hand cards more than you?',
+    target: '{0}: 將【{1}】交給一名手牌比你多的其他角色',
+  },
+  {
+    source: '{0}: do you want to give {1} cards to another player with the number of hand cards more than you?',
+    target: '{0}: 將 {1} 張牌交給一名手牌比你多的其他角色',
+  },
 ];

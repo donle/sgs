@@ -247,4 +247,8 @@ export const promptDescriptions: Word[] = [
     source: '{0} used card {1} to {2} and announced {3} as pending target',
     target: '{0} 使用了一张 {1}，目标是 {2}，其需要杀的目标是 {3}',
   },
+  {
+    source: 'player {0} selected {1}, {2} get 1 damage hit from {0}',
+    target: '{0} 选择了 {1}, {2} 收到了一点来自 {0} 的【无属性】伤害',
+  },
 ];

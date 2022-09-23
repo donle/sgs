@@ -244,4 +244,8 @@ export const cardDescriptions: Word[] = [
     source: '{0} used card {1} to {2} and announced {3} as pending target',
     target: '{0} 使用了一張 {1}，目標是 {2}，其需要殺的目標是 {3}',
   },
+  {
+    source: 'player {0} selected {1}, {2} get 1 damage hit from {0}',
+    target: '{0} 選擇了 {1}, {2} 收到了一點來自 {0} 的【無屬性】傷害',
+  },
 ];

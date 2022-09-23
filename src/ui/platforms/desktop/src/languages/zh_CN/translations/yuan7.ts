@@ -45,13 +45,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'rouxian_description',
-    target:
-      '当你受到伤害后，若场上没有角色处于濒死状态，你可以令伤害来源回复1点体力，然后其随机弃置其一张装备牌。',
+    target: '当你受到伤害后，若场上没有角色处于濒死状态，你可以令伤害来源回复1点体力，然后其随机弃置其一张装备牌。',
   },
   {
     source: 'hexian_description',
-    target:
-      '当你回复体力后，若场上没有角色处于濒死状态，你可以令一名其他角色回复1点体力，然后其随机弃置其一张装备牌。',
+    target: '当你回复体力后，若场上没有角色处于濒死状态，你可以令一名其他角色回复1点体力，然后其随机弃置其一张装备牌。',
   },
 
   {
@@ -77,8 +75,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'funan_EX_description',
-    target:
-      '当其他角色使用或打出牌响应你使用的牌时，你可以获得此牌。',
+    target: '当其他角色使用或打出牌响应你使用的牌时，你可以获得此牌。',
   },
   {
     source: 'jiexun_description',
@@ -87,9 +84,7 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
-export const skillAudios: Word[] = [
-  
-];
+export const skillAudios: Word[] = [];
 
 export const promptDescriptions: Word[] = [
   {
@@ -131,4 +126,20 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to choose a target to use this skill(draw {1} card(s), discard {2} card(s))?',
     target: '{0}：你可以令一名其他角色摸 {1} 张牌，然后弃置 {2} 张牌',
   },
-]
+  {
+    source: '{0}: do you want to let {1} lose 1 hp and use a equip card from draw pile?',
+    target: '{0}: 令 {1} 失去一点体力并使用一张摸牌堆里的一张装备牌',
+  },
+  {
+    source: '{0}: do you want to choose a target to lose 1 hp and use a equip card from draw pile?',
+    target: '{0}: 令一名角色失去一点体力并使用一张摸牌堆里的一张装备牌',
+  },
+  {
+    source: '{0}: do you want to let {1} recover 1 hp and discard a equip card?',
+    target: '{0}: 令 {1} 恢复一点体力并弃置一张装备牌',
+  },
+  {
+    source: '{0}: do you want to choose a target to recover 1 hp and discard a equip card?',
+    target: '{0}: 令一名角色恢复一点体力并弃置一张装备牌',
+  },
+];

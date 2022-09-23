@@ -846,4 +846,20 @@ export const promptDescriptions: Word[] = [
     source: 'dushi: please choose a target to gain this skill',
     target: '毒逝：請選擇一名其他角色獲得本技能',
   },
+  {
+    source: '{0}: do you want to put a hand card on another player’s general card?',
+    target: '{0}: 是否將一張手牌置於一名其他角色的武將牌上？',
+  },
+  {
+    source: '{0}: please give {1} a same type card, or you will lose 1 hp',
+    target: '{0}: 交給 {1} 一張同類型的牌或失去一點體力',
+  },
+  {
+    source: '{0}: please choose yuyun_sec options: {1}',
+    target: '{0}: 請選擇: {1}',
+  },
+  {
+    source: 'mansi: {0}',
+    target: '蠻嗣[{0}]',
+  },
 ];

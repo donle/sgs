@@ -1623,4 +1623,12 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to choose at most two targets to draw 1 card each?',
     target: '{0}：你可以少摸一张牌，并令至多两名其他角色各摸一张牌',
   },
+  {
+    source: '{0}: do you want to choose a target with 1 distance between you to be the target of {1}?',
+    target: '{0}: 选择一名与你距离为1的一名名角色成为 {1} 的目标',
+  },
+  {
+    source: '{0}: please choose zhenwei options: {1} {2}',
+    target: '{0}: 请选择: {1} {2}',
+  },
 ];

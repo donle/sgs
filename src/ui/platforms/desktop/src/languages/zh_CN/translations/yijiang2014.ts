@@ -444,4 +444,8 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose at least {1} xianzhou {2} target(s) to deal 1 damage each?',
     target: '{0}：你可对 {2} 攻击范围内的至多 {1} 名角色各造成1点伤害，否则 {2} 回复 {1} 点体力',
   },
+  {
+    source: '{0}: you need to give 2 handcards to {1}',
+    target: '{0}: 将2张手牌交给 {1}',
+  },
 ];

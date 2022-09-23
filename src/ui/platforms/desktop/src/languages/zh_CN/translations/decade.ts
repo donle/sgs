@@ -1227,4 +1227,16 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to put a random ‘wu zhong sheng you’ on the top of draw dile?',
     target: '{0}：你可以从牌堆和弃牌堆中（优先从牌堆）随机将一张【无中生有】置于牌堆顶',
   },
+  {
+    source: '{0}: do you want to move a card from another player’s judge area?',
+    target: '{0}: 选择一名其他角色判定区中的牌移动至你的判定区',
+  },
+  {
+    source: '{0}: please select a player to append to {1} targets',
+    target: '{0}: 选择一名角色成为【{1}】的目标',
+  },
+  {
+    source: '{0}: do you want discard a card?',
+    target: '{0}: 是否弃置一张牌？',
+  },
 ];

@@ -843,7 +843,8 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: '{0}: do you want to choose a target to judge, and if the result’s color is black, you deal 1 thunder damage to the target?',
+    source:
+      '{0}: do you want to choose a target to judge, and if the result’s color is black, you deal 1 thunder damage to the target?',
     target: '{0}：你可以令一名角色进行判定，若结果为黑色，你对其造成1点雷电伤害',
   },
 
@@ -875,5 +876,13 @@ export const promptDescriptions: Word[] = [
   {
     source: 'zhanyi: please choose one of these cards to gain',
     target: '战意：请选择其中一张牌获得',
-  },  
+  },
+  {
+    source: '{0}: please choose 2 hand cards to give them to {1}',
+    target: '{0}: 请选择两张手牌交给 {1}',
+  },
+  {
+    source: '{0}: please choose qianchong options: {1}',
+    target: '{0}: 请选择: {1}',
+  },
 ];

@@ -101,4 +101,20 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose wengua options: {1} {2}',
     target: '{0}：請選擇將 {1} 置於牌堆頂或牌堆底，然後你與 {2} 從牌堆另一端摸一張牌',
   },
+  {
+    source: '{0}: do you want to let {1} lose 1 hp and use a equip card from draw pile?',
+    target: '{0}: 令 {1} 失去一點體力並使用一張摸牌堆裡的一張裝備牌',
+  },
+  {
+    source: '{0}: do you want to choose a target to lose 1 hp and use a equip card from draw pile?',
+    target: '{0}: 令一名角色失去一點體力並使用一張摸牌堆裡的一張裝備牌',
+  },
+  {
+    source: '{0}: do you want to let {1} recover 1 hp and discard a equip card?',
+    target: '{0}: 令 {1} 恢復一點體力並棄置一張裝備牌',
+  },
+  {
+    source: '{0}: do you want to choose a target to recover 1 hp and discard a equip card?',
+    target: '{0}: 令一名角色恢復一點體力並棄置一張裝備牌',
+  },
 ];

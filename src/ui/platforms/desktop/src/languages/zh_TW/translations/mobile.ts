@@ -655,4 +655,12 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose shanli options: {1}',
     target: '{0}：請選擇以下一項主公技，令 {1} 獲得',
   },
+  {
+    source: '{0}: please choose 2 hand cards to give them to {1}',
+    target: '{0}: 請選擇兩張手牌交給 {1}',
+  },
+  {
+    source: '{0}: please choose qianchong options: {1}',
+    target: '{0}: 請選擇: {1}',
+  },
 ];

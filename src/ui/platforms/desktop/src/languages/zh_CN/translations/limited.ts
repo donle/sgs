@@ -362,8 +362,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'renzheng_description',
-    target:
-      '<b>锁定技</b>，当有伤害被防止或其伤害值减少后，你摸两张牌。',
+    target: '<b>锁定技</b>，当有伤害被防止或其伤害值减少后，你摸两张牌。',
   },
   {
     source: 'jinjian_description',
@@ -1032,7 +1031,24 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: '{0}: do you want to discard a card to increase the damage to {2} which dealt by {1} by 1, then you and {1} will draw 2 cards?',
+    source:
+      '{0}: do you want to discard a card to increase the damage to {2} which dealt by {1} by 1, then you and {1} will draw 2 cards?',
     target: '{0}：你可以弃置一张牌，令 {1} 对 {2} 造成的伤害+1，然后你与 {1} 各摸两张牌',
+  },
+  {
+    source: '{0}: do you want to put a hand card on another player’s general card?',
+    target: '{0}: 是否将一张手牌置于一名其他角色的武将牌上？',
+  },
+  {
+    source: '{0}: please give {1} a same type card, or you will lose 1 hp',
+    target: '{0}: 交给 {1} 一张同类型的牌或失去一点体力',
+  },
+  {
+    source: '{0}: please choose yuyun_sec options: {1}',
+    target: '{0}: 请选择: {1}',
+  },
+  {
+    source: 'mansi: {0}',
+    target: '蛮嗣[{0}]',
   },
 ];

@@ -31,7 +31,8 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jiyu_description',
-    target: '出牌阶段，若你有可以使用的手牌，你可以令一名有手牌的角色弃置一张手牌，然后你于此阶段内不能再使用与其弃置的牌花色相同的手牌。若其以此法弃置的牌的花色为黑桃，你翻面，其失去1点体力。',
+    target:
+      '出牌阶段，若你有可以使用的手牌，你可以令一名有手牌的角色弃置一张手牌，然后你于此阶段内不能再使用与其弃置的牌花色相同的手牌。若其以此法弃置的牌的花色为黑桃，你翻面，其失去1点体力。',
   },
 
   {
@@ -52,7 +53,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'jishe_description',
-    target: '出牌阶段，若你的手牌上限大于0，你可以摸一张牌，然后你的手牌上限于本回合内-1；结束阶段开始时，若你没有手牌，你可横置至多X名角色（X为你的体力值）。',
+    target:
+      '出牌阶段，若你的手牌上限大于0，你可以摸一张牌，然后你的手牌上限于本回合内-1；结束阶段开始时，若你没有手牌，你可横置至多X名角色（X为你的体力值）。',
   },
   {
     source: 'lianhuo_description',
@@ -114,5 +116,9 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please discard a hand card, {1} will gain debuff according to this card',
     target: '{0}：请弃置一张手牌，如果弃置的是黑桃牌，则 {1} 翻面，你失去1点体力',
+  },
+  {
+    source: 'duliang: {0}',
+    target: '督粮[{0}]',
   },
 ];

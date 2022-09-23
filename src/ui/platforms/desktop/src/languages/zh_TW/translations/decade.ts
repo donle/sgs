@@ -1076,4 +1076,16 @@ export const promptDescriptions: Word[] = [
   },
   { source: 'yaopei:you', target: '你回覆體力' },
   { source: 'yaopei:opponent', target: '對方回覆體力' },
+  {
+    source: '{0}: do you want to move a card from another player’s judge area?',
+    target: '{0}: 選擇一名其他角色判定區中的牌移動至你的判定區',
+  },
+  {
+    source: '{0}: please select a player to append to {1} targets',
+    target: '{0}: 選擇一名角色成為【{1}】的目標',
+  },
+  {
+    source: '{0}: do you want discard a card?',
+    target: '{0}: 是否棄置一張牌？',
+  },
 ];

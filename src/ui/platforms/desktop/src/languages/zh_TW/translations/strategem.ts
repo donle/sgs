@@ -100,6 +100,28 @@ export const skillAudios: Word[] = [
 ];
 
 export const promptDescriptions: Word[] = [
-  { source: 'tongye:change', target: '有變' },
-  { source: 'tongye:unchange', target: '不變' },
+  { source: 'tongye:change', target: '有变' },
+  { source: 'tongye:unchange', target: '不变' },
+
+  {
+    source: '{0}: do you want to discard 2 hand cards to let {1} gain {2} armor?',
+    target: '{0}：你可以弃置两张手牌，令 {1} 获得 {2} 点护甲',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to gain 1 armor?',
+    target: '{0}：你可以令一名其他角色获得1点护甲',
+  },
+  {
+    source: '{0}: do you want to give 1 card to {1}',
+    target: '{0}: 将一张牌交给 {1}',
+  },
+  {
+    source: '{0}: please choose mou_yaowu options',
+    target: '{0}: 请选择',
+  },
+  {
+    source: '{0}: please choose tongye options',
+    target: '{0}: 请选择',
+  },
 ];
