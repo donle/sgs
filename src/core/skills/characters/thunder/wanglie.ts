@@ -124,8 +124,14 @@ export class WangLieDebuff extends FilterSkill implements OnDefineReleaseTiming 
     return room.CurrentPlayerPhase === PlayerPhase.PlayCardStage && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
-    return room.getPlayerById(owner).getFlag<boolean>(this.GeneralName) ? false : true;
+  public canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
+  ): boolean {
+    return !room.getPlayerById(owner).getFlag<boolean>(this.GeneralName) || isCardResponse === true;
   }
 }
 

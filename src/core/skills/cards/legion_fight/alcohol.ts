@@ -2,6 +2,7 @@ import { AlcoholSkillTrigger } from 'core/ai/skills/cards/alcohol';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
+import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -15,8 +16,8 @@ import { ExtralCardSkillProperty } from '../interface/extral_property';
 export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty {
   private readonly recoverTag = 'recover';
 
-  public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
-    return owner.canUseCard(room, contentOrContainerCard);
+  public canUse(room: Room, owner: Player, cardId: CardId) {
+    return room.CommonRules.canUseCard(room, owner, Sanguosha.getCardById(cardId));
   }
 
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {

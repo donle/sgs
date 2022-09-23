@@ -7,10 +7,12 @@ import { HuCheEr } from './hucheer';
 import { QiuLiJu } from './qiuliju';
 import { WangRong } from './wangrong';
 import { XuShao } from './xushao';
+import { YanRou } from './yanrou';
 
 export const BiographiesPackage: (index: number) => Character[] = index => [
   new CaoSong(index++),
   new CaoAnMin(index++),
+  new YanRou(index++),
 
   new XuShao(index++),
   new WangRong(index++),

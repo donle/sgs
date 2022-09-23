@@ -49,6 +49,8 @@ export const characterDictionary: Word[] = [
   { source: 'jinjiu', target: '禁酒' },
   { source: 'xianzhen target: {0}', target: '陷阵:{0}' },
   { source: 'xianzhen_lose', target: '陷阵[没赢]' },
+
+  { source: 'std_xuanfeng', target: '旋风' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -157,6 +159,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jinjiu_description',
     target: '<b>锁定技</b>，你的【酒】均视为【杀】。',
+  },
+
+  {
+    source: 'std_xuanfeng_description',
+    target:
+      '若你于弃牌阶段内弃置过至少两张手牌，或当你失去装备区里的牌后，你可以依次弃置其他角色的共计一至两张牌。',
   },
 ];
 

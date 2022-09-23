@@ -1,6 +1,7 @@
 import classNames from 'classnames';
-import { Card } from 'core/cards/card';
+import { Card, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
+import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -146,6 +147,24 @@ export class Dashboard extends React.Component<DashboardProps> {
     return availableCards;
   }
 
+  getHandCardTags(cardId: CardId) {
+    if (!this.props.presenter.ClientPlayer) {
+      return;
+    }
+
+    const cardTags: string[] = [];
+    for (const [cardTag, cardIds] of Object.entries(this.props.presenter.ClientPlayer.getAllCardTags())) {
+      cardIds.includes(VirtualCard.getActualCards([cardId])[0]) && cardTags.push(cardTag);
+    }
+
+    if (Sanguosha.getCardById(cardId).isVirtualCard()) {
+      const generatedSkill = Sanguosha.getCardById<VirtualCard>(cardId).GeneratedBySkill;
+      cardTags.includes(generatedSkill) || cardTags.push(generatedSkill);
+    }
+
+    return cardTags.length > 0 ? cardTags : undefined;
+  }
+
   getCardXOffset(index: number) {
     let offsetX = index * (this.handCardWidth + this.cardOffset);
     if (this.cardOffset !== this.cardMargin && this.onFocusCardIndex >= 0 && index > this.onFocusCardIndex) {
@@ -176,7 +195,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index)}
           onMouseLeave={this.onFocusCard(-2)}
           onSelected={this.onClick(cardInfo.card)}
-          tag={this.props.translator.tr(cardInfo.areaName)}
+          tags={[this.props.translator.tr(cardInfo.areaName)]}
           className={styles.handCard}
           disabled={isDisabled}
           selected={isSelected}
@@ -205,6 +224,7 @@ export class Dashboard extends React.Component<DashboardProps> {
               onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index + outsideCards.length)}
               onMouseLeave={this.onFocusCard(-2)}
               card={!this.props.observerMode ? card : undefined}
+              tags={this.getHandCardTags(cardId)}
               highlight={this.props.store.highlightedCards}
               onSelected={this.onClick(card)}
               className={styles.handCard}

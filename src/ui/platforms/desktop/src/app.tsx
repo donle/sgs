@@ -1,6 +1,6 @@
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { Sanguosha } from 'core/game/engine';
-import { Logger } from 'core/shares/libs/logger/logger'
+import { Logger } from 'core/shares/libs/logger/logger';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { createMemoryHistory } from 'history';

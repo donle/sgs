@@ -46,6 +46,7 @@ export interface PlayerInfo {
   MaxHp: number;
   Flags: Record<string, { value: any; visiblePlayers?: PlayerId[] }>;
   Marks: Record<string, number>;
+  Armor: number;
 }
 
 export type PlayerShortcutInfo = PlayerInfo & {

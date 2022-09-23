@@ -234,6 +234,15 @@ export class GameCommonRules {
         (target ? skill.breakCardUsableDistanceTo(card instanceof Card ? card.Id : card, room, user, target) : 0);
     });
 
+    for (const player of room.getAlivePlayersFrom()) {
+      let count = 0;
+      player.getSkills<GlobalRulesBreakerSkill>('globalBreaker').forEach(skill => {
+        count += skill.breakGlobalCardUsableDistance(card instanceof Card ? card.Id : card, room, player, user);
+      });
+
+      times += count;
+    }
+
     return times;
   }
   public getCardAdditionalNumberOfTargets(room: Room, user: Player, card: Card | CardMatcher) {

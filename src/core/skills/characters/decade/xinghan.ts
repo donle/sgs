@@ -7,7 +7,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { ShiBeiShadow } from '../yijiang2014/shibei';
 import { ZhenGe } from './zhenge';
 
 @CompulsorySkill({ name: 'xinghan', description: 'xinghan_description' })
@@ -23,7 +22,7 @@ export class XingHan extends TriggerSkill {
       1,
     );
     if (records.length > 0 && !owner.getFlag<boolean>(XingHanShadow.Name)) {
-      owner.setFlag<boolean>(ShiBeiShadow.Name, true);
+      owner.setFlag<boolean>(XingHanShadow.Name, true);
       records[0].triggeredBySkills = [...(records[0].triggeredBySkills || []), this.Name];
     }
   }

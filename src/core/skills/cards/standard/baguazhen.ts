@@ -1,6 +1,7 @@
 import { BaGuaZhenSkillTrigger } from 'core/ai/skills/cards/baguazhen';
-import { CardType, VirtualCard } from 'core/cards/card';
+import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { BaGuaZhen } from 'core/cards/standard/baguazhen';
 import { Jink } from 'core/cards/standard/jink';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -42,7 +43,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     }
 
     const { cardMatcher } = content;
-    const jinkMatcher = new CardMatcher({ name: ['jink'], type: [CardType.Basic] });
+    const jinkMatcher = new CardMatcher({ name: ['jink'] });
     return (
       owner.Id === content.toId &&
       CardMatcher.match(cardMatcher, jinkMatcher) &&
@@ -60,7 +61,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
-    const judgeEvent = await room.judge(event.fromId, undefined, this.Name, JudgeMatcherEnum.BaGuaZhen);
+    const judgeEvent = await room.judge(event.fromId, undefined, BaGuaZhen.name, JudgeMatcherEnum.BaGuaZhen);
 
     if (JudgeMatcher.onJudge(judgeEvent.judgeMatcherEnum!, Sanguosha.getCardById(judgeEvent.judgeCardId))) {
       const jink = VirtualCard.create<Jink>({

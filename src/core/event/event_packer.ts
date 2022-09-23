@@ -3,6 +3,7 @@ import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from './ev
 
 const enum PrivateTagEnum {
   DamageSignatureInCardUse = 'DamageSignatureInCardUse',
+  LosingAllArmorTag = 'LosingAllArmorTag',
 }
 
 export class EventPacker {
@@ -183,5 +184,16 @@ export class EventPacker {
       | ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ): boolean {
     return !!EventPacker.getMiddleware<boolean>(PrivateTagEnum.DamageSignatureInCardUse, content);
+  }
+
+  public static setLosingAllArmorTag(
+    content: ServerEventFinder<GameEventIdentifiers.ArmorChangeEvent>,
+    data: number,
+  ): void {
+    EventPacker.addMiddleware({ tag: PrivateTagEnum.LosingAllArmorTag, data }, content);
+  }
+
+  public static getLosingAllArmorTag(content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): number | undefined {
+    return EventPacker.getMiddleware<number>(PrivateTagEnum.LosingAllArmorTag, content);
   }
 }

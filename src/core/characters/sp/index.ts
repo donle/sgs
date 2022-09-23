@@ -2,8 +2,11 @@ import { Character } from 'core/characters/character';
 import { BeiMiHu } from './beimihu';
 import { CaoAng } from './caoang';
 import { CaoHong } from './caohong';
+import { DingFeng } from './dingfeng';
 import { DongYun } from './dongyun';
 import { FuWan } from './fuwan';
+import { GuanYinPing } from './guanyinping';
+import { HeQi } from './heqi';
 import { HuangZu } from './huangzu';
 import { LiTong } from './litong';
 import { LiuQi } from './liuqi';
@@ -12,6 +15,7 @@ import { MaLiang } from './maliang';
 import { MaYunLu } from './mayunlu';
 import { MaZhong } from './mazhong';
 import { MiZhu } from './mizhu';
+import { OLZhuLing } from './ol_zhuling';
 import { QuYi } from './quyi';
 import { ShaMoKe } from './shamoke';
 import { ShiXie } from './shixie';
@@ -30,6 +34,7 @@ import { SunHao } from './sunhao';
 import { SunQian } from './sunqian';
 import { WenPin } from './wenpin';
 import { WuTuGu } from './wutugu';
+import { XiaHouBa } from './xiahouba';
 import { XiZhiCai } from './xizhicai';
 import { XSPLiuBei } from './xsp_liubei';
 import { XuJing } from './xujing';
@@ -57,7 +62,10 @@ export const SPPackage: (index: number) => Character[] = index => [
   new SiMaLang(index++),
   new XiZhiCai(index++),
   new SPLuZhi(index++),
+  new OLZhuLing(index++),
 
+  new GuanYinPing(index++),
+  new XiaHouBa(index++),
   new SPSunShangXiang(index++),
   new MaYunLu(index++),
   new SunQian(index++),
@@ -71,6 +79,8 @@ export const SPPackage: (index: number) => Character[] = index => [
 
   new SunHao(index++),
   new ZuMao(index++),
+  new DingFeng(index++),
+  new HeQi(index++),
 
   new SPZhaoYun(index++),
   new FuWan(index++),

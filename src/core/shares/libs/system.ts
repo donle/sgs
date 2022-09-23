@@ -7,6 +7,9 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { BaiYi, JingLve, QuanJi, TunTian, WuKu, ZhengRong } from 'core/skills';
 import { ZuoXing } from 'core/skills/characters/god/zuoxing';
+import { ZhanYuan } from 'core/skills/characters/limited/zhanyuan';
+import { JiBing } from 'core/skills/characters/mobile/jibing';
+import { ZhanYi } from 'core/skills/characters/mobile/zhanyi';
 import { MouLi } from 'core/skills/characters/sincerity/mouli';
 import { GuJu } from 'core/skills/characters/sp/guju';
 import { LiangZhu } from 'core/skills/characters/sp/liangzhu';
@@ -92,6 +95,8 @@ export namespace System {
     XianSi,
     MouLi,
     ZuoXing,
+    WenGua,
+    ZhanYi,
     PveLongShenQiFu,
   }
 
@@ -110,6 +115,12 @@ export namespace System {
     },
     [SideEffectSkillApplierEnum.ZuoXing]: (player: Player, room: Room) => {
       return player.getFlag(ZuoXing.Name);
+    },
+    [SideEffectSkillApplierEnum.WenGua]: (player: Player, room: Room, sourceId: PlayerId) => {
+      return player.Id !== sourceId;
+    },
+    [SideEffectSkillApplierEnum.ZhanYi]: (player: Player, room: Room) => {
+      return player.getFlag(ZhanYi.Name) !== undefined;
     },
     [SideEffectSkillApplierEnum.PveLongShenQiFu]: (player: Player, _: Room, sourceId: PlayerId) => {
       return player.Id !== sourceId;
@@ -144,6 +155,11 @@ export namespace System {
     MangQing = 'mangqing',
     ChouJue = 'choujue',
     BeiShui = 'beishui',
+    MouCuan = 'moucuan',
+    ZhuangRong = 'zhuangrong',
+    WuJi = 'wuji',
+    DuJiang = 'dujiang',
+    ZhanYuan = 'zhanyuan',
     PveClassicGuYong = 'pve_classic_guyong',
   }
 
@@ -171,9 +187,7 @@ export namespace System {
       return player.LostHp > 0;
     },
     [AwakeningSkillApplierEnum.QinXue]: (room: Room, player: Player) => {
-      return (
-        Math.abs(player.getCardIds(PlayerCardsArea.HandArea).length - player.Hp) >= (room.Players.length >= 7 ? 2 : 3)
-      );
+      return player.getCardIds(PlayerCardsArea.HandArea).length - player.Hp >= 2;
     },
     [AwakeningSkillApplierEnum.HongJu]: (room: Room, player: Player) => {
       return player.getCardIds(PlayerCardsArea.OutsideArea, ZhengRong.Name).length > 2;
@@ -219,6 +233,34 @@ export namespace System {
     },
     [AwakeningSkillApplierEnum.BeiShui]: (room: Room, player: Player) => {
       return player.Hp < 2 || player.getCardIds(PlayerCardsArea.HandArea).length < 2;
+    },
+    [AwakeningSkillApplierEnum.PveClassicGuYong]: (room: Room, player: Player) => {
+      return [MarkEnum.PveTanLang, MarkEnum.PveWenQu, MarkEnum.PveWuQu, MarkEnum.PvePoJun].every(
+        mark => player.getMark(mark) > 0,
+      );
+    },
+    [AwakeningSkillApplierEnum.MouCuan]: (room: Room, player: Player) => {
+      return (
+        player.getCardIds(PlayerCardsArea.OutsideArea, JiBing.Name).length >=
+        room.AlivePlayers.reduce<CharacterNationality[]>((allNations, p) => {
+          if (!allNations.includes(p.Nationality)) {
+            allNations.push(p.Nationality);
+          }
+          return allNations;
+        }, []).length
+      );
+    },
+    [AwakeningSkillApplierEnum.ZhuangRong]: (room: Room, player: Player) => {
+      return player.Hp === 1 || player.getCardIds(PlayerCardsArea.HandArea).length === 1;
+    },
+    [AwakeningSkillApplierEnum.WuJi]: (room: Room, player: Player) => {
+      return room.Analytics.getDamage(player.Id, 'round') > 2;
+    },
+    [AwakeningSkillApplierEnum.DuJiang]: (room: Room, player: Player) => {
+      return player.Armor > 2;
+    },
+    [AwakeningSkillApplierEnum.ZhanYuan]: (room: Room, player: Player) => {
+      return player.getFlag<number>(ZhanYuan.Name) > 7;
     },
     [AwakeningSkillApplierEnum.PveClassicGuYong]: (room: Room, player: Player) => {
       return [MarkEnum.PveTanLang, MarkEnum.PveWenQu, MarkEnum.PveWuQu, MarkEnum.PvePoJun].every(

@@ -10,7 +10,7 @@ import { LvLi, LvLiEX, LvLiI, LvLiII } from './lvli';
 @AwakeningSkill({ name: 'choujue', description: 'choujue_description' })
 export class ChouJue extends TriggerSkill {
   public get RelatedSkills(): string[] {
-    return ['beishui'];
+    return ['beishui', 'qingjiao'];
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {

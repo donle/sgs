@@ -238,4 +238,19 @@ export abstract class Functional {
         throw new Error(`Cannot convert this value: ${equipSectionOrCardType}`);
     }
   }
+
+  static convertSuitStringToSuit(suitStr: string) {
+    switch (suitStr) {
+      case 'spade':
+        return CardSuit.Spade;
+      case 'club':
+        return CardSuit.Club;
+      case 'diamond':
+        return CardSuit.Diamond;
+      case 'heart':
+        return CardSuit.Heart;
+      default:
+        throw new Error(`Cannot convert this value: ${suitStr}`);
+    }
+  }
 }

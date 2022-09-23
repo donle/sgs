@@ -1,3 +1,4 @@
+import { BenevolencePackage } from 'core/characters/benevolence';
 import { BiographiesPackage } from 'core/characters/biographies';
 import { Character } from 'core/characters/character';
 import { DecadePackage } from 'core/characters/decade';
@@ -13,6 +14,7 @@ import { SincerityCharacterPackage } from 'core/characters/sincerity';
 import { SPPackage } from 'core/characters/sp';
 import { SparkPackage } from 'core/characters/spark';
 import { StandardCharacterPackage } from 'core/characters/standard';
+import { StrategemPackage } from 'core/characters/strategem';
 import { ThunderCharacterPackage } from 'core/characters/thunder';
 import { WindCharacterPackage } from 'core/characters/wind';
 import { WisdomPackage } from 'core/characters/wisdom';
@@ -21,6 +23,8 @@ import { YiJiang2012Package } from 'core/characters/yijiang2012';
 import { YiJiang2013Package } from 'core/characters/yijiang2013';
 import { YiJiang2014Package } from 'core/characters/yijiang2014';
 import { YiJiang2015Package } from 'core/characters/yijiang2015';
+import { Yuan6Package } from 'core/characters/yuan6';
+import { Yuan7Package } from 'core/characters/yuan7';
 import { GameCharacterExtensions } from 'core/game/game_props';
 
 export type CharacterPackages = {
@@ -55,6 +59,8 @@ export class CharacterLoader {
     [GameCharacterExtensions.YiJiang2013]: YiJiang2013Package,
     [GameCharacterExtensions.YiJiang2014]: YiJiang2014Package,
     [GameCharacterExtensions.YiJiang2015]: YiJiang2015Package,
+    [GameCharacterExtensions.Yuan6]: Yuan6Package,
+    [GameCharacterExtensions.Yuan7]: Yuan7Package,
     [GameCharacterExtensions.SP]: SPPackage,
     [GameCharacterExtensions.Spark]: SparkPackage,
     [GameCharacterExtensions.Decade]: DecadePackage,
@@ -63,6 +69,8 @@ export class CharacterLoader {
     [GameCharacterExtensions.Mobile]: MobilePackage,
     [GameCharacterExtensions.Wisdom]: WisdomPackage,
     [GameCharacterExtensions.Sincerity]: SincerityCharacterPackage,
+    [GameCharacterExtensions.Benevolence]: BenevolencePackage,
+    [GameCharacterExtensions.Strategem]: StrategemPackage,
     [GameCharacterExtensions.Pve]: PvePackage,
   };
 

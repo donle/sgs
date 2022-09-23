@@ -3,12 +3,14 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { AllStage, CardUseStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CommonSkill, ShadowSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { CommonSkill, RulesBreakerSkill, ShadowSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { PersistentSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'jianying', description: 'jianying_description' })
 export class JianYing extends ViewAsSkill {
@@ -20,12 +22,17 @@ export class JianYing extends ViewAsSkill {
     return phase === PlayerPhase.PhaseBegin && room.CurrentPlayer.Id === owner.Id;
   }
 
-  private canUseBasicCard(room: Room, owner: Player) {
-    return owner.canUseCard(room, new CardMatcher({ generalName: ['slash', 'jink', 'alcohol'] }));
-  }
-
   public canUse(room: Room, owner: Player): boolean {
-    return !owner.hasUsedSkill(this.Name) && this.canUseBasicCard(room, owner) && owner.getPlayerCards().length > 0;
+    return (
+      !owner.hasUsedSkill(this.Name) &&
+      owner.getPlayerCards().length > 0 &&
+      owner.canUseCard(
+        room,
+        new CardMatcher({
+          name: Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)),
+        }),
+      )
+    );
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
@@ -92,7 +99,9 @@ export class JianYingTrigger extends TriggerSkill {
     return false;
   }
 
-  async onTrigger() {
+  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    event.mute = false;
+
     return true;
   }
 
@@ -149,5 +158,18 @@ export class JianYingRecord extends TriggerSkill {
     const cardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     room.setFlag(event.fromId, this.Name, cardEvent.cardId);
     return true;
+  }
+}
+
+@ShadowSkill
+@PersistentSkill()
+@CommonSkill({ name: JianYingRecord.Name, description: JianYingRecord.Description })
+export class JianYingUnlimited extends RulesBreakerSkill {
+  public breakCardUsableTimes(cardId: CardId | CardMatcher) {
+    return !(cardId instanceof CardMatcher) &&
+      Sanguosha.getCardById(cardId).isVirtualCard() &&
+      (Sanguosha.getCardById(cardId) as VirtualCard).findByGeneratedSkill(this.GeneralName)
+      ? INFINITE_TRIGGERING_TIMES
+      : 0;
   }
 }

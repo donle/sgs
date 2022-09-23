@@ -354,14 +354,20 @@ export class TianSuanPower extends TriggerSkill implements OnDefineReleaseTiming
 @PersistentSkill()
 @CommonSkill({ name: TianSuanPower.Name, description: TianSuanPower.Description })
 export class TianSuanDebuff extends FilterSkill {
-  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
-    if (!room.getFlag<string[]>(owner, TianSuan.Name)?.includes(TianSuan.TianSuanStricks[4])) {
+  public canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
+  ): boolean {
+    if (!(room.getFlag<string[]>(owner, TianSuan.Name) || []).includes(TianSuan.TianSuanStricks[4]) || isCardResponse) {
       return true;
     }
 
     return cardId instanceof CardMatcher
       ? !cardId.match(new CardMatcher({ generalName: ['peach', 'alcohol'] }))
-      : Sanguosha.getCardById(cardId).GeneralName !== 'peach' ||
+      : Sanguosha.getCardById(cardId).GeneralName !== 'peach' &&
           Sanguosha.getCardById(cardId).GeneralName !== 'alcohol';
   }
 }

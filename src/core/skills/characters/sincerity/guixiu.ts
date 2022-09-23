@@ -1,6 +1,5 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { EventPacker } from 'core/event/event_packer';
-import { AllStage, DamageEffectStage, TurnOverStage } from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
@@ -8,28 +7,20 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'guixiu', description: 'guixiu_description' })
 export class GuiXiu extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.PlayerTurnOverEvent>,
-    stage?: AllStage,
-  ): boolean {
-    return stage === DamageEffectStage.AfterDamagedEffect || stage === TurnOverStage.TurnedOver;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+    return stage === PhaseStageChangeStage.StageChanged;
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.PlayerTurnOverEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.DamageEvent) {
-      const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      return damageEvent.toId === owner.Id && !owner.isFaceUp();
-    } else if (identifier === GameEventIdentifiers.PlayerTurnOverEvent) {
-      const playerTurnOverEvent = event as ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent>;
-      return playerTurnOverEvent.toId === owner.Id && owner.isFaceUp();
-    }
-
-    return false;
+    return (
+      event.playerId === owner.Id &&
+      event.toStage === PlayerPhaseStages.FinishStageStart &&
+      !(owner.Hp % 2 === 0 && owner.LostHp === 0)
+    );
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -37,16 +28,14 @@ export class GuiXiu extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const { fromId } = event;
-    const unknownEvent = event.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.DamageEvent | GameEventIdentifiers.PlayerTurnOverEvent
-    >;
-
-    const identifier = EventPacker.getIdentifier(unknownEvent);
-    if (identifier === GameEventIdentifiers.DamageEvent) {
-      room.getPlayerById(fromId).isFaceUp() || (await room.turnOver(fromId));
+    if (room.getPlayerById(event.fromId).Hp % 2 === 1) {
+      await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name);
     } else {
-      await room.drawCards(1, fromId, 'top', fromId, this.Name);
+      await room.recover({
+        toId: event.fromId,
+        recoveredHp: 1,
+        recoverBy: event.fromId,
+      });
     }
 
     return true;

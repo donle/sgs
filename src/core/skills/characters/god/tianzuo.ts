@@ -69,7 +69,8 @@ export class TianZuoShadow extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const cardEffectEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
-    cardEffectEvent.nullifiedTargets?.push(event.fromId);
+    cardEffectEvent.nullifiedTargets = cardEffectEvent.nullifiedTargets || [];
+    cardEffectEvent.nullifiedTargets.push(event.fromId);
 
     return true;
   }

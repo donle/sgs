@@ -5,6 +5,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'xin_xinpi', target: '信辛毗' },
   { source: 'xin_yinju', target: '引裾' },
+  { source: 's_xin_yinju_debuff', target: '引裾（跳過階段）' },
   { source: 'xin_chijie', target: '持節' },
 
   { source: 'wangling', target: '王凌' },
@@ -17,6 +18,9 @@ export const characterDictionary: Word[] = [
   { source: 'cunsi', target: '存嗣' },
   { source: 'cunsi damage: {0}', target: '存嗣[{0}]' },
   { source: 'guixiu', target: '閨秀' },
+
+  { source: 'qingyu', target: '清玉' },
+  { source: 'xuancun', target: '懸存' },
 
   { source: 'wangfuzhaolei', target: '王甫趙累' },
   { source: 'xunyi', target: '殉義' },
@@ -31,8 +35,9 @@ export const characterDictionary: Word[] = [
   { source: 'chuhai', target: '除害' },
 
   { source: 'kongrong', target: '孔融' },
-  { source: 'mingshi', target: '名士' },
+  { source: 'mingshi', target: '名仕' },
   { source: 'lirang', target: '禮讓' },
+  { source: 'qian', target: '謙' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -47,19 +52,33 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'xin_yinju_description',
+    target:
+      '出牌階段限一次，你可以令一名其他角色須對你使用一張【殺】（無距離限制），否則於其下個回合的首個準備階段開始時，其跳過本回合的出牌階段和棄牌階段。',
+  },
+  {
+    source: 'xin_chijie_description',
+    target: '每回合限一次，當你成為其他角色使用牌的唯一目標時，你可以判定，若結果點數大於6，取消之。',
+  },
+  {
     source: 'xunyi_description',
     target:
       '遊戲開始時，你可以選擇一名其他角色，其獲得“義”標記：當你或其造成傷害後，對方摸一張牌；當你或其受到傷害後，對方棄置一張牌（你和其對對方造成的傷害除外）。當其死亡時，你可以移動此“義”。',
   },
 
   {
-    source: 'cunsi_description',
-    target:
-      '出牌階段限一次，你可以將武將牌翻至背面朝上，並令一名角色從牌堆和棄牌堆中隨機獲得一張【殺】，且其使用的下一張【殺】傷害基數+1。',
+    source: 'guixiu_description',
+    target: '<b>鎖定技</b>，結束階段開始時，若你的體力值為奇數，你摸一張牌，否則你回覆1點體力。',
   },
   {
-    source: 'guixiu_description',
-    target: '<b>鎖定技</b>，當你受到傷害後，你將武將牌翻至正面朝上；當你的武將牌翻至正面朝上後，你摸一張牌。',
+    source: 'qingyu_description',
+    target:
+      '<b>使命技</b>，當你受到傷害時，你棄置兩張牌並防止此傷害。<br><b>成功</b>：準備階段開始時，若你未受傷且沒有手牌，你獲得技能“懸存”；<br><b>失敗</b>：當你進入瀕死狀態時，若你的體力小於1，你減1點體力上限。',
+  },
+  {
+    source: 'xuancun_description',
+    target:
+      '其他角色的回合結束時，若你的體力值大於手牌數，你可以令其摸X張牌（X為你的體力值與手牌數的差值，且至多為2）。',
   },
   {
     source: 'heji_description',
@@ -83,11 +102,13 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'mingshi_description',
-    target: '<b>鎖定技</b>，當你受到1點傷害後，傷害來源棄置一張牌。',
+    target:
+      '<b>鎖定技</b>，當你受到傷害後，若你有“謙”標記，傷害來源棄置其區域內的一張牌，若此牌為：黑色，你獲得之；紅色，你回覆1點體力。',
   },
   {
     source: 'lirang_description',
-    target: '出牌階段限一次，你可以棄置所有手牌，將其中一至X張牌交給一名其他角色（X為你的體力值），然後你摸一張牌。',
+    target:
+      '其他角色的摸牌階段，你可以令其多摸兩張牌，然後你獲得一枚“謙”標記。若如此做，你於本回合內的其棄牌階段結束時，你可獲得其於此階段內棄置過的至多兩張牌；摸牌階段開始前，若你有“謙”標記，你跳過此階段並移去“謙”標記。',
   },
 ];
 
@@ -218,12 +239,6 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to use a slash or duel to {1} ?',
     target: '{0}：你可以對 {1} 使用一張【殺】或【決鬥】',
   },
-
-  {
-    source: 'lirang: please choose a target to give cards',
-    target: '禮讓：請選擇一名其他角色，將所選牌交給他',
-  },
-
   {
     source: '{0}: do you want to choose a target to gain 1 ‘Yi’?',
     target: '{0}：你可以令一名其他角色獲得一枚“義”',

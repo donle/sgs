@@ -9,6 +9,8 @@ export const NONE_TRIGGERING_TIMES = -9999;
 export const INFINITE_DISTANCE = 1000;
 export const INFINITE_ATTACK_RANGE = 1000;
 
+export const UPPER_LIMIT_OF_ARMOR = 5;
+
 export const enum GameCharacterExtensions {
   Standard = 'standard',
   Wind = 'wind',
@@ -25,6 +27,8 @@ export const enum GameCharacterExtensions {
   YiJiang2013 = 'yijiang2013',
   YiJiang2014 = 'yijiang2014',
   YiJiang2015 = 'yijiang2015',
+  Yuan6 = 'yuan6',
+  Yuan7 = 'yuan7',
   SP = 'sp',
   Spark = 'spark',
   Decade = 'decade',
@@ -33,6 +37,8 @@ export const enum GameCharacterExtensions {
   Mobile = 'mobile',
   Wisdom = 'wisdom',
   Sincerity = 'sincerity',
+  Benevolence = 'benevolence',
+  Strategem = 'strategem',
   Pve = 'pve',
 }
 

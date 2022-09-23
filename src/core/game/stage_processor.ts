@@ -177,6 +177,8 @@ export const enum DamageEffectStage {
   AfterDamageEffect = 'AfterDamageEffect',
   AfterDamagedEffect = 'AfterDamagedEffect',
   DamageFinishedEffect = 'DamageFinishedEffect',
+  DamageReduced = 'DamageReduced',
+  DamageTerminated = 'DamageTerminated',
 }
 
 export const enum JudgeEffectStage {
@@ -255,6 +257,12 @@ export const enum LevelBeginStage {
   LevelBegining = 'LevelBegining',
 }
 
+export const enum ArmorChangeStage {
+  BeforeArmorChange = 'BeforeArmorChange',
+  ArmorChanging = 'ArmorChanging',
+  AfterArmorChange = 'AfterArmorChange',
+}
+
 export type GameEventStage =
   | PhaseChangeStage
   | PhaseStageChangeStage
@@ -279,7 +287,8 @@ export type GameEventStage =
   | CardMoveStage
   | TurnOverStage
   | HpChangeStage
-  | ChainLockStage;
+  | ChainLockStage
+  | ArmorChangeStage;
 
 export type AllStage = PlayerPhaseStages | GameEventStage;
 
@@ -392,6 +401,11 @@ const gameEventStageList: {
     HpChangeStage.BeforeHpChange,
     HpChangeStage.HpChanging,
     HpChangeStage.AfterHpChange,
+  ],
+  [GameEventIdentifiers.ArmorChangeEvent]: [
+    ArmorChangeStage.BeforeArmorChange,
+    ArmorChangeStage.ArmorChanging,
+    ArmorChangeStage.AfterArmorChange,
   ],
   [GameEventIdentifiers.ChainLockedEvent]: [
     ChainLockStage.BeforeChainingOn,

@@ -17,6 +17,7 @@ import { RoomStore } from 'pages/room/room.store';
 import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
+import { Armor } from 'ui/armor/armor';
 import { NationalityBadge } from 'ui/badge/badge';
 import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
@@ -606,7 +607,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
 
           {this.getSkillButtons()}
           {clientPlayer && (
-            <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
+            <>
+              <Armor amount={clientPlayer.Armor} />
+              <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
+            </>
           )}
           <div className={styles.playerTags}>
             {clientPlayer && this.getSkillTags(clientPlayer.Id)}

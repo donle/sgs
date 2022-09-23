@@ -3,6 +3,10 @@ import { Word } from 'languages';
 export const characterDictionary: Word[] = [
   { source: 'decade', target: '十周年' },
 
+  { source: 'huaxin', target: '华歆' },
+  { source: 'wanggui', target: '望归' },
+  { source: 'xibing', target: '息兵' },
+
   { source: 'niujin', target: '牛金' },
   { source: 'cuirui', target: '摧锐' },
   { source: 'liewei', target: '裂围' },
@@ -26,6 +30,29 @@ export const characterDictionary: Word[] = [
   { source: '#shunshi', target: '顺世（摸牌+1）' },
   { source: 'shunshi points: {0}', target: '顺世[{0}]' },
 
+  { source: 'caimaozhangyun', target: '蔡瑁张允' },
+  { source: 'lianzhou', target: '连舟' },
+  { source: 'jinglan', target: '惊澜' },
+
+  { source: 'mifangfushiren', target: '糜芳傅士仁' },
+  { source: 'fengshi', target: '锋势' },
+
+  { source: 'wangyue', target: '王悦' },
+  { source: 'huguan', target: '护关' },
+  { source: 'huguan suits: {0}', target: '护关[{0}]' },
+  { source: 'yaopei', target: '摇佩' },
+
+  { source: 'wangtao', target: '王桃' },
+  { source: 'mingluan', target: '鸣鸾' },
+
+  { source: 'decade_dengzhi', target: '邓芝' },
+  { source: 'jianliang', target: '简亮' },
+  { source: 'weimeng', target: '危盟' },
+
+  { source: 'decade_liuba', target: 'D刘巴' },
+  { source: 'zhubi', target: '铸币' },
+  { source: 'liuzhuan', target: '流转' },
+
   { source: 'xugong', target: '许贡' },
   { source: 'biaozhao', target: '表召' },
   { source: 'yechou', target: '业仇' },
@@ -34,6 +61,14 @@ export const characterDictionary: Word[] = [
   { source: 'zhangwen', target: '张温' },
   { source: 'songshu', target: '颂蜀' },
   { source: 'sibian', target: '思辨' },
+
+  { source: 'luyusheng', target: '陆郁生' },
+  { source: 'zhente', target: '贞特' },
+  { source: 'zhiwei', target: '至微' },
+
+  { source: 'fengxi', target: '冯熙' },
+  { source: 'yusui', target: '玉碎' },
+  { source: 'boyan', target: '驳言' },
 
   { source: 'lijue', target: '李傕' },
   { source: 'langxi', target: '狼袭' },
@@ -93,19 +128,52 @@ export const characterDictionary: Word[] = [
   { source: 'zhenge: {0}', target: '枕戈+{0}' },
   { source: 'xinghan', target: '兴汉' },
 
+  { source: 'lvlingqi', target: '吕玲绮' },
+  { source: 'guowu', target: '帼武' },
+  { source: 'zhuangrong', target: '妆戎' },
+  { source: 'shenwei', target: '神威' },
+
   { source: 'xunchen', target: '荀谌' },
   { source: 'fenglve', target: '锋略' },
   { source: 'anyong', target: '暗涌' },
+
+  { source: 'decade_miheng', target: 'D祢衡' },
+  { source: 'decade_kuangcai', target: '狂才' },
+  { source: 'kuangcai: +{0}', target: '狂才[+{0}]' },
+  { source: 'kuangcai: {0}', target: '狂才[{0}]' },
+  { source: 'decade_shejian', target: '舌剑' },
+
+  { source: 'licaiwei', target: '李采薇' },
+  { source: 'yijiao', target: '异教' },
+  { source: 'yijiao: {0}', target: '异教[{0}]' },
+  { source: 's_yijiao_handler', target: '异教（效果）' },
+  { source: 'qibie', target: '泣别' },
+
+  { source: 'mamidi', target: '马日磾' },
+  { source: 'bingjie', target: '秉节' },
+  { source: '#bingjie', target: '秉节（目标弃牌）' },
+  { source: 'zhengding', target: '正订' },
 ];
 
 export const skillDescriptions: Word[] = [
   {
+    source: 'wanggui_description',
+    target:
+      '当你造成伤害后，你可以对一名与你势力不同的角色造成1点伤害（此项每回合限一次）；当你受到伤害后，你可以令一名与你势力相同的角色摸一张牌，若其不为你，则你摸一张牌。',
+  },
+  {
+    source: 'xibing_description',
+    target:
+      '每回合限一次，当其他角色于其出牌阶段内使用黑色【杀】或黑色普通锦囊牌指定唯一目标后，你可以对其发动本技能，令其将手牌摸至其体力值（至多摸至5张），若其以此法摸牌，其于本回合内不能再使用牌。',
+  },
+
+  {
     source: 'cuirui_description',
-    target: '你的第一个回合开始时，你可以获得一至X名其他角色的各一张手牌（X为你的体力值）。',
+    target: '<b>限定技</b>，出牌阶段，你可以获得至多X名其他角色的各一张手牌（X为你的体力值）。',
   },
   {
     source: 'liewei_description',
-    target: '每回合限X次（X为你的体力值），当你令其他角色进入濒死状态时，你可以摸一张牌。',
+    target: '当一名角色于你的回合内进入濒死状态时，你可以摸一张牌。',
   },
 
   {
@@ -157,6 +225,50 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'lianzhou_description',
+    target: '<b>锁定技</b>，准备阶段开始时，你横置，然后无论你是否横置，你横置任意名与你体力值相等的角色。',
+  },
+  {
+    source: 'jinglan_description',
+    target:
+      '<b>锁定技</b>，当你受到伤害后，若你的手牌数：大于体力值，你弃置三张手牌；等于体力值，你弃置一张手牌，回复1点体力；小于体力值，你受到1点火焰伤害并摸四张牌。',
+  },
+
+  {
+    source: 'fengshi_description',
+    target:
+      '当你使用基本牌或锦囊牌指定其他角色为唯一目标后，若其手牌数小于你，你可以弃置你与其各一张牌，然后令此牌对其伤害基数+1；当你成为其他角色使用基本牌或锦囊牌的唯一目标后，若你的手牌数小于其，其可令你弃置你与其各一张牌，然后令此牌对你伤害基数+1。',
+  },
+
+  {
+    source: 'huguan_description',
+    target:
+      '当一名角色于其出牌阶段内使用第一张牌时，若此牌为红色，你可以声明一种花色，令其于本回合内此花色的牌不计入其手牌上限。',
+  },
+  {
+    source: 'yaopei_description',
+    target:
+      '其他角色的弃牌阶段结束时，若该角色于此阶段内弃置过其牌，你可以弃置一张与这些牌花色均不同的牌，然后选择你与该角色中的一名角色，所选角色回复1点体力，另一名角色摸两张牌。',
+  },
+
+  {
+    source: 'mingluan_description',
+    target:
+      '其他角色的结束阶段开始时，若有角色于本回合内回复过体力，你可以弃置一张牌，然后将手牌摸至等同于当前回合角色的手牌数（至多摸至五张）。',
+  },
+
+  {
+    source: 'zhubi_description',
+    target:
+      '当有方片牌因弃置而进入弃牌堆后，你可以从牌堆中（若牌堆中没有【无中生有】，则改为从弃牌堆中）随机将一张【无中生有】置于牌堆顶。',
+  },
+  {
+    source: 'liuzhuan_description',
+    target:
+      '<b>锁定技</b>，其他角色于其回合内使用于此回合的摸牌阶段外获得的牌不能指定你为目标，且当这些牌于本回合内进入弃牌堆后，你获得之。',
+  },
+
+  {
     source: 'biaozhao_description',
     target:
       '结束阶段开始时，若你没有“表”，你可以将一张牌扣置于你的武将牌上，称为“表”；当与你的“表”花色和点数均相同的牌进入弃牌堆后，你移去你的“表”（若进入弃牌堆的牌为其他角色弃置，则改为该角色获得你的“表”），且你失去1点体力；准备阶段开始时，若你有“表”，你移去你的“表”，选择一名角色，令其回复1点体力并将手牌摸至X张（X为场上手牌数最多的角色的手牌数，且至多为5）。',
@@ -175,6 +287,17 @@ export const skillDescriptions: Word[] = [
     source: 'sibian_description',
     target:
       '摸牌阶段，你可以改为亮出牌堆顶四张牌，你获得其中点数最大和最小的所有牌，然后若剩余的牌数为2且它们的点数之差小于存活角色数，你可以将剩余的牌交给手牌数最少的一名角色。',
+  },
+
+  {
+    source: 'zhente_description',
+    target:
+      '每回合限一次，当你成为其他角色使用基本牌或普通锦囊牌的目标后，你可以令其选择一项：1.于本回合内不能再使用此颜色的牌；2.令此牌对你无效。',
+  },
+  {
+    source: 'zhiwei_description',
+    target:
+      '游戏开始时，你可以选择一名其他角色为“至微”角色。当该角色造成伤害后，你摸一张牌，该角色受到伤害后，你随机弃置一张手牌，你于弃牌阶段内弃置的你的牌进入弃牌堆后，其获得这些牌。回合开始时，若你的“至微”角色已阵亡，你可重新选择一名其他角色为“至微”角色。',
   },
 
   {
@@ -247,7 +370,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xuhe_description',
     target:
-      '出牌阶段开始时，你可以减1点体力上限，然后弃置距离1以内的所有角色各一张牌或令这些角色各摸一张牌；出牌阶段结束时，若你的体力上限为全场最少，你加1点体力上限。',
+      '出牌阶段开始时，你可以减1点体力上限，然后弃置距离1以内的所有角色各一张牌或令这些角色各摸一张牌；出牌阶段结束时，若你的体力上限不为全场最高，你加1点体力上限，然后回复1点体力或摸两张牌。',
   },
 
   {
@@ -268,7 +391,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'huangkong_description',
-    target: '<b>锁定技</b>，当你于回合外成为【杀】或伤害类锦囊牌的唯一目标后，若你没有手牌，你摸两张牌。',
+    target: '<b>锁定技</b>，当你于回合外成为【杀】或普通锦囊牌的目标后，若你没有手牌，你摸两张牌。',
   },
 
   {
@@ -309,6 +432,21 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'guowu_description',
+    target:
+      '出牌阶段开始时，你可以展示所有手牌，根据其中的类别数，你获得对应效果：至少一种，随机获得弃牌堆里的一张【杀】；至少两种，你于此阶段内使用牌无距离限制；至少三中，你于此阶段内使用【杀】或普通锦囊牌可额外选择两个目标。',
+  },
+  {
+    source: 'zhuangrong_description',
+    target:
+      '<b>觉醒技</b>，一名角色的回合结束时，若你的手牌数或体力值为1，你减1点体力上限，将体力回复至体力上限，手牌摸至体力上限，然后你获得技能“神威”和“无双”。',
+  },
+  {
+    source: 'shenwei_description',
+    target: '<b>锁定技</b>，摸牌阶段，你多摸两张牌；你的手牌上限+2。',
+  },
+
+  {
     source: 'fenglve_description',
     target:
       '出牌阶段限一次，你可以与一名角色拼点。若：你赢，其交给你其区域里的两张牌；双方均没赢，本技能视为未发动过；你输，其获得你的拼点牌。',
@@ -317,6 +455,59 @@ export const skillDescriptions: Word[] = [
     source: 'anyong_description',
     target:
       '当一名角色于其回合内首次对除其外的角色造成伤害后，若伤害值为1且受伤角色存活，你可以弃置一张牌，对受伤角色造成1点伤害。',
+  },
+
+  {
+    source: 'yusui_description',
+    target:
+      '每回合限一次，当你成为其他角色使用黑色牌的目标后，你可以失去1点体力，然后选择一项令其执行：1.将手牌弃至与你相同；2.将体力失去至与你相同。',
+  },
+  {
+    source: 'boyan_description',
+    target:
+      '出牌阶段限一次，你可以选择一名其他角色，其将手牌摸至体力上限（至多摸至5张），其于本回合内不能使用或打出手牌。',
+  },
+
+  {
+    source: 'jianliang_description',
+    target: '摸牌阶段开始时，若你不为场上手牌最多的角色，你可以令至多两名角色各摸一张牌。',
+  },
+  {
+    source: 'weimeng_description',
+    target:
+      '出牌阶段限一次，你可以获得一名其他角色至多X张手牌（X为你的体力值），然后你交给其等量的牌，若你以此法交给其的牌的点数和：大于你以此法获得的牌，你摸一张牌；小于你以此法获得的牌，你弃置其区域内的一张牌。',
+  },
+
+  {
+    source: 'decade_kuangcai_description',
+    target:
+      '<b>锁定技</b>，你使用牌无距离和次数限制；弃牌阶段开始时，若你于本回合内：未使用过牌，你的手牌上限-1；使用过牌且未造成过伤害，你的手牌上限+1；结束阶段开始时，若你于本回合造成过伤害，你摸X张牌（X为你于本回合内造成过的伤害值）。',
+  },
+  {
+    source: 'decade_shejian_description',
+    target:
+      '每回合限两次，当你成为其他角色使用牌的唯一目标后，若场上没有处于濒死状态的角色，你可以弃置至少两张手牌，然后选择一项：1.弃置其等量的牌（不足则全弃）；2.对其造成1点伤害。',
+  },
+
+  {
+    source: 'yijiao_description',
+    target:
+      '出牌阶段限一次，你可以选择一名其他角色并声明1~4中的一个整数，令其获得你所声明数字十倍的“异”标记。若如此做，其于移去其“异”标记前的结束阶段开始时，若其于本回合内使用过牌的点数之和：小于其“异”标记数，其随机弃置一张手牌；等于其“异”标记数，其于本回合结束时获得一个额外的回合；大于其“异”标记，你摸两张牌。该角色于其下个回合结束时移去其所有“异”标记。',
+  },
+  {
+    source: 'qibie_description',
+    target: '当其他角色死亡后，你可以弃置所有手牌（至少一张），然后回复1点体力并摸X+1张牌（X为你以此法弃置的牌数）。',
+  },
+
+  {
+    source: 'bingjie_description',
+    target:
+      '出牌阶段开始时，你可以减1点体力上限，令你于本回合内使用【杀】或普通锦囊牌指定第一个目标后，目标中的所有其他角色弃置一张牌。',
+  },
+  {
+    source: 'zhengding_description',
+    target:
+      '<b>锁定技</b>，当你于回合外因响应其他角色使用的牌而使用或打出牌时，若你使用或打出的牌与其使用的牌颜色相同，你加1点体力上限。',
   },
 ];
 
@@ -628,6 +819,168 @@ export const skillAudios: Word[] = [
     source: '$zhuangdan:2',
     target: '我家丞相在此，哪个有胆敢动我？',
   },
+
+  {
+    source: '$jianliang:1',
+    target: '岂曰少衣食，与君共袍泽！',
+  },
+  {
+    source: '$zhuangdan:2',
+    target: '义士同心力，粮秣应期来！',
+  },
+  {
+    source: '$weimeng:1',
+    target: '此礼献于友邦，共赴兴汉大业！',
+  },
+  {
+    source: '$weimeng:2',
+    target: '吴有三江之守，何故委身侍魏？',
+  },
+
+  {
+    source: '$decade_kuangcai:1',
+    target: '耳所瞥闻，不忘于心。',
+  },
+  {
+    source: '$decade_kuangcai:2',
+    target: '吾焉能从屠沽儿耶？',
+  },
+  {
+    source: '$decade_shejian:1',
+    target: '伤人的可不止刀剑！',
+  },
+  {
+    source: '$decade_shejian:2',
+    target: '死公！云等道？',
+  },
+
+  {
+    source: '$wanggui:1',
+    target: '存志太虚，安心玄妙。',
+  },
+  {
+    source: '$wanggui:2',
+    target: '礼法有度，良德才略。',
+  },
+  {
+    source: '$xibing:1',
+    target: '千里运粮，非用兵之利。',
+  },
+  {
+    source: '$xibing:2',
+    target: '宜弘一代之治，绍三王之迹。',
+  },
+
+  {
+    source: '$yusui:1',
+    target: '宁为玉碎，不为瓦全！',
+  },
+  {
+    source: '$yusui:2',
+    target: '生义相左，舍生取义！',
+  },
+  {
+    source: '$boyan:1',
+    target: '黑白颠倒，汝言谬矣！',
+  },
+  {
+    source: '$boyan:2',
+    target: '魏王高论，实为无知之言！',
+  },
+
+  {
+    source: '$zhente:1',
+    target: '抗声昭节，义形于色。',
+  },
+  {
+    source: '$zhente:2',
+    target: '少履贞特之行，三从四德。',
+  },
+  {
+    source: '$zhiwei:1',
+    target: '体信贯于神明，送终以礼。',
+  },
+  {
+    source: '$zhiwei:2',
+    target: '昭德以行，生不能侍奉二主。',
+  },
+
+  {
+    source: '$guowu:1',
+    target: '方天映黛眉，赤兔签红妆。',
+  },
+  {
+    source: '$guowu:2',
+    target: '武姬青丝利，巾帼女儿红。',
+  },
+  {
+    source: '$zhuangrong:1',
+    target: '继父神威，无坚不摧！',
+  },
+  {
+    source: '$zhuangrong:2',
+    target: '我乃温侯吕奉先之女！',
+  },
+
+  {
+    source: '$bingjie:1',
+    target: '秉节传旌，心存丹衷。',
+  },
+  {
+    source: '$bingjie:2',
+    target: '秉节刚劲，奸佞务尽。',
+  },
+  {
+    source: '$zhengding:1',
+    target: '行义修正，改故用新。',
+  },
+  {
+    source: '$zhengding:2',
+    target: '义约谬误，有所正订。',
+  },
+
+  {
+    source: '$fengshi:1',
+    target: '锋芒之锐，势不可挡！',
+  },
+  {
+    source: '$fengshi:2',
+    target: '势须砥砺，就其锋芒。',
+  },
+
+  {
+    source: '$huguan:1',
+    target: '共护边关，蜀汉可安。',
+  },
+  {
+    source: '$huguan:2',
+    target: '护君周全，妾身无悔。',
+  },
+  {
+    source: '$yaopei:1',
+    target: '环佩春风，步摇桃粉。',
+  },
+  {
+    source: '$yaopei:2',
+    target: '赠君摇佩，佑君安好。',
+  },
+
+  {
+    source: '$huguan.wangyue:1',
+    target: '此战虽险，悦亦可助之。',
+  },
+  {
+    source: '$huguan.wangyue:2',
+    target: '葭萌关外，同军携手。',
+  },
+  {
+    source: '$mingluan:1',
+    target: '鸾笺寄情，笙歌动心。',
+  },
+  {
+    source: '$mingluan:2',
+    target: '鸾鸣轻歌，声声悦耳。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -686,6 +1039,12 @@ export const promptDescriptions: Word[] = [
   },
   { source: 'xuhe:draw', target: '摸牌' },
   { source: 'xuhe:discard', target: '弃置牌' },
+  {
+    source: '{0}: please choose xuhe buff options',
+    target: '{0}；请选择以下一项',
+  },
+  { source: 'xuhe:draw2', target: '摸两张牌' },
+  { source: 'xuhe:recover', target: '回复1点体力' },
 
   {
     source: '{0}: do you want to discard 2 cards to let {1} lose 1 hp?',
@@ -759,5 +1118,113 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to discard a card to deal 1 damage to {1} ?',
     target: '{0}：你可以弃置一张牌，对 {1} 造成1点伤害',
+  },
+
+  {
+    source: '{0}: please choose zhente options: {1} {2} {3}',
+    target: '{0}：请选择于本回合内不能再使用 {1} 牌，或令 {2} 对 {3} 无效',
+  },
+  { source: 'zhente:ban', target: '不能使用此颜色牌' },
+  { source: 'zhente:nullify', target: '对其无效' },
+
+  {
+    source: '{0}: do you want to choose another player to be the ‘Zhi Wei’ target?',
+    target: '{0}：你可以重新选择一名其他角色作为“至微”角色',
+  },
+  {
+    source: 'zhiwei: please choose another player to be your ‘Zhi Wei’ player',
+    target: '至微：请选择一名其他角色作为“至微”角色',
+  },
+
+  {
+    source: '{0}: do you want to discard at least 2 hand cards to use this skill to {1} ?',
+    target: '{0}：你可以弃置至少两张手牌，对 {1} 发动本技能',
+  },
+  {
+    source: '{0}: please choose decade_shejian options: {1}',
+    target: '{0}：请选择以下一项对 {1} 执行',
+  },
+  { source: 'decade_shejian:discard', target: '弃置其等量牌' },
+  { source: 'decade_shejian:damage', target: '对其造成1点伤害' },
+
+  {
+    source: '{0}: do you want to use ‘Feng Shi’ to {1}: {2} ?',
+    target: '{0}：你可以弃置你与 {1} 各一张牌，令 {2} 对其伤害基数+1',
+  },
+  {
+    source: '{0}: please choose fengshi options: {1} {2}',
+    target: '{0}：你可以令 {1} 弃置你与其各一张牌，令 {2} 对其伤害基数+1',
+  },
+
+  {
+    source: '{0}: please choose a card suit: {1}',
+    target: '{0}：你可以令一种花色的牌于本回合内不计入 {1} 的手牌上限',
+  },
+
+  {
+    source: '{0}: do you want to choose at most 2 targets to draw 1 card each?',
+    target: '{0}：你可以选择至多两名角色，令他们各摸一张牌',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to use this skill?',
+    target: '{0}：你可以弃置一张牌发动本技能',
+  },
+
+  {
+    source: 'wangggui: do you want to choose a player with the different nationality from you to deal 1 damage?',
+    target: '望归：你可以选择一名与你势力不同的角色，对其造成1点伤害',
+  },
+  {
+    source: 'wanggui: do you want to choose a player with the same nationality with you to let he/she draw a card?',
+    target: '望归：你可以选择一名与你势力相同的角色，令其摸一张牌',
+  },
+
+  {
+    source: '{0}: you need to give {1} card(s) to {2}',
+    target: '{0}：请交给 {2} {1} 张牌',
+  },
+
+  {
+    source: '{0}: do you want to reduce 1 max hp to use this skill?',
+    target: '{0}：你可以减1点体力上限发动本技能',
+  },
+
+  {
+    source: '{0}: please choose yusui options: {1}',
+    target: '{0}：请选择以下一项令 {1} 执行',
+  },
+  { source: 'yusui:loseHp', target: '令其失去体力至与你相同' },
+  { source: 'yusui:discard', target: '令其弃置手牌至与你相同' },
+
+  {
+    source: '{0}: please choose yijiao options: {1}',
+    target: '{0}：请选择以下一个数字，令 {1} 获得此数字十倍的“异”标记',
+  },
+
+  {
+    source: '{0}: do you want to discard all your hand cards to recover 1 hp and draw cards?',
+    target: '{0}：你可以弃置所有手牌，回复1点体力并摸以此法弃置牌数+1数量的牌',
+  },
+
+  {
+    source: '{0}: do you want to choose at most 2 targets to append to {1} targets?',
+    target: '{0}：你可以为 {1} 额外选择两个目标',
+  },
+  {
+    source: '{0}: do you want to choose a target to append to {1} targets?',
+    target: '{0}：你可以为 {1} 额外选择一个目标',
+  },
+
+  {
+    source: '{0}: please choose yaopei options: {1}',
+    target: '{0}：请选择令你或 {1} ，所选角色回复1点体力，另一名角色摸两张牌',
+  },
+  { source: 'yaopei:you', target: '你回复体力' },
+  { source: 'yaopei:opponent', target: '对方回复体力' },
+
+  {
+    source: '{0}: do you want to put a random ‘wu zhong sheng you’ on the top of draw dile?',
+    target: '{0}：你可以从牌堆和弃牌堆中（优先从牌堆）随机将一张【无中生有】置于牌堆顶',
   },
 ];

@@ -9,6 +9,7 @@ import baoliIcon from './images/baoli.png';
 import danlieIcon from './images/danlie.png';
 import danxueIcon from './images/danxue.png';
 import dawuIcon from './images/dawu.png';
+import fengIcon from './images/feng.png';
 import fuIcon from './images/fu.png';
 import gouchenIcon from './images/gouchen.png';
 import houtuIcon from './images/houtu.png';
@@ -19,10 +20,12 @@ import kuiIcon from './images/kui.png';
 import lieIcon from './images/lie.png';
 import limitIcon from './images/limit.png';
 import limitUsedIcon from './images/limit_used.png';
+import shuIcon from './images/mark_shu.png';
 import nightmareIcon from './images/nightmare.png';
 import wrathIcon from './images/nu.png';
 import orangeIcon from './images/orange.png';
 import pingdingIcon from './images/pingding.png';
+import qianIcon from './images/qian.png';
 import ranIcon from './images/ran.png';
 import renIcon from './images/ren.png';
 import switchYangIcon from './images/switch_yang.png';
@@ -31,6 +34,8 @@ import taomieIcon from './images/taomie.png';
 import tianrenIcon from './images/tianren.png';
 import weiIcon from './images/wei.png';
 import xueyiIcon from './images/xueyi.png';
+import yeIcon from './images/ye.png';
+import yiIcon from './images/yi.png';
 import yingIcon from './images/ying.png';
 import yuqingIcon from './images/yuqing.png';
 import zhongIcon from './images/zhong.png';
@@ -80,6 +85,11 @@ const markIconMaps: {
   [MarkEnum.HouTu]: houtuIcon,
   [MarkEnum.GouChen]: gouchenIcon,
   [MarkEnum.YuQing]: yuqingIcon,
+  [MarkEnum.Feng]: fengIcon,
+  [MarkEnum.Qian]: qianIcon,
+  [MarkEnum.Ye]: yeIcon,
+  [MarkEnum.Shu]: shuIcon,
+  [MarkEnum.Yi]: yiIcon,
 
   [MarkEnum.PveJi]: pveClassicJiIcon,
   [MarkEnum.PveJian]: pveClassicJianIcon,

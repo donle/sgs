@@ -11,7 +11,13 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'yinghun', description: 'yinghun_description' })
 export class YingHun extends TriggerSkill {
   public get RelatedCharacters(): string[] {
-    return ['sunce'];
+    return ['sunce', 'sunyi'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.slice(1, this.RelatedCharacters.length).includes(characterName)
+      ? 1
+      : 2;
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {

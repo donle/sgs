@@ -62,8 +62,17 @@ export class TunChu extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: TunChu.Name, description: TunChu.Description })
 export class TunChuDebuff extends FilterSkill {
-  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
-    if (room.getPlayerById(owner).getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length === 0) {
+  public canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+    isCardResponse?: boolean,
+  ): boolean {
+    if (
+      room.getPlayerById(owner).getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length === 0 ||
+      isCardResponse
+    ) {
       return true;
     }
 

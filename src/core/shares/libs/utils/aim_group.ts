@@ -28,8 +28,10 @@ export class AimGroupUtil {
 
   public static setTargetDone(aimGroup: AimGroup, playerId: PlayerId) {
     const index = aimGroup[AimStatus.Undone].findIndex(id => id === playerId);
-    index !== -1 && aimGroup[AimStatus.Undone].splice(index, 1);
-    aimGroup[AimStatus.Done].push(playerId);
+    if (index !== -1) {
+      aimGroup[AimStatus.Undone].splice(index, 1);
+      aimGroup[AimStatus.Done].push(playerId);
+    }
   }
 
   public static addTargets(

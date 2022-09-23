@@ -254,12 +254,13 @@ export const skillDescriptions: Word[] = [
   {
     source: 'qinxue_description',
     target:
-      '<b>覺醒技</b>，準備階段，若你的手牌數與你的體力值之差不小於3（若遊戲人數不小於7則改為2），你減1點體力上限，然後獲得"攻心"。',
+      '<b>覺醒技</b>，準備階段或結束階段開始時，若你的手牌數比體力值多2或更多，你減1點體力上限，摸兩張牌或回覆1點體力，然後獲得技能"攻心"。',
   },
-  { source: 'keji_description', target: '若你未於出牌階段內使用或打出過【殺】，則你可以跳過棄牌階段。' },
+  { source: 'keji_description', target: '若你未於本回合的出牌階段內使用或打出過【殺】，則你可以跳過棄牌階段。' },
   {
     source: 'botu_description',
-    target: '回合結束後，若你於出牌階段內使用過四種花色的牌，則你可以獲得一個額外的回合。',
+    target:
+      '每輪限X次（X為存活角色數且至多為3），結束階段開始時，若於本回合內進入過棄牌堆的所有牌包含四種花色，則你可以獲得一個額外的回合。',
   },
   { source: 'kurou_description', target: '出牌階段限一次，你可以棄置一張牌，然後失去1點體力。' },
   {
@@ -328,7 +329,8 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'wangzun_description',
-    target: '鎖定技，體力值大於你的角色的準備階段開始時，你摸一張牌，若其為主公，改為你摸兩張牌且其本回合手牌上限-1。',
+    target:
+      '<b>鎖定技</b>，體力值大於你的角色的準備階段開始時，你摸一張牌，若其為主公，改為你摸兩張牌且其本回合手牌上限-1。',
   },
   {
     source: 'tongji_description',

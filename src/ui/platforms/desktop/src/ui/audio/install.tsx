@@ -1,5 +1,6 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { CharacterGender } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
 import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { CharacterSkinInfo } from 'skins/skins';
@@ -9,12 +10,18 @@ export interface AudioService {
     skillName: string,
     gender: CharacterGender,
     audioIndex?: number,
+    stopCurrent?: boolean,
     skinData?: CharacterSkinInfo[],
     characterName?: string,
     skinName?: string,
   ): Promise<void>;
   playCardAudio(skillName: string, gender?: CharacterGender, characterName?: string): Promise<void>;
-  playDeathAudio(characterName: string, skinDara?: CharacterSkinInfo[], skinName?: string): Promise<void>;
+  playDeathAudio(
+    characterName: string,
+    stopCurrent?: boolean,
+    skinData?: CharacterSkinInfo[],
+    skinName?: string,
+  ): Promise<void>;
   playDamageAudio(damage: number): void;
   playLoseHpAudio(): void;
   playEquipAudio(): void;
@@ -48,14 +55,21 @@ class AudioPlayerService implements AudioService {
     skillName: string,
     gender: CharacterGender,
     audioIndex?: number,
+    stopCurrent?: boolean,
     skinData?: CharacterSkinInfo[],
     characterName?: string,
     skinName?: string,
   ) {
-    if (this.playList.has(skillName) || this.badResourcesList.has(skillName)) {
+    if (
+      this.playList.has(skillName) ||
+      this.badResourcesList.has(skillName) ||
+      Sanguosha.getSkillBySkillName(skillName).audioIndex(characterName) < 1
+    ) {
       return;
     }
     try {
+      stopCurrent && this.stop();
+
       if (skinName) {
         const audioUrl = await this.loader.getCharacterSkinAudio(
           characterName!,
@@ -87,8 +101,15 @@ class AudioPlayerService implements AudioService {
     }
   }
 
-  async playDeathAudio(characterName: string, skinData: CharacterSkinInfo[], skinName?: string) {
+  async playDeathAudio(
+    characterName: string,
+    stopCurrent?: boolean,
+    skinData?: CharacterSkinInfo[],
+    skinName?: string,
+  ) {
     try {
+      stopCurrent && this.stop();
+
       if (skinName) {
         const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', undefined, skinData);
         await this.play(audioUrl);

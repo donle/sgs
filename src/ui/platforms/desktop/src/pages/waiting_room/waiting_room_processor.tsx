@@ -101,7 +101,10 @@ export class WaitingRoomProcessor {
     this.electronLoader.setData(ElectronData.RoomSettingsGameMode, this.store.gameSettings.gameMode);
     this.electronLoader.setData(ElectronData.RoomSettingsPlayTime, this.store.gameSettings.playingTimeLimit);
     this.electronLoader.setData(ElectronData.RoomSettingsWuxiekejiTime, this.store.gameSettings.wuxiekejiTimeLimit);
-    this.electronLoader.setData(ElectronData.RoomSettingsFortuneCardsExchangeTime, this.store.gameSettings.fortuneCardsExchangeLimit);
+    this.electronLoader.setData(
+      ElectronData.RoomSettingsFortuneCardsExchangeTime,
+      this.store.gameSettings.fortuneCardsExchangeLimit,
+    );
     this.electronLoader.setData(
       ElectronData.RoomSettingsDisabledCharacters,
       this.store.gameSettings.excludedCharacters,

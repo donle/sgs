@@ -64,7 +64,7 @@ export class MoveCard extends React.Component<MoveCardProps> {
               imageLoader={this.props.imageLoader}
               key={index}
               card={displayCard.card}
-              tag={displayCard.tag}
+              tags={displayCard.tag}
               width={this.cardWidth}
               offsetLeft={this.calculateDisplayedCardOffset(this.props.store.displayedCards.length, index)}
               translator={this.props.translator}

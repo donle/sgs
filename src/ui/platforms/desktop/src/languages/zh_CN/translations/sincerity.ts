@@ -5,6 +5,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'xin_xinpi', target: '信辛毗' },
   { source: 'xin_yinju', target: '引裾' },
+  { source: 's_xin_yinju_debuff', target: '引裾（跳过阶段）' },
   { source: 'xin_chijie', target: '持节' },
 
   { source: 'wangling', target: '王凌' },
@@ -14,9 +15,11 @@ export const characterDictionary: Word[] = [
   { source: 'zifu', target: '自缚' },
 
   { source: 'mifuren', target: '糜夫人' },
-  { source: 'cunsi', target: '存嗣' },
-  { source: 'cunsi damage: {0}', target: '存嗣[{0}]' },
   { source: 'guixiu', target: '闺秀' },
+  { source: 'qingyu', target: '清玉' },
+  { source: 'qingyu:succeeded', target: '清玉[成功]' },
+  { source: 'qingyu:failed', target: '清玉[失败]' },
+  { source: 'xuancun', target: '悬存' },
 
   { source: 'wangfuzhaolei', target: '王甫赵累' },
   { source: 'xunyi', target: '殉义' },
@@ -31,8 +34,9 @@ export const characterDictionary: Word[] = [
   { source: 'chuhai', target: '除害' },
 
   { source: 'kongrong', target: '孔融' },
-  { source: 'mingshi', target: '名士' },
+  { source: 'mingshi', target: '名仕' },
   { source: 'lirang', target: '礼让' },
+  { source: 'qian', target: '谦' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -47,19 +51,34 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'xin_yinju_description',
+    target:
+      '出牌阶段限一次，你可以令一名其他角色须对你使用一张【杀】（无距离限制），否则于其下个回合的首个准备阶段开始时，其跳过本回合的出牌阶段和弃牌阶段。',
+  },
+  {
+    source: 'xin_chijie_description',
+    target: '每回合限一次，当你成为其他角色使用牌的唯一目标时，你可以判定，若结果点数大于6，取消之。',
+  },
+
+  {
     source: 'xunyi_description',
     target:
       '游戏开始时，你可以选择一名其他角色，其获得“义”标记：当你或其造成伤害后，对方摸一张牌；当你或其受到伤害后，对方弃置一张牌（你和其对对方造成的伤害除外）。当其死亡时，你可以移动此“义”。',
   },
 
   {
-    source: 'cunsi_description',
-    target:
-      '出牌阶段限一次，你可以将武将牌翻至背面朝上，并令一名角色从牌堆和弃牌堆中随机获得一张【杀】，且其使用的下一张【杀】伤害基数+1。',
+    source: 'guixiu_description',
+    target: '<b>锁定技</b>，结束阶段开始时，若你的体力值为奇数，你摸一张牌，否则你回复1点体力。',
   },
   {
-    source: 'guixiu_description',
-    target: '<b>锁定技</b>，当你受到伤害后，你将武将牌翻至正面朝上；当你的武将牌翻至正面朝上后，你摸一张牌。',
+    source: 'qingyu_description',
+    target:
+      '<b>使命技</b>，当你受到伤害时，你弃置两张牌并防止此伤害。<br><b>成功</b>：准备阶段开始时，若你未受伤且没有手牌，你获得技能“悬存”；<br><b>失败</b>：当你进入濒死状态时，若你的体力小于1，你减1点体力上限。',
+  },
+  {
+    source: 'xuancun_description',
+    target:
+      '其他角色的回合结束时，若你的体力值大于手牌数，你可以令其摸X张牌（X为你的体力值与手牌数的差值，且至多为2）。',
   },
 
   {
@@ -84,11 +103,13 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'mingshi_description',
-    target: '<b>锁定技</b>，当你受到1点伤害后，伤害来源弃置一张牌。',
+    target:
+      '<b>锁定技</b>，当你受到伤害后，若你有“谦”标记，伤害来源弃置其区域内的一张牌，若此牌为：黑色，你获得之；红色，你回复1点体力。',
   },
   {
     source: 'lirang_description',
-    target: '出牌阶段限一次，你可以弃置所有手牌，将其中一至X张牌交给一名其他角色（X为你的体力值），然后你摸一张牌。',
+    target:
+      '其他角色的摸牌阶段，你可以令其多摸两张牌，然后你获得一枚“谦”标记。若如此做，你于本回合内的其弃牌阶段结束时，你可获得其于此阶段内弃置过的至多两张牌；摸牌阶段开始前，若你有“谦”标记，你跳过此阶段并移去“谦”标记。',
   },
 ];
 
@@ -212,6 +233,23 @@ export const skillAudios: Word[] = [
     source: '$lirang:2',
     target: '施之以礼，还之以德。',
   },
+
+  {
+    source: '$xin_yinju:1',
+    target: '伐吴者，兴师劳民，徒而无动，万望陛下三思！',
+  },
+  {
+    source: '$xin_yinju:2',
+    target: '今当屯田罢兵，徐图吴蜀。安能急躁冒进乎？',
+  },
+  {
+    source: '$xin_chijie:1',
+    target: '节度在此，诸将莫要轻进。',
+  },
+  {
+    source: '$xin_chijie:2',
+    target: '吾奉天子明诏，整肃六军。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -221,12 +259,31 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: 'lirang: please choose a target to give cards',
-    target: '礼让：请选择一名其他角色，将所选牌交给他',
+    source: '{0}: do you want to choose a target to gain 1 ‘Yi’?',
+    target: '{0}：你可以令一名其他角色获得一枚“义”',
   },
 
   {
-    source: '{0}: do you want to choose a target to gain 1 ‘Yi’?',
-    target: '{0}：你可以令一名其他角色获得一枚“义”',
+    source: '{0}: do you want to let {1} draw 2 card(s) additionally?',
+    target: '{0}：你可以令 {1} 多摸两张牌',
+  },
+  {
+    source: 'lirang: you can choose at most 2 cards of these cards to gain',
+    target: '礼让：你可以获得其中至多两张牌',
+  },
+
+  {
+    source: '{0}: do you want to let {1} draws {2} card(s)?',
+    target: '{0}：你可以令 {1} 摸 {2} 张牌',
+  },
+
+  {
+    source: '{0}: please use a slash to {1} , or you will skip your next play card phase and drop card phase',
+    target: '{0}：请对 {1} 使用一张【杀】，否则跳过你下回合的出牌阶段和弃牌阶段',
+  },
+
+  {
+    source: '{0}: do you want to use this skill to {1} which {2} used?',
+    target: '{0}：你可以对 {2} 使用的 {1} 发动本技能',
   },
 ];

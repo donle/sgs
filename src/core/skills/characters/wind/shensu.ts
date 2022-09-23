@@ -11,6 +11,10 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'shensu', description: 'shensu_description' })
 export class ShenSu extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['xiahouba'];
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
     return (
       stage === PhaseChangeStage.BeforePhaseChange &&

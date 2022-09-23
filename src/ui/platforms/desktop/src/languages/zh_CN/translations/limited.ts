@@ -28,6 +28,13 @@ export const characterDictionary: Word[] = [
   { source: '#xingzuo', target: '兴作（换牌）' },
   { source: 'miaoxian', target: '妙弦' },
 
+  { source: 'guozhao', target: '郭照' },
+  { source: 'pianchong', target: '偏宠' },
+  { source: '#pianchong', target: '偏宠' },
+  { source: 'pianchong: {0}', target: '偏宠[{0}]' },
+  { source: 'pianchong: {0} {1}', target: '偏宠[{0}{1}]' },
+  { source: 'zunwei', target: '尊位' },
+
   { source: 'wenyang', target: '文鸯' },
   { source: 'lvli', target: '膂力' },
   { source: 'lvli_I', target: '膂力' },
@@ -52,18 +59,24 @@ export const characterDictionary: Word[] = [
   { source: '#xushen', target: '许身（变关索）' },
   { source: 'zhennan', target: '镇南' },
 
-  { source: 'guozhao', target: '郭照' },
-  { source: 'pianchong', target: '偏宠' },
-  { source: 'pianchong: {0}', target: '偏宠[{0}]' },
-  { source: 'pianchong: {0} {1}', target: '偏宠[{0}{1}]' },
-  { source: 'zunwei', target: '尊位' },
+  { source: 'huaman', target: '花鬘' },
+  { source: 'manyi', target: '蛮裔' },
+  { source: 'mansi', target: '蛮嗣' },
+  { source: 'souying', target: '薮影' },
+  { source: 'zhanyuan', target: '战缘' },
+  { source: 'xili', target: '系力' },
+
+  { source: 'yangwan', target: '杨婉' },
+  { source: 'youyan', target: '诱言' },
+  { source: 'zhuihuan', target: '追还' },
+  { source: '#s_zhuihuan_buff', target: '追还' },
 
   { source: 'gexuan', target: '葛玄' },
   { source: 'lianhua', target: '炼化' },
   { source: 'danxue', target: '丹血' },
   { source: 'zhafu', target: '札符' },
 
-  { source: 'new_liuzan', target: '留赞' },
+  { source: 'new_liuzan', target: 'D留赞' },
   { source: 'new_fenyin', target: '奋音' },
   { source: 'liji', target: '力激' },
   { source: 'liji times: {0} {1}', target: '力激[{0}|+{1}]' },
@@ -76,6 +89,18 @@ export const characterDictionary: Word[] = [
   { source: 'zhukou', target: '逐寇' },
   { source: 'mangqing', target: '氓情' },
   { source: 'yuyun', target: '玉陨' },
+
+  { source: 'sunyi', target: '孙翊' },
+  { source: 'sunyi_jiqiao', target: '激峭' },
+  { source: '#sunyi_jiqiao', target: '激峭（获得牌）' },
+  { source: 'xiongyi', target: '凶疑' },
+
+  { source: 'decade_luotong', target: 'D骆统' },
+  { source: 'renzheng', target: '仁政' },
+  { source: 'jinjian', target: '进谏' },
+  { source: 'jinjian+1', target: '进谏+1' },
+  { source: 'jinjian-1', target: '进谏-1' },
+  { source: '#jinjian', target: '进谏' },
 
   { source: 'xurong', target: '徐荣' },
   { source: 'xionghuo', target: '凶镬' },
@@ -91,6 +116,17 @@ export const characterDictionary: Word[] = [
   { source: 'houtu', target: '厚土' },
   { source: 'yuqing', target: '玉清' },
   { source: 'gouchen', target: '勾陈' },
+
+  { source: 'fanyufeng', target: '樊玉凤' },
+  { source: 'bazhan', target: '把盏' },
+  { source: 'jiaoying', target: '醮影' },
+  { source: '#jiaoying', target: '醮影（摸牌）' },
+
+  { source: 'fengyu', target: '冯妤' },
+  { source: 'tiqi', target: '涕泣' },
+  { source: 'baoshu', target: '宝梳' },
+  { source: 'mark_shu', target: '梳' },
+  { source: '#s_baoshu_buff', target: '宝梳（额外摸牌）' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -220,6 +256,41 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'manyi_description',
+    target: '<b>锁定技</b>，【南蛮入侵】对你无效。',
+  },
+  {
+    source: 'mansi_description',
+    target: '出牌阶段限一次，你可以将所有手牌当【南蛮入侵】使用；当有角色受到【南蛮入侵】造成的伤害后，你摸一张牌。',
+  },
+  {
+    source: 'souying_description',
+    target:
+      '每回合限一次，当你使用牌指定其他角色/其他角色使用牌指定你为唯一目标后，若此牌不为你/其于本回合内对其/你使用过的第一张牌，你可以弃置一张牌，获得此牌/令此牌对你无效。',
+  },
+  {
+    source: 'zhanyuan_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若你因“蛮嗣”而获得过的牌大于7张，你加1点体力上限并回复1点体力，然后你可选择一名其他男性角色，你与其均获得技能“系力”，然后你失去技能“蛮嗣”。',
+  },
+  {
+    source: 'xili_description',
+    target:
+      '每回合限一次，你的回合外，当其他拥有技能“系力”的角色于其回合内对没有“系力”的角色造成伤害时，你可以弃置一张牌，令此伤害+1，然后你与此拥有“系力”的角色各摸两张牌。',
+  },
+
+  {
+    source: 'youyan_description',
+    target:
+      '每回合限一次，当你的牌于回合内因弃置而进入弃牌堆后，你可以从牌堆中随机获得这些牌中没有的花色的牌各一张；出牌阶段结束时，本技能于本回合内可发动的次数上限+1。',
+  },
+  {
+    source: 'zhuihuan_description',
+    target:
+      '结束阶段开始时，你可以选择一名角色。若如此做，其下个准备阶段开始时，于此期间内对其造成过伤害的角色依次执行：其中体力值大于其的角色受到其造成的2点伤害，体力值不大于其的角色随机弃置两张手牌。',
+  },
+
+  {
     source: 'pianchong_description',
     target:
       '摸牌阶段，你可以改为随机获得牌堆里的黑色和红色牌各一张，然后选择一项获得一项效果直到你的下个回合开始：1.当你失去一张黑色牌后，你随机获得牌堆里的一张红色牌；2.当你失去一张红色牌后，你随机获得牌堆里的一张黑色牌。',
@@ -275,7 +346,29 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yuyun_description',
     target:
-      '<b>锁定技</b>，出牌阶段开始时，你失去1点体力或减1点体力上限（不可减至1点以下），然后你依次选择至多X项（X为你已损失的体力值+1）：1.摸两张牌；2.对一名其他角色造成1点伤害，且你于本回合内对其使用【杀】无距离和次数限制；3.你于本回合内手牌上限为无限；4.弃置一名其他角色区域里的一张牌；5.令一名角色将手牌摸至体力上限（至多摸至五张）。',
+      '<b>锁定技</b>，出牌阶段开始时，你失去1点体力或减1点体力上限（不可减至1点以下），然后你依次选择至多X项（X为你已损失的体力值+1）：1.摸两张牌；2.对一名其他角色造成1点伤害，且你于本回合内对其使用【杀】无距离和次数限制；3.你于本回合内手牌上限为无限；4.获得一名其他角色区域里的一张牌；5.令一名角色将手牌摸至体力上限（至多摸至五张）。',
+  },
+
+  {
+    source: 'sunyi_jiqiao_description',
+    target:
+      '出牌阶段开始时，你可以将牌堆顶X张牌置于你的武将牌上（X为你的体力上限），称为“激”，直到此阶段结束。若如此做，当你于此阶段内使用牌结算结束后，若你有“激”，你获得你的一张“激”，然后若其余“激”中红色和黑色牌的数量：相等，你回复1点体力；不等，你失去1点体力。',
+  },
+  {
+    source: 'xiongyi_description',
+    target:
+      '<b>限定技</b>，当你处于濒死状态时，若场上：没有徐氏，你可以将体力回复至3点，并将武将牌替换为徐氏（体力上限不变）；有徐氏，你可将体力回复至1点，并获得技能“魂姿”。',
+  },
+
+  {
+    source: 'renzheng_description',
+    target:
+      '<b>锁定技</b>，当有伤害被防止或其伤害值减少后，你摸两张牌。',
+  },
+  {
+    source: 'jinjian_description',
+    target:
+      '当你造成伤害时/受到伤害时，你可以令此伤害+1/-1。若如此做，当你于本回合内下次造成伤害时/受到伤害时，此伤害-1/+1且你不能对此伤害发动本技能。',
   },
 
   {
@@ -301,6 +394,28 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yuwei_description',
     target: '<b>主公技</b>，<b>锁定技</b>，其他群雄角色的回合内，你的技能“诗怨”视为“每回合每项限两次”。',
+  },
+
+  {
+    source: 'bazhan_description',
+    target:
+      '<b>转换技</b>，出牌阶段限一次，阳：你可以将至多两张手牌交给一名其他角色；阴：你可以获得一名其他角色的至多两张手牌。若以此法获得牌的角色获得了红桃牌或【酒】，你可令其回复1点体力或复原武将牌。',
+  },
+  {
+    source: 'jiaoying_description',
+    target:
+      '<b>锁定技</b>，当其他角色获得你的手牌后，其于本回合内不能使用或打出与这些牌颜色相同的牌，且本回合结束时，若其于此后未使用过牌，你可令至多X名角色将手牌摸至五张（X为你于本回合内发动过本技能的次数）。',
+  },
+
+  {
+    source: 'tiqi_description',
+    target:
+      '其他角色的出牌阶段开始前，若其于本回合的摸牌阶段内的规则摸牌数之和不等于2，则你摸其超出或少于2数量的牌，然后你可令该角色于本回合内手牌上限增加或减少相同数值。',
+  },
+  {
+    source: 'baoshu_description',
+    target:
+      '准备阶段开始时，你可以令至多X名角色（X为你的体力上限）各获得Y+1枚“梳”标记并重置其武将牌（Y为X减去你以此法选择的角色数）。若如此做，这些角色于其移去其“梳”标记前的摸牌阶段，多摸其“梳”标记数的牌，然后移去其所有“梳”标记。',
   },
 ];
 
@@ -608,6 +723,124 @@ export const skillAudios: Word[] = [
     source: '$yuyun:2',
     target: '泪沾青衫，玉殒香消。',
   },
+
+  {
+    source: '$renzheng:1',
+    target: '仁政如水，可润万物。',
+  },
+  {
+    source: '$renzheng:2',
+    target: '为官一任，当造福一方。',
+  },
+  {
+    source: '$jinjian:1',
+    target: '臣代天子牧民，闻苛自当谏之。',
+  },
+  {
+    source: '$jinjian:2',
+    target: '为将者死战，为臣者死谏！',
+  },
+
+  {
+    source: '$bazhan:1',
+    target: '此酒，当配将军。',
+  },
+  {
+    source: '$bazhan:2',
+    target: '这杯酒，敬于将军。',
+  },
+  {
+    source: '$jiaoying:1',
+    target: '独酌清醮，霓裳自舞。',
+  },
+  {
+    source: '$jiaoying:2',
+    target: '醮影倩丽，何人爱怜。',
+  },
+
+  {
+    source: '$tiqi:1',
+    target: '远望中原，涕泪交流。',
+  },
+  {
+    source: '$tiqi:2',
+    target: '瞻望家乡，泣涕如雨。',
+  },
+  {
+    source: '$baoshu:1',
+    target: '明镜映梳台，黛眉衬粉面。',
+  },
+  {
+    source: '$baoshu:2',
+    target: '头作扶摇髻，首枕千金梳。',
+  },
+
+  {
+    source: '$manyi:1',
+    target: '南蛮女子，该当英勇善战。',
+  },
+  {
+    source: '$manyi:2',
+    target: '蛮族的力量，你可不要小瞧。',
+  },
+  {
+    source: '$mansi:1',
+    target: '承父母庇护，得此福气。',
+  },
+  {
+    source: '$mansi:2',
+    target: '多谢父母怜爱！',
+  },
+  {
+    source: '$souying:1',
+    target: '幽薮影单，只身勇斗。',
+  },
+  {
+    source: '$souying:2',
+    target: '蓁薮影移，险战不惧。',
+  },
+  {
+    source: '$zhanyuan:1',
+    target: '战中结缘，虽苦亦甜。',
+  },
+  {
+    source: '$zhanyuan:2',
+    target: '势不同，情相随。',
+  },
+
+  {
+    source: '$sunyi_jiaqiao:1',
+    target: '为将者，当躬冒矢石！',
+  },
+  {
+    source: '$sunyi_jiaqiao:2',
+    target: '吾承父兄之志，危又何惧？',
+  },
+  {
+    source: '$xiongyi:1',
+    target: '此仇不报，吾恨难消！',
+  },
+  {
+    source: '$xiongyi:2',
+    target: '功业未立，汝可继之！',
+  },
+
+  {
+    source: '$youyan:1',
+    target: '诱言者，为人所不齿！',
+  },
+  {
+    source: '$youyan:2',
+    target: '诱言之弊，不可不慎。',
+  },
+  {
+    source: '$zhuihuan:1',
+    target: '伤人者，追而还之！',
+  },
+  {
+    source: '$zhuihuan:2',
+    target: '追而还击，皆为因果。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -739,7 +972,7 @@ export const promptDescriptions: Word[] = [
   { source: 'yuyun:draw2', target: '摸两张牌' },
   { source: 'yuyun:damage', target: '对一名其他角色造成1点伤害，且本回合对其无限出杀' },
   { source: 'yuyun:unlimited', target: '本回合手牌上限无限' },
-  { source: 'yuyun:discard', target: '弃置一名其他角色区域里的一张牌' },
+  { source: 'yuyun:prey', target: '获得一名其他角色区域里的一张牌' },
   { source: 'yuyun:letDraw', target: '令一名角色将手牌摸至体力上限' },
   {
     source: 'yuyun: please choose a target',
@@ -749,5 +982,57 @@ export const promptDescriptions: Word[] = [
   {
     source: 'dushi: please choose a target to gain this skill',
     target: '毒逝：请选择一名其他角色获得本技能',
+  },
+
+  {
+    source: '{0}: do you want to choose at most {1} targets to draw cards?',
+    target: '{0}：你可以令至多 {1} 名角色将手牌摸至五张',
+  },
+
+  {
+    source: '{0}: please choose bazhan options: {1}',
+    target: '{0}：请选择以下一项令 {1} 执行',
+  },
+  { source: 'bazhan:recover', target: '回复1点体力' },
+  { source: 'bazhan:resume', target: '复原武将牌' },
+
+  {
+    source: '{0}: do you want to increase the damage {1} will take by 1?',
+    target: '{0}：你可以令 {1} 本次受到的伤害+1',
+  },
+  {
+    source: '{0}: do you want to reduce the damage you will take by 1?',
+    target: '{0}：你可以令你本次受到的伤害-1',
+  },
+
+  {
+    source: '{0}: please choose tiqi options: {1}',
+    target: '{0}：你可令 {1} 于本回合内手牌上限增加或减少相同值',
+  },
+  { source: 'tiqi:increase', target: '令其手牌上限增加' },
+  { source: 'tiqi:decrease', target: '令其手牌上限减少' },
+
+  {
+    source: '{0}: do you want to choose at most {1} target(s) to gain ‘Shu’ marks each?',
+    target: '{0}：你可以选择至多 {1} 角色各获得“梳”标记',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to obtain {1} ?',
+    target: '{0}：你可以弃置一张牌获得 {1}',
+  },
+  {
+    source: '{0}: do you want to discard a card to let {1} nullify to you?',
+    target: '{0}：你可以弃置一张牌，令 {1} 对你无效',
+  },
+
+  {
+    source: 'zhanyuan: do you want to choose another male character to gain ‘Xi Li’ with him?',
+    target: '战缘：你可以选择一名其他男性角色，你与其均获得技能“系力”',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to increase the damage to {2} which dealt by {1} by 1, then you and {1} will draw 2 cards?',
+    target: '{0}：你可以弃置一张牌，令 {1} 对 {2} 造成的伤害+1，然后你与 {1} 各摸两张牌',
   },
 ];

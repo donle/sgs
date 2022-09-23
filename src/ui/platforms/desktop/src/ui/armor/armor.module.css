@@ -1,0 +1,16 @@
+.armorLabel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.background {
+    position: absolute;
+    z-index: -1;
+}
+
+.armorText {
+    text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 3px white, 0 0 4px white, 0 0 4px white,
+        0 0 3px white;
+}

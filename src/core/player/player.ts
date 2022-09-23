@@ -12,6 +12,7 @@ import {
   CharacterNationality,
 } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
+import { UPPER_LIMIT_OF_ARMOR } from 'core/game/game_props';
 import {
   PlayerCards,
   PlayerCardsArea,
@@ -67,6 +68,7 @@ export type HuaShenInfo = {
 export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
+  private armor: number;
   private dying: boolean = false;
   private dead: boolean;
   private chainLocked: boolean = false;
@@ -114,6 +116,9 @@ export abstract class Player implements PlayerInfo {
   private marks: {
     [markName: string]: number;
   } = {};
+  private cardTags: {
+    [cardTag: string]: CardId[];
+  } = {};
 
   constructor(
     playerCards?: PlayerCards & {
@@ -151,6 +156,9 @@ export abstract class Player implements PlayerInfo {
       }
       if (this.gender == null) {
         this.gender = this.playerCharacter.Gender;
+      }
+      if (this.Armor == null) {
+        this.Armor = this.playerCharacter.Armor;
       }
     }
 
@@ -250,14 +258,40 @@ export abstract class Player implements PlayerInfo {
     this.removeMark('!' + name);
   }
 
+  removeCardTag(cardTag: string) {
+    delete this.cardTags[cardTag];
+  }
+  setCardTag(cardTag: string, cardIds: CardId[]) {
+    this.cardTags[cardTag] = cardIds;
+  }
+  getCardTag(cardTag: string): CardId[] | undefined {
+    return this.cardTags[cardTag];
+  }
+  getAllCardTags() {
+    return this.cardTags;
+  }
+  clearCardTags() {
+    this.cardTags = {};
+  }
+
   public canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher): boolean {
     const card = cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
     const ruleCardUse = room.CommonRules.canUseCard(room, this, card);
 
+    for (const skill of this.getSkills<FilterSkill>('filter')) {
+      if (!skill.canUseCard(cardId, room, this.Id)) {
+        return false;
+      }
+    }
+
     const canUseToSomeone = room.AlivePlayers.find(player => room.CommonRules.canUseCardTo(room, this, card, player));
     if (card instanceof Card) {
       if (canUseToSomeone) {
-        return card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : true;
+        return card.is(CardType.Equip)
+          ? true
+          : onResponse
+          ? onResponse.match(card)
+          : card.Skill.canUse(room, this, cardId);
       }
     } else {
       if (canUseToSomeone) {
@@ -570,19 +604,17 @@ export abstract class Player implements PlayerInfo {
       ) {
         return false;
       }
-
-      return (
-        unlimited ||
-        room.CommonRules.canUseCardTo(
-          room,
-          this,
-          cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
-          room.getPlayerById(target),
-        )
-      );
     }
 
-    return true;
+    return (
+      unlimited ||
+      room.CommonRules.canUseCardTo(
+        room,
+        this,
+        cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
+        room.getPlayerById(target),
+      )
+    );
   }
 
   public getEquipment(cardType: CardType): CardId | undefined {
@@ -932,11 +964,23 @@ export abstract class Player implements PlayerInfo {
     this.hp += amount;
   }
 
+  public changeArmor(amount: number) {
+    this.armor += amount;
+  }
+
   public get Hp() {
     return this.hp;
   }
   public set Hp(hp: number) {
     this.hp = hp;
+  }
+
+  public get Armor() {
+    return this.armor;
+  }
+
+  public set Armor(armor: number) {
+    this.armor = Math.min(armor, UPPER_LIMIT_OF_ARMOR);
   }
 
   public get Gender() {
@@ -996,6 +1040,7 @@ export abstract class Player implements PlayerInfo {
         skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
       ));
 
+    this.Armor = this.playerCharacter.Armor;
     this.hp = this.playerCharacter.Hp;
     this.maxHp = this.playerCharacter.MaxHp;
     this.nationality = this.playerCharacter.Nationality;
@@ -1081,6 +1126,7 @@ export abstract class Player implements PlayerInfo {
       Status: this.status,
       Flags: flags,
       Marks: this.marks,
+      Armor: this.armor,
     };
   }
 
@@ -1105,6 +1151,7 @@ export abstract class Player implements PlayerInfo {
       Status: this.status,
       Flags: flags,
       Marks: this.marks,
+      Armor: this.armor,
       chainLocked: this.chainLocked,
       drunk: this.drunk,
       turnedOver: this.turnedOver,

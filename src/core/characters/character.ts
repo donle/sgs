@@ -1,4 +1,4 @@
-import { GameCharacterExtensions } from 'core/game/game_props';
+import { GameCharacterExtensions, UPPER_LIMIT_OF_ARMOR } from 'core/game/game_props';
 import { Skill } from 'core/skills/skill';
 
 export type CharacterId = number;
@@ -39,10 +39,19 @@ export function Lord(constructor: new (...args: any[]) => any): any {
   } as any;
 }
 
+export function Armor(amount: number) {
+  return function <T extends new (...args: any[]) => any>(constructor: T) {
+    return class extends constructor {
+      private armor: number = Math.max(Math.min(amount, UPPER_LIMIT_OF_ARMOR), 0);
+    } as any;
+  };
+}
+
 export abstract class Character {
   private turnedOver: boolean = false;
   private linked: boolean = false;
   private lord: boolean = false;
+  private armor: number = 0;
 
   protected constructor(
     protected id: CharacterId,
@@ -73,6 +82,10 @@ export abstract class Character {
 
   public get Hp() {
     return this.hp;
+  }
+
+  public get Armor() {
+    return this.armor;
   }
 
   public get Nationality() {

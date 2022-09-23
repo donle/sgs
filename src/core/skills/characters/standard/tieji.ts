@@ -6,9 +6,10 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Functional } from 'core/shares/libs/functional';
-import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, CompulsorySkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { UncompulsoryBlocker } from './uncompulsory_blocker';
 
 @CommonSkill({ name: 'tieji', description: 'tieji_description' })
 export class TieJi extends TriggerSkill {
@@ -32,6 +33,8 @@ export class TieJi extends TriggerSkill {
     const { triggeredOnEvent } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
     room.setFlag(aimEvent.toId, this.Name, true, this.Name);
+    room.getPlayerById(aimEvent.toId).hasShadowSkill(UncompulsoryBlocker.Name) ||
+      (await room.obtainSkill(aimEvent.toId, UncompulsoryBlocker.Name));
     const to = room.getPlayerById(aimEvent.toId);
 
     const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
@@ -67,6 +70,7 @@ export class TieJi extends TriggerSkill {
 }
 
 @ShadowSkill
+@PersistentSkill()
 @CompulsorySkill({ name: TieJi.GeneralName, description: TieJi.Description })
 export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(
@@ -110,6 +114,7 @@ export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     for (const player of room.AlivePlayers) {
       room.removeFlag(player.Id, this.GeneralName);
+      player.hasShadowSkill(UncompulsoryBlocker.Name) && (await room.loseSkill(player.Id, UncompulsoryBlocker.Name));
     }
     return true;
   }

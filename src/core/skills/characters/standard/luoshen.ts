@@ -105,6 +105,10 @@ export class LuoShen extends TriggerSkill {
           toArea: CardMoveArea.HandArea,
           movedByReason: this.Name,
         });
+
+        const originalLuoShenCards = room.getCardTag(skillUseEvent.fromId, this.Name) || [];
+        originalLuoShenCards.push(judgeEvent.judgeCardId);
+        room.setCardTag(skillUseEvent.fromId, this.Name, originalLuoShenCards);
       }
     }
 
@@ -137,6 +141,7 @@ export class LuoShenShadow extends TriggerSkill {
     const player = room.getPlayerById(askForCardDropEvent.toId);
     const luoshenCards = player.getFlag<CardId[]>(this.GeneralName) || [];
     player.removeFlag(this.GeneralName);
+    room.removeCardTag(askForCardDropEvent.toId, this.GeneralName);
 
     const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !luoshenCards.includes(card));
     const discardAmount = otherHandCards.length - player.getMaxCardHold(room);

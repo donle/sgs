@@ -16,7 +16,7 @@ import { MoveCardEventInfos, PinDianProcedure, PinDianReport } from 'core/event/
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
-import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { GameInfo, TemporaryRoomCreationInfo, UPPER_LIMIT_OF_ARMOR } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
@@ -24,6 +24,7 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import {
   AimStage,
   AllStage,
+  ArmorChangeStage,
   CardResponseStage,
   CardUseStage,
   DamageEffectStage,
@@ -410,7 +411,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               skillsInPriorities[priority]
                 ? skillsInPriorities[priority].push(skill)
                 : (skillsInPriorities[priority] = [skill]);
-              skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content);
+              skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content, player);
             }
 
             for (const skills of skillsInPriorities) {
@@ -423,7 +424,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
               if (skills.length === 1) {
                 const skill = skills[0];
-                for (let i = 0; i < skill.triggerableTimes(content); i++) {
+                for (let i = 0; i < skill.triggerableTimes(content, player); i++) {
                   const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
                     fromId: player.Id,
                     skillName: skill.Name,
@@ -699,6 +700,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (const property of changedProperties) {
       const player = this.getPlayerById(property.toId);
       property.characterId !== undefined && (player.CharacterId = property.characterId);
+      property.armor !== undefined && (player.Armor = property.armor);
       property.maxHp !== undefined && (player.MaxHp = property.maxHp);
       property.hp !== undefined && (player.Hp = property.hp);
       property.nationality !== undefined && (player.Nationality = property.nationality);
@@ -878,6 +880,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
         responseEvent.cardId = preUseEvent.cardId;
         responseEvent.fromId = preUseEvent.fromId;
+        responseEvent.extraUse = preUseEvent.extraUse;
         EventPacker.copyPropertiesTo(preUseEvent, responseEvent);
         break;
       } else {
@@ -1182,6 +1185,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             isFirstTarget,
             additionalDamage: event.additionalDamage,
             extraUse: event.extraUse,
+            triggeredBySkills: event.triggeredBySkills,
           });
 
           EventPacker.copyPropertiesTo(event, aimEvent);
@@ -1196,6 +1200,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           aimEvent.nullifiedTargets = event.nullifiedTargets || [];
           aimEvent.isFirstTarget = isFirstTarget;
           aimEvent.extraUse = event.extraUse;
+          aimEvent.triggeredBySkills = event.triggeredBySkills;
         }
 
         isFirstTarget = false;
@@ -1439,10 +1444,30 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.createIdentifierEvent(GameEventIdentifiers.SkillUseEvent, content),
     );
     if (!EventPacker.isTerminated(content)) {
+      const isDamageEvent =
+        content.triggeredOnEvent &&
+        EventPacker.getIdentifier(content.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>) ===
+          GameEventIdentifiers.DamageEvent;
+
+      const preDamage = isDamageEvent
+        ? (content.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).damage
+        : 0;
+
       await this.gameProcessor.onHandleIncomingEvent(
         GameEventIdentifiers.SkillEffectEvent,
         EventPacker.createIdentifierEvent(GameEventIdentifiers.SkillEffectEvent, content),
       );
+
+      if (isDamageEvent) {
+        const damageEvent = content.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+        if (!EventPacker.isTerminated(damageEvent)) {
+          preDamage > damageEvent.damage && (await this.trigger(damageEvent, DamageEffectStage.DamageReduced));
+        } else {
+          const copyDamageEvent = { ...damageEvent };
+          EventPacker.recall(copyDamageEvent);
+          await this.trigger(copyDamageEvent, DamageEffectStage.DamageTerminated);
+        }
+      }
     }
 
     return true;
@@ -1554,6 +1579,40 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     await this.trigger(lostMaxHpEvent);
+  }
+
+  public async changeArmor(playerId: PlayerId, amount: number) {
+    if (
+      amount === 0 ||
+      (amount > 0 && this.getPlayerById(playerId).Armor >= UPPER_LIMIT_OF_ARMOR) ||
+      (amount < 0 && this.getPlayerById(playerId).Armor < 1)
+    ) {
+      return;
+    }
+
+    const armorChangeEvent: ServerEventFinder<GameEventIdentifiers.ArmorChangeEvent> = {
+      toId: playerId,
+      amount,
+      leftDamage: 0,
+    };
+
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.ArmorChangeEvent, armorChangeEvent);
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.ArmorChangeEvent,
+      armorChangeEvent,
+      async armorChangeStage => {
+        if (armorChangeStage === ArmorChangeStage.ArmorChanging) {
+          armorChangeEvent.translationsMessage = TranslationPack.translationJsonPatcher(
+            `{0} ${armorChangeEvent.amount > 0 ? 'obtained' : 'lost'} {1} armor`,
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(playerId)),
+            Math.abs(armorChangeEvent.amount),
+          ).extract();
+
+          this.broadcast(GameEventIdentifiers.ArmorChangeEvent, armorChangeEvent);
+        }
+        return true;
+      },
+    );
   }
 
   public getCards(numberOfCards: number, from: 'top' | 'bottom') {
@@ -2100,6 +2159,31 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       ).extract(),
     });
     return super.addMark(player, name, value);
+  }
+
+  public clearCardTags(player: PlayerId) {
+    this.broadcast(GameEventIdentifiers.ClearCardTagsEvent, {
+      toId: player,
+    });
+    super.clearCardTags(player);
+  }
+  public removeCardTag(player: PlayerId, cardTag: string) {
+    this.broadcast(GameEventIdentifiers.RemoveCardTagEvent, {
+      toId: player,
+      cardTag,
+    });
+    super.removeCardTag(player, cardTag);
+  }
+  public setCardTag(player: PlayerId, cardTag: string, cardIds: CardId[]) {
+    this.broadcast(GameEventIdentifiers.SetCardTagEvent, {
+      toId: player,
+      cardTag,
+      cardIds,
+    });
+    return super.setCardTag(player, cardTag, cardIds);
+  }
+  public getCardTag(player: PlayerId, cardTag: string): CardId[] | undefined {
+    return this.getPlayerById(player).getCardTag(cardTag);
   }
 
   public findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack: boolean = true): CardId[] {

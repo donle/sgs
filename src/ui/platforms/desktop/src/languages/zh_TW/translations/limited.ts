@@ -28,6 +28,12 @@ export const characterDictionary: Word[] = [
   { source: '#xingzuo', target: '興作（換牌）' },
   { source: 'miaoxian', target: '妙弦' },
 
+  { source: 'guozhao', target: '郭照' },
+  { source: 'pianchong', target: '偏寵' },
+  { source: 'pianchong: {0}', target: '偏寵[{0}]' },
+  { source: 'pianchong: {0} {1}', target: '偏寵[{0}{1}]' },
+  { source: 'zunwei', target: '尊位' },
+
   { source: 'wenyang', target: '文鴦' },
   { source: 'lvli', target: '膂力' },
   { source: 'lvli_I', target: '膂力' },
@@ -52,18 +58,24 @@ export const characterDictionary: Word[] = [
   { source: '#xushen', target: '許身（變關索）' },
   { source: 'zhennan', target: '鎮南' },
 
-  { source: 'guozhao', target: '郭照' },
-  { source: 'pianchong', target: '偏寵' },
-  { source: 'pianchong: {0}', target: '偏寵[{0}]' },
-  { source: 'pianchong: {0} {1}', target: '偏寵[{0}{1}]' },
-  { source: 'zunwei', target: '尊位' },
+  { source: 'huaman', target: '花鬘' },
+  { source: 'manyi', target: '蠻裔' },
+  { source: 'mansi', target: '蠻嗣' },
+  { source: 'souying', target: '藪影' },
+  { source: 'zhanyuan', target: '戰緣' },
+  { source: 'xili', target: '系力' },
+
+  { source: 'yangwan', target: '楊婉' },
+  { source: 'youyan', target: '誘言' },
+  { source: 'zhuihuan', target: '追還' },
+  { source: '#s_zhuihuan_buff', target: '追還' },
 
   { source: 'gexuan', target: '葛玄' },
   { source: 'lianhua', target: '煉化' },
   { source: 'danxue', target: '丹血' },
   { source: 'zhafu', target: '札符' },
 
-  { source: 'new_liuzan', target: '留贊' },
+  { source: 'new_liuzan', target: 'D留贊' },
   { source: 'new_fenyin', target: '奮音' },
   { source: 'liji', target: '力激' },
   { source: 'liji times: {0} {1}', target: '力激[{0}|+{1}]' },
@@ -77,6 +89,16 @@ export const characterDictionary: Word[] = [
   { source: 'mangqing', target: '氓情' },
   { source: 'yuyun', target: '玉隕' },
 
+  { source: 'sunyi', target: '孫翊' },
+  { source: 'sunyi_jiqiao', target: '激峭' },
+  { source: '#sunyi_jiqiao', target: '激峭（獲得牌）' },
+  { source: 'xiongyi', target: '兇疑' },
+
+  { source: 'decade_luotong', target: 'D駱統' },
+  { source: 'renzheng', target: '仁政' },
+  { source: 'jinjian', target: '進諫' },
+  { source: '#jinjian', target: '進諫' },
+
   { source: 'xurong', target: '徐榮' },
   { source: 'xionghuo', target: '兇鑊' },
   { source: 'baoli', target: '暴戾' },
@@ -86,6 +108,20 @@ export const characterDictionary: Word[] = [
   { source: 'shiyuan', target: '詩怨' },
   { source: 'dushi', target: '毒逝' },
   { source: 'yuwei', target: '餘威' },
+
+  { source: 'fanyufeng', target: '樊玉鳳' },
+  { source: 'bazhan', target: '把盞' },
+  { source: 'jiaoying', target: '醮影' },
+
+  { source: 'fanyufeng', target: '樊玉鳳' },
+  { source: 'bazhan', target: '把盞' },
+  { source: 'jiaoying', target: '醮影' },
+  { source: '#jiaoying', target: '醮影（摸牌）' },
+
+  { source: 'fengyu', target: '馮妤' },
+  { source: 'tiqi', target: '涕泣' },
+  { source: 'baoshu', target: '寶梳' },
+  { source: '#s_baoshu_buff', target: '寶梳（額外摸牌）' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -215,6 +251,40 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'manyi_description',
+    target: '<b>鎖定技</b>，【南蠻入侵】對你無效。',
+  },
+  {
+    source: 'mansi_description',
+    target: '出牌階段限一次，你可以將所有手牌當【南蠻入侵】使用；當有角色受到【南蠻入侵】造成的傷害後，你摸一張牌。',
+  },
+  {
+    source: 'souying_description',
+    target:
+      '每回合限一次，當你使用牌指定其他角色/其他角色使用牌指定你為唯一目標後，若此牌不為你/其於本回合內對其/你使用過的第一張牌，你可以棄置一張牌，獲得此牌/令此牌對你無效。',
+  },
+  {
+    source: 'zhanyuan_description',
+    target:
+      '<b>覺醒技</b>，準備階段開始時，若你因“蠻嗣”而獲得過的牌大於7張，你加1點體力上限並回復1點體力，然後你可選擇一名其他男性角色，你與其均獲得技能“系力”，然後你失去技能“蠻嗣”。',
+  },
+  {
+    source: 'xili_description',
+    target:
+      '每回合限一次，你的回合外，當其他擁有技能“系力”的角色於其回合內對沒有“系力”的角色造成傷害時，你可以棄置一張牌，令此傷害+1，然後你與此擁有“系力”的角色各摸兩張牌。',
+  },
+
+  {
+    source: 'youyan_description',
+    target:
+      '每回合限一次，當你的牌於回合內因棄置而進入棄牌堆後，你可以從牌堆中隨機獲得這些牌中沒有的花色的牌各一張；出牌階段結束時，本技能於本回合內可發動的次數上限+1。',
+  },
+  {
+    source: 'zhuihuan_description',
+    target:
+      '結束階段開始時，你可以選擇一名角色。若如此做，其下個準備階段開始時，於此期間內對其造成過傷害的角色依次執行：其中體力值大於其的角色受到其造成的2點傷害，體力值不大於其的角色隨機棄置兩張手牌。',
+  },
+  {
     source: 'pianchong_description',
     target:
       '摸牌階段，你可以改為隨機獲得牌堆裡的黑色和紅色牌各一張，然後選擇一項獲得一項效果直到你的下個回合開始：1.當你失去一張黑色牌後，你隨機獲得牌堆裡的一張紅色牌；2.當你失去一張紅色牌後，你隨機獲得牌堆裡的一張黑色牌。',
@@ -270,7 +340,28 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yuyun_description',
     target:
-      '<b>鎖定技</b>，出牌階段開始時，你失去1點體力或減1點體力上限（不可減至1點以下），然後你依次選擇至多X項（X為你已損失的體力值+1）：1.摸兩張牌；2.對一名其他角色造成1點傷害，且你於本回合內對其使用【殺】無距離和次數限制；3.你於本回合內手牌上限為無限；4.棄置一名其他角色區域裡的一張牌；5.令一名角色將手牌摸至體力上限（至多摸至五張）。',
+      '<b>鎖定技</b>，出牌階段開始時，你失去1點體力或減1點體力上限（不可減至1點以下），然後你依次選擇至多X項（X為你已損失的體力值+1）：1.摸兩張牌；2.對一名其他角色造成1點傷害，且你於本回合內對其使用【殺】無距離和次數限制；3.你於本回合內手牌上限為無限；4.獲得一名其他角色區域裡的一張牌；5.令一名角色將手牌摸至體力上限（至多摸至五張）。',
+  },
+
+  {
+    source: 'sunyi_jiqiao_description',
+    target:
+      '出牌階段開始時，你可以將牌堆頂X張牌置於你的武將牌上（X為你的體力上限），稱為“激”，直到此階段結束。若如此做，當你於此階段內使用牌結算結束後，若你有“激”，你獲得你的一張“激”，然後若其餘“激”中紅色和黑色牌的數量：相等，你回覆1點體力；不等，你失去1點體力。',
+  },
+  {
+    source: 'xiongyi_description',
+    target:
+      '<b>限定技</b>，當你處於瀕死狀態時，若場上：沒有徐氏，你可以將體力回覆至3點，並將武將牌替換為徐氏（體力上限不變）；有徐氏，你可將體力回覆至1點，並獲得技能“魂姿”。',
+  },
+
+  {
+    source: 'renzheng_description',
+    target: '<b>鎖定技</b>，當有傷害被防止或其傷害值減少後，你摸兩張牌。',
+  },
+  {
+    source: 'jinjian_description',
+    target:
+      '當你造成傷害時/受到傷害時，你可以令此傷害+1/-1。若如此做，當你於本回合內下次造成傷害時/受到傷害時，此傷害-1/+1且你不能對此傷害發動本技能。',
   },
 
   {
@@ -296,6 +387,17 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yuwei_description',
     target: '<b>主公技</b>，<b>鎖定技</b>，其他群雄角色的回合內，你的技能“詩怨”視為“每回合每項限兩次”。',
+  },
+
+  {
+    source: 'bazhan_description',
+    target:
+      '<b>轉換技</b>，出牌階段限一次，陽：你可以將至多兩張手牌交給一名其他角色；陰：你可以獲得一名其他角色的至多兩張手牌。若以此法獲得牌的角色獲得了紅桃牌或【酒】，你可令其回覆1點體力或復原武將牌。',
+  },
+  {
+    source: 'jiaoying_description',
+    target:
+      '<b>鎖定技</b>，當其他角色獲得你的手牌後，其於本回合內不能使用或打出與這些牌顏色相同的牌，且本回合結束時，。',
   },
 ];
 
@@ -733,7 +835,7 @@ export const promptDescriptions: Word[] = [
   { source: 'yuyun:draw2', target: '摸兩張牌' },
   { source: 'yuyun:damage', target: '對一名其他角色造成1點傷害，且本回合對其無限出殺' },
   { source: 'yuyun:unlimited', target: '本回合手牌上限無限' },
-  { source: 'yuyun:discard', target: '棄置一名其他角色區域裡的一張牌' },
+  { source: 'yuyun:prey', target: '获得一名其他角色区域里的一张牌' },
   { source: 'yuyun:letDraw', target: '令一名角色將手牌摸至體力上限' },
   {
     source: 'yuyun: please choose a target',

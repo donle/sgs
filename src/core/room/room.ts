@@ -127,6 +127,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract changeMaxHp(player: PlayerId, additionalMaxHp: number): Promise<void>;
   //Server only
+  public abstract changeArmor(player: PlayerId, amount: number): Promise<void>;
+  //Server only
   public abstract damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void>;
   //Server only
   public abstract recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void>;
@@ -228,6 +230,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
   public abstract getCardsByNameFromStack(cardName: string, stackName: 'draw' | 'drop', amount?: number): CardId[];
+
   public abstract setCharacterOutsideAreaCards(
     player: PlayerId,
     areaName: string,
@@ -619,6 +622,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
   public getMark(player: PlayerId, name: string) {
     return this.getPlayerById(player).getMark(name);
+  }
+
+  public clearCardTags(player: PlayerId) {
+    this.getPlayerById(player).clearCardTags();
+  }
+  public removeCardTag(player: PlayerId, cardTag: string) {
+    this.getPlayerById(player).removeCardTag(cardTag);
+  }
+  public setCardTag(player: PlayerId, cardTag: string, cardIds: CardId[]) {
+    this.getPlayerById(player).setCardTag(cardTag, cardIds);
+  }
+  public getCardTag(player: PlayerId, cardTag: string): CardId[] | undefined {
+    return this.getPlayerById(player).getCardTag(cardTag);
   }
 
   public async abortPlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {

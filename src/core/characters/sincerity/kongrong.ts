@@ -8,7 +8,7 @@ export class KongRong extends Character {
   constructor(id: number) {
     super(id, 'kongrong', CharacterGender.Male, CharacterNationality.Qun, 3, 3, GameCharacterExtensions.Sincerity, [
       skillLoaderInstance.getSkillByName('mingshi'),
-      skillLoaderInstance.getSkillByName('lirang'),
+      ...skillLoaderInstance.getSkillsByName('lirang'),
     ]);
   }
 }

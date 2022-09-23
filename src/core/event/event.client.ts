@@ -83,6 +83,8 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.GameBeginEvent]: {};
 
+  [GameEventIdentifiers.CircleStartEvent]: {};
+
   [GameEventIdentifiers.GameOverEvent]: {
     playersInfo: PlayerInfo[];
   };
@@ -120,6 +122,7 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPeachEvent]: {
     cardId?: CardId;
     fromId: PlayerId;
+    extraUse?: boolean;
   };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     cardId?: CardId;

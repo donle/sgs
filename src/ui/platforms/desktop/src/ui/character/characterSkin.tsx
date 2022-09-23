@@ -8,6 +8,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
+import { Armor } from 'ui/armor/armor';
 import { AudioService } from 'ui/audio/install';
 import { NationalityBadge } from '../badge/badge';
 import { CharacterHp } from '../hp/hp';
@@ -166,12 +167,13 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
               <NationalityBadge size={size} nationality={character.Nationality} isLord={character.isLord()}>
                 {translator.tr(character.Name)}
               </NationalityBadge>
-              <CharacterHp
-                character={character}
-                className={classNames(styles.characterHp, {
-                  [styles.small]: size === 'small',
-                })}
-              />
+              <div className={classNames(styles.hpContainer)}>
+                <Armor className={classNames(styles.characterArmor)} amount={character.Armor} />
+                <CharacterHp
+                  character={character}
+                  className={classNames(styles.characterHp, { [styles.small]: size === 'small' })}
+                />
+              </div>
 
               <img
                 className={classNames(styles.characterImage, { [styles.small]: size === 'small' }, styles.right)}
@@ -212,6 +214,8 @@ export type CharacterSpecProps = {
 };
 
 export class CharacterSpec extends React.Component<CharacterSpecProps> {
+  private currentAudioIndexMapper: { [skillName: string]: number } = {};
+
   @mobx.observable.ref
   private skills: Skill[] = [];
   @mobx.observable.ref
@@ -224,11 +228,21 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
   }
   @mobx.action
   onPlaySkillAudio = (skillName: string, skinName: string) => () => {
+    let audioIndex: number | undefined;
+    if (Sanguosha.getSkillBySkillName(skillName).audioIndex(this.props.character.Name) > 0) {
+      this.currentAudioIndexMapper[skillName] = this.currentAudioIndexMapper[skillName] || 1;
+      audioIndex = this.currentAudioIndexMapper[skillName];
+      ++this.currentAudioIndexMapper[skillName] >
+        Sanguosha.getSkillBySkillName(skillName).audioIndex(this.props.character.Name) &&
+        (this.currentAudioIndexMapper[skillName] = 1);
+    }
+
     if (this.props.skinName && this.props.skinName !== this.props.character.Name) {
       this.props.audioService.playSkillAudio(
         skillName,
         this.props.character.Gender,
-        undefined,
+        audioIndex,
+        true,
         this.props.skinData,
         this.props.character.Name,
         this.props.skinName,
@@ -237,7 +251,8 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
       this.props.audioService.playSkillAudio(
         skillName,
         this.props.character.Gender,
-        undefined,
+        audioIndex,
+        true,
         [],
         this.props.character.Name,
       );
@@ -246,9 +261,9 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
   @mobx.action
   onPlayDeathAudio = (characterName: string, skinName?: string) => () => {
     if (this.props.skinName && this.props.skinName !== characterName) {
-      this.props.audioService.playDeathAudio(characterName, this.props.skinData, this.props.skinName);
+      this.props.audioService.playDeathAudio(characterName, true, this.props.skinData, this.props.skinName);
     } else {
-      this.props.audioService.playDeathAudio(characterName, []);
+      this.props.audioService.playDeathAudio(characterName, true, []);
     }
   };
   @mobx.action
@@ -259,6 +274,7 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
   componentDidUpdate() {
     this.skills = [];
     this.getSkillName();
+    this.currentAudioIndexMapper = {};
   }
 
   render() {

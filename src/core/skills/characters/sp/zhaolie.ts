@@ -42,25 +42,24 @@ export class ZhaoLie extends TriggerSkill {
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
     const from = room.getPlayerById(owner);
     const to = room.getPlayerById(targetId);
-    return room.canAttack(from, to);
+    return room.withinAttackDistance(from, to);
   }
 
   async onTrigger() {
     return true;
   }
-
-  async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent, toIds, fromId } = skillEffectEvent;
+  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { triggeredOnEvent, toIds, fromId } = skillUseEvent;
     const toId = toIds![0];
     const drawCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
     drawCardEvent.drawAmount -= 1;
     const displayCards = room.getCards(3, 'top');
     const cardDisplayEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
       displayCards,
-      fromId: skillEffectEvent.fromId,
+      fromId: skillUseEvent.fromId,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} used skill {1}, display cards: {2}',
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillEffectEvent.fromId!)),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId!)),
         this.Name,
         TranslationPack.patchCardInTranslation(...displayCards),
       ).extract(),
@@ -136,7 +135,7 @@ export class ZhaoLie extends TriggerSkill {
       if (zhaolie.length !== 0) {
         await room.moveCards({
           movingCards: zhaolie.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
-          toId: skillEffectEvent.fromId,
+          toId: skillUseEvent.fromId,
           toArea: CardMoveArea.HandArea,
           moveReason: CardMoveReason.ActivePrey,
         });

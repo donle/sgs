@@ -13,9 +13,18 @@ import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase, StagePriori
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill, CompulsorySkill, FilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import {
+  ActiveSkill,
+  CommonSkill,
+  CompulsorySkill,
+  FilterSkill,
+  PersistentSkill,
+  ShadowSkill,
+  TriggerSkill,
+} from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { UncompulsoryBlocker } from './uncompulsory_blocker';
 
 @CommonSkill({ name: 'yijue', description: 'yijue_description' })
 export class YiJue extends ActiveSkill {
@@ -80,6 +89,7 @@ export class YiJue extends ActiveSkill {
     if (card.isBlack()) {
       await room.obtainSkill(to.Id, YiJueBlocker.Name);
       room.setFlag(to.Id, this.Name, true, this.Name);
+      to.hasShadowSkill(UncompulsoryBlocker.Name) || (await room.obtainSkill(to.Id, UncompulsoryBlocker.Name));
     } else {
       await room.moveCards({
         movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
@@ -122,6 +132,7 @@ export class YiJue extends ActiveSkill {
 }
 
 @ShadowSkill
+@PersistentSkill()
 @CompulsorySkill({ name: YiJue.GeneralName, description: YiJue.Description })
 export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
   public afterDead(
@@ -203,6 +214,7 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
         if (player.hasSkill(YiJueBlocker.Name)) {
           await room.loseSkill(player.Id, YiJueBlocker.Name);
         }
+        player.hasShadowSkill(UncompulsoryBlocker.Name) && (await room.loseSkill(player.Id, UncompulsoryBlocker.Name));
       }
     }
     return true;
@@ -210,6 +222,7 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
 }
 
 @ShadowSkill
+@PersistentSkill()
 @CompulsorySkill({ name: 'shadowYijueBlocker', description: 'shadowYijueBlocker_description' })
 export class YiJueBlocker extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
