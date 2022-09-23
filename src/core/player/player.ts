@@ -10,6 +10,7 @@ import {
   CharacterGender,
   CharacterId,
   CharacterNationality,
+  HegemonyCharacter,
 } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { UPPER_LIMIT_OF_ARMOR } from 'core/game/game_props';
@@ -46,6 +47,8 @@ import { UniqueSkillRule } from 'core/skills/skill_rule';
 type SkillStringType =
   | 'trigger'
   | 'common'
+  | 'primary'
+  | 'secondary'
   | 'limit'
   | 'awaken'
   | 'compulsory'
@@ -66,16 +69,16 @@ export type HuaShenInfo = {
 };
 
 export abstract class Player implements PlayerInfo {
-  private hp: number;
-  private maxHp: number;
+  protected hp: number;
+  protected maxHp: number;
   private armor: number;
   private dying: boolean = false;
   private dead: boolean;
   private chainLocked: boolean = false;
   private turnedOver: boolean = false;
-  private playerSkills: Skill[] = [];
-  private hookedSkills: Skill[] = [];
-  private gender: CharacterGender;
+  protected playerSkills: Skill[] = [];
+  protected hookedSkills: Skill[] = [];
+  protected gender: CharacterGender;
   private equipSectionsStatus: {
     [K in CharacterEquipSections]: 'enabled' | 'disabled';
   } = {
@@ -103,7 +106,7 @@ export abstract class Player implements PlayerInfo {
     [K: string]: number;
   }[] = [];
   private switchSkillState: string[] = [];
-  private playerCharacter: Character | undefined;
+  protected playerCharacter: Character | undefined;
   protected playerCards: PlayerCards;
   protected playerOutsideCards: PlayerCardsOutside;
   protected playerOutsideCharactersAreaNames: string[] = [];
@@ -806,6 +809,10 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
       case 'common':
         return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
+      case 'primary':
+        return skills.filter(skill => skill.SkillType === SkillType.Primary) as T[];
+      case 'secondary':
+        return skills.filter(skill => skill.SkillType === SkillType.Secondary) as T[];
       case 'transform':
         return skills.filter(skill => skill instanceof TransformSkill) as T[];
       case 'switch':
@@ -857,6 +864,10 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
       case 'common':
         return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
+      case 'primary':
+        return skills.filter(skill => skill.SkillType === SkillType.Primary) as T[];
+      case 'secondary':
+        return skills.filter(skill => skill.SkillType === SkillType.Secondary) as T[];
       case 'switch':
         return skills.filter(skill => skill.isSwitchSkill()) as T[];
       case 'skillProhibited':
@@ -1252,5 +1263,171 @@ export abstract class Player implements PlayerInfo {
 
   public isReady() {
     return this.ready;
+  }
+}
+
+export abstract class HegemonyPlayer extends Player {
+  protected playerCharacter: HegemonyCharacter | undefined;
+  protected abstract playerSecondaryCharacter: HegemonyCharacter | undefined;
+  protected abstract playerSecondaryCharacterId: CharacterId | undefined;
+
+  private yingYangMagatama = false;
+  private perfectMatch = false;
+
+  private characterHidden = true;
+  private secondaryCharacterHidden = true;
+
+  public set HegemonyCharacterIds(characterId: [CharacterId, CharacterId] | undefined) {
+    if (characterId === undefined) {
+      return;
+    }
+
+    const hasCharacterId = this.playerCharacterId;
+
+    this.playerCharacterId = characterId[0];
+    this.playerSecondaryCharacterId = characterId[1];
+
+    this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId) as HegemonyCharacter;
+    this.playerSecondaryCharacter = Sanguosha.getCharacterById(this.playerSecondaryCharacterId) as HegemonyCharacter;
+    hasCharacterId ||
+      (this.playerSkills = [
+        ...this.playerCharacter.Skills.filter(
+          skill => skill.SkillType === SkillType.Common || skill.SkillType === SkillType.Primary,
+        ),
+        ...this.playerSecondaryCharacter.Skills.filter(
+          skill => skill.SkillType === SkillType.Common || skill.SkillType === SkillType.Secondary,
+        ),
+      ]);
+
+    this.Armor = this.playerCharacter.Armor;
+    this.hp = (this.playerCharacter.Hp + this.playerSecondaryCharacter.Hp) / 2;
+    this.maxHp = (this.playerCharacter.MaxHp + this.playerSecondaryCharacter.MaxHp) / 2;
+    if (this.hp - Math.floor(this.hp) !== 0) {
+      this.yingYangMagatama = true;
+    }
+    if (
+      Algorithm.intersection(this.playerCharacter.ClosedCharacters, this.playerSecondaryCharacter.ClosedCharacters)
+        .length > 0
+    ) {
+      this.perfectMatch = true;
+    }
+
+    this.nationality = Algorithm.intersection(
+      [this.playerCharacter.Nationality, this.playerCharacter.SecondaryNationality],
+      [this.playerSecondaryCharacter.Nationality, this.playerSecondaryCharacter.SecondaryNationality],
+    )[0];
+
+    this.gender = CharacterGender.Neutral;
+  }
+  public get HegemonyCharacterId(): [CharacterId, CharacterId] | undefined {
+    return this.playerCharacterId && this.playerSecondaryCharacterId
+      ? [this.playerCharacterId, this.playerSecondaryCharacterId]
+      : undefined;
+  }
+
+  public get HegemonyCharacters(): [HegemonyCharacter, HegemonyCharacter] {
+    Precondition.exists(this.playerCharacter && this.playerSecondaryCharacter, 'Uninitialized player character');
+
+    return [this.playerCharacter!, this.playerSecondaryCharacter!];
+  }
+
+  public getPlayerSkills<T extends Skill = Skill>(skillType?: SkillStringType, includeDisabled?: boolean): T[] {
+    Precondition.assert(
+      this.playerCharacter !== undefined && this.playerSecondaryCharacter !== undefined,
+      `Player ${this.playerName} has not been initialized with a character yet`,
+    );
+
+    const playerSkills: Skill[] = [];
+    if (!this.isPrimaryCharacterHidden()) {
+      playerSkills.push(
+        ...this.playerCharacter!.Skills.filter(skill =>
+          [SkillType.Common, SkillType.Primary].includes(skill.SkillType),
+        ),
+      );
+    }
+    if (!this.isSecondaryCharacterHidden()) {
+      playerSkills.push(
+        ...this.playerSecondaryCharacter!.Skills.filter(skill =>
+          [SkillType.Common, SkillType.Primary].includes(skill.SkillType),
+        ),
+      );
+    }
+
+    const skills = [...playerSkills, ...this.hookedSkills].filter(
+      skill => (includeDisabled || !UniqueSkillRule.isProhibited(skill, this)) && !skill.isSideEffectSkill(),
+    );
+    if (skillType === undefined) {
+      return skills as T[];
+    }
+
+    switch (skillType) {
+      case 'filter':
+        return skills.filter(skill => skill instanceof FilterSkill) as T[];
+      case 'globalFilter':
+        return skills.filter(skill => skill instanceof GlobalFilterSkill) as T[];
+      case 'viewAs':
+        return skills.filter(skill => skill instanceof ViewAsSkill) as T[];
+      case 'active':
+        return skills.filter(skill => skill instanceof ActiveSkill) as T[];
+      case 'trigger':
+        return skills.filter(skill => skill instanceof TriggerSkill) as T[];
+      case 'breaker':
+        return skills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
+      case 'globalBreaker':
+        return skills.filter(skill => skill instanceof GlobalRulesBreakerSkill) as T[];
+      case 'transform':
+        return skills.filter(skill => skill instanceof TransformSkill) as T[];
+      case 'compulsory':
+        return skills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
+      case 'awaken':
+        return skills.filter(skill => skill.SkillType === SkillType.Awaken) as T[];
+      case 'limit':
+        return skills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
+      case 'common':
+        return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
+      case 'primary':
+        return skills.filter(skill => skill.SkillType === SkillType.Primary) as T[];
+      case 'secondary':
+        return skills.filter(skill => skill.SkillType === SkillType.Secondary) as T[];
+      case 'switch':
+        return skills.filter(skill => skill.isSwitchSkill()) as T[];
+      case 'skillProhibited':
+        return skills.filter(skill => skill instanceof SkillProhibitedSkill) as T[];
+      case 'quest':
+        return skills.filter(skill => skill.SkillType === SkillType.Quest) as T[];
+      default:
+        throw Precondition.UnreachableError(skillType);
+    }
+  }
+
+  public hasYingYangMagatama() {
+    return this.yingYangMagatama;
+  }
+
+  public isPerfectMatch() {
+    return this.perfectMatch;
+  }
+
+  public usePerfectMatch() {
+    this.perfectMatch = false;
+  }
+
+  public useYingYangMagatama() {
+    this.yingYangMagatama = false;
+  }
+
+  public showPrimaryCharacter() {
+    this.characterHidden = false;
+  }
+
+  public showSecondaryCharacter() {
+    this.secondaryCharacterHidden = false;
+  }
+
+  public isPrimaryCharacterHidden() {
+    return this.characterHidden === true;
+  }
+  public isSecondaryCharacterHidden() {
+    return this.secondaryCharacterHidden === true;
   }
 }

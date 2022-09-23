@@ -8,6 +8,7 @@ import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor'
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 export * from './skill_wrappers';
@@ -19,6 +20,8 @@ export const enum SkillType {
   Awaken,
   Limit,
   Quest,
+  Primary,
+  Secondary,
 }
 
 export const enum SwitchSkillState {

@@ -22,6 +22,8 @@ export const enum CharacterNationality {
   Wu,
   Qun,
   God,
+
+  Ambitioner,
 }
 
 export function getNationalityRawText(nationality: CharacterNationality) {
@@ -126,4 +128,14 @@ export abstract class Character {
   public isLinked() {
     return this.linked;
   }
+}
+
+export abstract class HegemonyCharacter extends Character {
+  protected abstract secondaryNationality: CharacterNationality;
+
+  public get SecondaryNationality() {
+    return this.secondaryNationality;
+  }
+
+  public abstract get ClosedCharacters(): string[];
 }

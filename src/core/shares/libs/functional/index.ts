@@ -77,7 +77,7 @@ export abstract class Functional {
     }
   }
   static getPlayerNationalityText(nationality: CharacterNationality) {
-    const playerRoleRawText = ['wei', 'shu', 'wu', 'qun', 'god'];
+    const playerRoleRawText = ['wei', 'shu', 'wu', 'qun', 'god', 'ambitioner'];
     return playerRoleRawText[nationality];
   }
 
@@ -137,6 +137,9 @@ export abstract class Functional {
       }
       case 'god': {
         return CharacterNationality.God;
+      }
+      case 'ambitioner': {
+        return CharacterNationality.Ambitioner;
       }
       default: {
         throw new Error(`Unknown incoming nationality: ${nationality}`);

@@ -102,6 +102,14 @@ export const CommonSkill =
   (skill: { name: string; description: string }) =>
   <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
     onCalculatingSkillUsageWrapper(SkillType.Common, skill.name, skill.description, constructorFunction as any);
+export const PrimarySkill =
+  (skill: { name: string; description: string }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    onCalculatingSkillUsageWrapper(SkillType.Primary, skill.name, skill.description, constructorFunction as any);
+export const SecondarySkill =
+  (skill: { name: string; description: string }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    onCalculatingSkillUsageWrapper(SkillType.Secondary, skill.name, skill.description, constructorFunction as any);
 export const AwakeningSkill =
   (skill: { name: string; description: string }) =>
   <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
