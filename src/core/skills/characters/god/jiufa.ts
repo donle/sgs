@@ -67,7 +67,16 @@ export class JiuFa extends TriggerSkill {
       room.removeFlag(skillEffectEvent.fromId, this.Name);
 
       const displayCardIds = room.getCards(9, 'top');
-      const selectedCardIds: { card: CardId; player?: PlayerId }[] = [];
+      const selectedCardIds: { card: CardId; player?: PlayerId }[] = displayCardIds
+        .filter(
+          (cardId, _, allCardIds) =>
+            allCardIds.filter(id => Sanguosha.getCardById(id).CardNumber === Sanguosha.getCardById(cardId).CardNumber)
+              .length === 1,
+        )
+        .map(cardId => ({
+          card: cardId,
+        }));
+
       room.addProcessingCards(displayCardIds.toString(), ...displayCardIds);
 
       const observeCardsEvent: ServerEventFinder<GameEventIdentifiers.ObserveCardsEvent> = {

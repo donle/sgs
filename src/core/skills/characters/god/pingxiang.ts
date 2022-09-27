@@ -76,6 +76,7 @@ export class PingXiang extends ActiveSkill {
       });
     }
 
+    await room.loseSkill(skillUseEvent.fromId, 'jiufa', true);
     return true;
   }
 }
