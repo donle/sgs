@@ -188,6 +188,7 @@ export class GameClientProcessor {
     this.tryToThrowNotReadyException(e);
     this.eventFilter(e, content);
     this.record(e, content);
+    this.clearDialogs(e);
 
     switch (e) {
       case GameEventIdentifiers.UserMessageEvent:
@@ -1199,6 +1200,7 @@ export class GameClientProcessor {
       };
       this.store.room.broadcast(type, response);
       this.presenter.closeIncomingConversation();
+      this.endAction();
     });
     this.presenter.defineCancelButtonActions(() => {
       const response: ClientEventFinder<T> = {
@@ -1207,6 +1209,7 @@ export class GameClientProcessor {
       };
       this.store.room.broadcast(type, response);
       this.presenter.closeIncomingConversation();
+      this.endAction();
     });
 
     this.presenter.enableActionButton('confirm', 'cancel');
