@@ -106,16 +106,16 @@ export class QiZhengXiangShengSkill extends ActiveSkill implements ExtralCardSki
       toId,
     );
 
-    const responseCard = response.cardId!;
-    const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
-      fromId: toId,
-      cardId: responseCard,
-      responseToEvent: event,
-      triggeredBySkills: [this.Name],
-    };
-    await room.responseCard(cardResponsedEvent);
-
+    const responseCard = response.cardId;
     if (responseCard) {
+      const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
+        fromId: toId,
+        cardId: responseCard,
+        responseToEvent: event,
+        triggeredBySkills: [this.Name],
+      };
+      await room.responseCard(cardResponsedEvent);
+
       if (isQiBingSelected && Sanguosha.getCardById(responseCard).GeneralName !== 'slash') {
         await this.doQiBingSelection(fromId, toId, room, cardId);
       } else if (!isQiBingSelected && Sanguosha.getCardById(responseCard).GeneralName !== 'jink') {
