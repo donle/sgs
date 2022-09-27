@@ -749,10 +749,21 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public getRoomShortcutInfo(): RoomShortcutInfo {
     const info = this.getRoomInfo();
+    let currentPlayerId: PlayerId;
+    let currentPhasePlayerId: PlayerId;
+
+    try {
+      currentPlayerId = this.CurrentPlayer.Id;
+      currentPhasePlayerId = this.CurrentPhasePlayer.Id;
+    } catch {
+      currentPlayerId = this.players[0].Id;
+      currentPhasePlayerId = this.players[0].Id;
+    }
+
     return {
       ...info,
-      currentPlayerId: this.CurrentPlayer.Id,
-      currentPhasePlayerId: this.CurrentPhasePlayer.Id,
+      currentPlayerId,
+      currentPhasePlayerId,
       currentPlayerStage: this.CurrentPlayerStage,
       currentPlayerPhase: this.CurrentPlayerPhase,
     };

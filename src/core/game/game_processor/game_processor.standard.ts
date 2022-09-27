@@ -927,6 +927,7 @@ export class StandardGameProcessor extends GameProcessor {
           cardMatcher: wuxiekejiMatcher.toSocketPassenger(),
           byCardId: event.cardId,
           cardUserId: event.fromId,
+          scopedTargets: event.toIds,
           ignoreNotifiedStatus: true,
         };
         pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id);
@@ -2462,10 +2463,5 @@ export class StandardGameProcessor extends GameProcessor {
       this.playerPositionIndex = nextIndex % this.room.Players.length;
       chosen = !this.room.Players[this.playerPositionIndex].Dead;
     }
-  }
-
-  public get CurrentPlayer() {
-    this.tryToThrowNotStartedError();
-    return this.room.Players[this.playerPositionIndex];
   }
 }

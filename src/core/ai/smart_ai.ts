@@ -208,8 +208,9 @@ export class SmartAI extends PlayerAI {
   ) {
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     const toPlayer = room.getPlayerById(toId);
-    let availableCards = AiLibrary.findCardsByMatcher(room, toPlayer, new CardMatcher(cardMatcher)).filter(cardId =>
-      toPlayer.canUseCard(room, cardId, new CardMatcher(cardMatcher)),
+    const cardMatcherInstance = new CardMatcher(cardMatcher);
+    let availableCards = AiLibrary.findCardsByMatcher(room, toPlayer, cardMatcherInstance).filter(cardId =>
+      toPlayer.canUseCard(room, cardId, cardMatcherInstance),
     );
     for (const skill of toPlayer.getSkills<FilterSkill>('filter')) {
       availableCards = availableCards.filter(cardId => skill.canUseCard(cardId, room, toPlayer.Id));
@@ -217,6 +218,17 @@ export class SmartAI extends PlayerAI {
 
     for (const skillName of content.triggeredBySkills || []) {
       const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForCardUseEvent?.(content, room, availableCards);
+      if (response) {
+        return response;
+      }
+    }
+
+    const cardNames = cardMatcherInstance.Matcher.generalName || cardMatcherInstance.Matcher.name || [];
+    for (const cardName of cardNames) {
+      const skill = Sanguosha.getSkillBySkillName(cardName);
       const aiSkill = skill.tryToCallAiTrigger();
 
       const response = aiSkill?.onAskForCardUseEvent?.(content, room, availableCards);
