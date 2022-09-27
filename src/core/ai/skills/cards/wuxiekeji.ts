@@ -3,10 +3,9 @@ import type { CardId } from 'core/cards/libs/card_props';
 import type { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import type { Room } from 'core/room/room';
-import { WuXieKeJiSkill } from 'core/skills';
-import { ResponsiveSkillTriggerClass } from '../base/responsive_skill_trigger';
+import { BaseSkillTrigger } from '../base/base_trigger';
 
-export class WuXieKeJiSkillTrigger extends ResponsiveSkillTriggerClass<WuXieKeJiSkill> {
+export class WuXieKeJiSkillTrigger extends BaseSkillTrigger {
   public onAskForCardUseEvent(
     content: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
     room: Room,
