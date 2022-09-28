@@ -812,50 +812,82 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
     await this.trigger(event);
 
-    const canDropCards: CardId[] = [];
-    const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-      fromId: playerId,
-      droppedCards: [],
+    const askForDropCardsFunc = async (isContinuous?: boolean) => {
+      const canDropCards: CardId[] = [];
+      const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+        fromId: playerId,
+        droppedCards: [],
+      };
+      if (event.cardAmount <= 0) {
+        return autoResponse;
+      }
+
+      if (event.responsedEvent) {
+        EventPacker.terminate(event);
+        return event.responsedEvent;
+      } else if (EventPacker.isUncancellableEvent(event)) {
+        for (const area of fromArea) {
+          canDropCards.push(
+            ...this.getPlayerById(playerId)
+              .getCardIds(area)
+              .filter(id => !except?.includes(id)),
+          );
+        }
+
+        if (canDropCards.length <= 0) {
+          return autoResponse;
+        } else if (
+          canDropCards.length <= (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount) ||
+          (isContinuous && event.cardAmount instanceof Array && canDropCards.length <= event.cardAmount[1])
+        ) {
+          autoResponse.droppedCards = canDropCards;
+          return autoResponse;
+        }
+      }
+
+      this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
+      const response = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
+
+      if (EventPacker.isUncancellableEvent(event) && response.droppedCards.length === 0) {
+        while (
+          canDropCards.length === 0 ||
+          response.droppedCards.length === (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount)
+        ) {
+          const index = Math.floor(Math.random() * canDropCards.length);
+          response.droppedCards.push(canDropCards[index]);
+          canDropCards.splice(index, 1);
+        }
+      }
+
+      return response;
     };
-    if (event.cardAmount <= 0) {
-      return autoResponse;
-    }
 
-    if (event.responsedEvent) {
-      EventPacker.terminate(event);
-      return event.responsedEvent;
-    } else if (EventPacker.isUncancellableEvent(event)) {
-      for (const area of fromArea) {
-        canDropCards.push(
-          ...this.getPlayerById(playerId)
-            .getCardIds(area)
-            .filter(id => !except?.includes(id)),
-        );
+    if (hideExclusive && typeof discardAmount === 'number' && typeof event.cardAmount === 'number' && uncancellable) {
+      const realResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+        fromId: playerId,
+        droppedCards: [],
+      };
+      let totalCount = event.cardAmount;
+
+      while (totalCount > 0) {
+        event.cardAmount = [1, totalCount];
+        event.except = event.except || [];
+        event.except.push(...realResponse.droppedCards);
+
+        const response = await askForDropCardsFunc();
+
+        if (response.droppedCards.length > 0) {
+          totalCount -= response.droppedCards.length;
+          realResponse.droppedCards.push(...response.droppedCards);
+        } else {
+          break;
+        }
       }
 
-      if (canDropCards.length <= 0) {
-        return autoResponse;
-      } else if (canDropCards.length <= (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount)) {
-        autoResponse.droppedCards = canDropCards;
-        return autoResponse;
-      }
+      return realResponse;
+    } else {
+      return await askForDropCardsFunc();
     }
-
-    this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
-    const response = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
-
-    if (EventPacker.isUncancellableEvent(event) && response.droppedCards.length === 0) {
-      while (
-        canDropCards.length === 0 ||
-        response.droppedCards.length === (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount)
-      ) {
-        const index = Math.floor(Math.random() * canDropCards.length);
-        response.droppedCards.push(canDropCards[index]);
-        canDropCards.splice(index, 1);
-      }
-    }
-
-    return response;
   }
 
   public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
@@ -1399,7 +1431,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               collabroatorsIndex[toId] = collabroatorsIndex[toId] || 0;
               const aimEvent = aimEventCollaborators[toId][collabroatorsIndex[toId]];
               EventPacker.copyPropertiesTo(aimEvent, singleCardEffectEvent);
-              singleCardEffectEvent.additionalDamage = aimEvent.additionalDamage;
+
+              if (aimEvent.additionalDamage) {
+                singleCardEffectEvent.additionalDamage = singleCardEffectEvent.additionalDamage || 0;
+                singleCardEffectEvent.additionalDamage += aimEvent.additionalDamage;
+              }
+
               if (
                 !EventPacker.isDisresponsiveEvent(singleCardEffectEvent) &&
                 list &&
