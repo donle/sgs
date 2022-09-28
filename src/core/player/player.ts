@@ -1287,8 +1287,8 @@ export abstract class HegemonyPlayer extends Player {
     this.playerCharacterId = characterId[0];
     this.playerSecondaryCharacterId = characterId[1];
 
-    this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId) as HegemonyCharacter;
-    this.playerSecondaryCharacter = Sanguosha.getCharacterById(this.playerSecondaryCharacterId) as HegemonyCharacter;
+    this.playerCharacter = Sanguosha.getCharacterById<HegemonyCharacter>(this.playerCharacterId);
+    this.playerSecondaryCharacter = Sanguosha.getCharacterById<HegemonyCharacter>(this.playerSecondaryCharacterId);
     hasCharacterId ||
       (this.playerSkills = [
         ...this.playerCharacter.Skills.filter(
@@ -1429,5 +1429,22 @@ export abstract class HegemonyPlayer extends Player {
   }
   public isSecondaryCharacterHidden() {
     return this.secondaryCharacterHidden === true;
+  }
+
+  public isSkillFromPrimaryCharacter(skillName: string) {
+    return this.playerCharacter?.Skills.find(skill => skill.Name === skillName) !== undefined;
+  }
+  public isSkillFromSecondaryCharacter(skillName: string) {
+    return this.playerSecondaryCharacter?.Skills.find(skill => skill.Name === skillName) !== undefined;
+  }
+
+  public isSkillInactivated(skillName: string) {
+    if (this.isSkillFromPrimaryCharacter(skillName)) {
+      return this.isPrimaryCharacterHidden();
+    } else if (this.isSkillFromSecondaryCharacter(skillName)) {
+      return this.isSecondaryCharacterHidden();
+    }
+
+    return false;
   }
 }

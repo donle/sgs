@@ -340,8 +340,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
     this.mapSocketIdToPlayerId[event.playerId] = socket.id;
     if (!event.joinAsObserver) {
-      const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
-      room.addPlayer(player);
+      room.addPlayer(event.playerId, event.playerName, room.Players.length);
 
       this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
         joiningPlayerName: event.playerName,

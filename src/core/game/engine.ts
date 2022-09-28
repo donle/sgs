@@ -1,7 +1,7 @@
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
+import { Character, CharacterId, CharacterNationality, HegemonyCharacter } from 'core/characters/character';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { Skill, TransformSkill } from 'core/skills/skill';
@@ -91,10 +91,10 @@ export class Sanguosha {
     );
   }
 
-  public static getCharacterById(characterId: CharacterId) {
+  public static getCharacterById<T extends Character | HegemonyCharacter = Character>(characterId: CharacterId): T {
     this.tryToThrowUninitializedError();
 
-    const character = Sanguosha.characters[characterId] as Character;
+    const character = Sanguosha.characters[characterId] as T;
     return Precondition.exists(character, `Unable to find the card by id: ${characterId}`);
   }
 

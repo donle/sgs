@@ -7,12 +7,13 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
-import { ClientPlayer } from 'core/player/player.client';
+import { ClientPlayer, HegemonyClientPlayer } from 'core/player/player.client';
 import type { PlayerId, PlayerInfo, PlayerShortcutInfo } from 'core/player/player_props';
 import type { RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GameMode } from 'core/shares/types/room_props';
 import { Skill } from 'core/skills/skill';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -67,14 +68,25 @@ export class RoomPresenter {
   @mobx.action
   playerEnter(playerInfo: PlayerInfo) {
     this.tryToThrowUninitializedError();
-    const player = new ClientPlayer(
-      playerInfo.Id,
-      playerInfo.Name,
-      playerInfo.Position,
-      playerInfo.CharacterId,
-      undefined,
-      playerInfo.Status,
-    );
+    const player =
+      this.store.room.Info.gameMode !== GameMode.Hegemony
+        ? new ClientPlayer(
+            playerInfo.Id,
+            playerInfo.Name,
+            playerInfo.Position,
+            playerInfo.CharacterId,
+            undefined,
+            playerInfo.Status,
+          )
+        : new HegemonyClientPlayer(
+            playerInfo.Id,
+            playerInfo.Name,
+            playerInfo.Position,
+            playerInfo.CharacterId,
+            undefined,
+            playerInfo.Status,
+          );
+
     this.store.room.addPlayer(player);
     this.broadcastUIUpdate();
   }

@@ -142,8 +142,7 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
-    room.addPlayer(player);
+    room.addPlayer(event.playerId, event.playerName, room.Players.length);
     this.playerId = event.playerId;
     this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
       joiningPlayerName: event.playerName,

@@ -80,7 +80,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected analytics: RecordAnalytics,
     protected players: Player[] = [],
     private flavor: Flavor,
-    private logger: Logger,
+    protected logger: Logger,
     protected gameMode: GameMode,
     protected gameCommonRules: GameCommonRules,
     protected eventStack: RoomEventStacker<WorkPlace.Server>,
@@ -279,7 +279,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.broadcast(type, content);
   }
 
-  private playerTriggerableSkills(
+  protected playerTriggerableSkills(
     player: Player,
     skillFrom: 'character' | 'equip',
     content: ServerEventFinder<GameEventIdentifiers>,

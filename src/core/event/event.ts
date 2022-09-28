@@ -107,6 +107,8 @@ export const enum GameEventIdentifiers {
   ClearCardTagsEvent,
 
   ArmorChangeEvent,
+
+  HegemonyCharacterShownEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
@@ -217,6 +219,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.ClearCardTagsEvent,
 
   GameEventIdentifiers.ArmorChangeEvent,
+  GameEventIdentifiers.HegemonyCharacterShownEvent,
 ];
 
 export const serverActiveListenerEvents = [

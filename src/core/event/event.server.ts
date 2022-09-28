@@ -390,6 +390,7 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     conversation?: string | PatchedTranslationObject;
     byHuaShen?: boolean;
+    isHegemonyMode?: boolean;
   };
   [GameEventIdentifiers.AskForChoosingOptionsEvent]: {
     askedBy?: PlayerId;
@@ -502,6 +503,10 @@ export interface ServerEvent extends EventUtilities {
       equips?: CardId[];
       playerPosition?: number;
       activate?: boolean;
+
+      secondaryCharacterId?: CharacterId;
+      perfetchMatchTag?: boolean;
+      yinYangMagatama?: boolean;
     }[];
   };
   [GameEventIdentifiers.SetOutsideCharactersEvent]: {
@@ -559,6 +564,11 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.ClearCardTagsEvent]: {
     toId: PlayerId;
   };
+  [GameEventIdentifiers.HegemonyCharacterShownEvent]: {
+    fromId: PlayerId;
+    isPrimaryCharacter: boolean;
+    characterId: CharacterId;
+  }
 }
 
 export type PinDianProcedure = {

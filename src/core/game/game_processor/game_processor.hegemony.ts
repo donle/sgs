@@ -1,5 +1,11 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
+import {
+  Character,
+  CharacterGender,
+  CharacterId,
+  CharacterNationality,
+  HegemonyCharacter,
+} from 'core/characters/character';
 import {
   CardMoveArea,
   CardMoveReason,
@@ -9,6 +15,7 @@ import {
 } from 'core/event/event';
 import { HegemonyPlayer, Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { HegemonyServerRoom } from 'core/room/room.hegemony.server';
 import { Functional } from 'core/shares/libs/functional';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
@@ -18,6 +25,8 @@ import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 import { StandardGameProcessor } from './game_processor.standard';
 
 export class HegemonyGameProcessor extends StandardGameProcessor {
+  protected room: HegemonyServerRoom;
+
   // tslint:disable-next-line: no-empty
   public assignRoles(players: Player[]) {}
 
@@ -29,13 +38,6 @@ export class HegemonyGameProcessor extends StandardGameProcessor {
         return alives;
       }
     }
-  }
-
-  protected async beforeGameStartPreparation() {
-    const lord = this.room.AlivePlayers.find(player => player.Role === PlayerRole.Lord)!;
-
-    await this.room.obtainSkill(lord.Id, 'feiyang');
-    await this.room.obtainSkill(lord.Id, 'bahu');
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
@@ -65,6 +67,7 @@ export class HegemonyGameProcessor extends StandardGameProcessor {
             Functional.getPlayerRoleRawText(playerInfo.Role!, GameMode.OneVersusTwo),
           ).extract(),
           ignoreNotifiedStatus: true,
+          isHegemonyMode: true,
         },
         playerInfo.Id,
       );
@@ -77,55 +80,29 @@ export class HegemonyGameProcessor extends StandardGameProcessor {
     const changedProperties: {
       toId: PlayerId;
       characterId?: CharacterId;
+      secondaryCharacterId?: CharacterId;
       maxHp?: number;
       hp?: number;
       nationality?: CharacterNationality;
       gender?: CharacterGender;
     }[] = [];
-    const askForChooseNationalities: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
     for (const response of await Promise.all(sequentialAsyncResponse)) {
       const playerInfo = Precondition.exists(
         playersInfo.find(info => info.Id === response.fromId),
         'Unexpected player id received',
       );
 
-      const character = Sanguosha.getCharacterById(response.chosenCharacterIds[0]);
+      const character = Sanguosha.getCharacterById<HegemonyCharacter>(response.chosenCharacterIds[0]);
+      const secondCharacter = Sanguosha.getCharacterById<HegemonyCharacter>(response.chosenCharacterIds[1]);
+
       changedProperties.push({
         toId: playerInfo.Id,
         characterId: character.Id,
-        maxHp: playerInfo.Role === PlayerRole.Lord ? character.MaxHp + 1 : undefined,
-        hp: playerInfo.Role === PlayerRole.Lord ? character.Hp + 1 : undefined,
+        secondaryCharacterId: secondCharacter.Id,
       });
-
-      if (character.Nationality === CharacterNationality.God) {
-        askForChooseNationalities.push(this.askForChoosingNationalities(playerInfo.Id));
-      }
     }
-
-    this.room.doNotify(notifyOtherPlayer);
-    const godNationalityPlayers: PlayerId[] = [];
-    for (const response of await Promise.all(askForChooseNationalities)) {
-      const property = Precondition.exists(
-        changedProperties.find(obj => obj.toId === response.fromId),
-        'Unexpected player id received',
-      );
-
-      godNationalityPlayers.push(property.toId);
-      property.nationality = Functional.getPlayerNationalityEnum(response.selectedOption!);
-    }
-    this.room.sortPlayersByPosition(godNationalityPlayers);
 
     this.room.changePlayerProperties({ changedProperties });
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
-      messages: godNationalityPlayers.map(id => {
-        const player = this.room.getPlayerById(id);
-        return TranslationPack.translationJsonPatcher(
-          '{0} select nationaliy {1}',
-          TranslationPack.patchPlayerInTranslation(player),
-          Functional.getPlayerNationalityText(player.Nationality),
-        ).toString();
-      }),
-    });
   }
 
   protected async onHandlePlayerDiedEvent(

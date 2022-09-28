@@ -18,7 +18,8 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
-import { Player } from 'core/player/player';
+import { HegemonyPlayer, Player } from 'core/player/player';
+import { HegemonyServerPlayer, ServerPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerRole, PlayerStatus } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -391,9 +392,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     });
   }
 
-  public addPlayer(player: Player) {
-    this.players.push(player);
-    return this.players;
+  public addPlayer<T extends Player = Player>(playerName: string, playerId: PlayerId, playerPosition: number): T[];
+  public addPlayer<T extends Player = Player>(player: T): T[];
+  public addPlayer<T extends Player = Player>(player: Player | string, playerId?: PlayerId, playerPosition?: number) {
+    if (player instanceof Player) {
+      this.players.push(player);
+    } else {
+      if (this.gameInfo.gameMode === GameMode.Hegemony) {
+        this.players.push(new HegemonyServerPlayer(player, playerId!, playerPosition!));
+      } else {
+        this.players.push(new ServerPlayer(player, playerId!, playerPosition!));
+      }
+    }
+    return this.players as T[];
   }
 
   public removePlayer(playerId: PlayerId) {

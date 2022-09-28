@@ -11,6 +11,7 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { StageProcessor } from 'core/game/stage_processor';
 import { LocalServerEmitter } from 'core/network/local/local_emitter.server';
 import { ServerSocket } from 'core/network/socket.server';
+import { HegemonyServerRoom } from 'core/room/room.hegemony.server';
 import { ServerRoom } from 'core/room/room.server';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
 import { Logger } from 'core/shares/libs/logger/logger';
@@ -52,7 +53,9 @@ export class CampaignService {
   ) {
     const roomId = Date.now();
     const socket = new LocalServerEmitter((window as any).eventEmitter, this.logger);
-    const room = new ServerRoom(
+    const RoomClass = roomInfo.gameMode === GameMode.Hegemony ? HegemonyServerRoom : ServerRoom;
+
+    const room = new RoomClass(
       roomId,
       {
         ...roomInfo,
