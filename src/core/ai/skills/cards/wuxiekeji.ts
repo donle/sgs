@@ -43,9 +43,5 @@ export class WuXieKeJiSkillTrigger extends BaseSkillTrigger {
         fromId: ai.Id,
       };
     }
-
-    return {
-      fromId: ai.Id,
-    };
   }
 }

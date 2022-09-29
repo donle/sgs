@@ -27,7 +27,7 @@ export interface ImageLoader {
   getOthersAbortedEquipCard(): Promise<ImageProps>;
   getSlimAbortedEquipSection(section: CharacterEquipSections): Promise<ImageProps>;
   getSlimCard(cardName: string): Promise<ImageProps>;
-  getPlayerRoleCard(role: PlayerRole, gameMode: GameMode): Promise<ImageProps>;
+  getPlayerRoleCard(role: PlayerRole, gameMode: GameMode, selfRole?: PlayerRole): Promise<ImageProps>;
   getCharacterSkinPlay(
     characterName: string,
     skinData?: CharacterSkinInfo[],

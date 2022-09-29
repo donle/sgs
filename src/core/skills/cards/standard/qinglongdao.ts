@@ -37,6 +37,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
       extraUse: true,
       cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
       conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract(),
+      triggeredBySkills: [this.Name],
     };
 
     const response = await room.askForCardUse(askForSlash, slashEffectEvent.fromId!);

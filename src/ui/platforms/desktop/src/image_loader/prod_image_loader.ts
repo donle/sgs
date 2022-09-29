@@ -150,10 +150,13 @@ export class ProdImageLoader implements ImageLoader {
     return { alt: 'aborted', src: image };
   }
 
-  public async getPlayerRoleCard(role: PlayerRole, gameMode: GameMode) {
-    const roleName = [GameMode.OneVersusTwo, GameMode.TwoVersusTwo].includes(gameMode)
-      ? 'unknown'
-      : Functional.getPlayerRoleRawText(role, gameMode);
+  public async getPlayerRoleCard(role: PlayerRole, gameMode: GameMode, selfRole?: PlayerRole) {
+    const roleName =
+      gameMode === GameMode.TwoVersusTwo && selfRole !== undefined
+        ? role === selfRole
+          ? 'ally'
+          : 'enemy'
+        : Functional.getPlayerRoleRawText(role, gameMode);
     const image: string = (await import(`./images/system/death/${roleName}.png`)).default;
     return { src: image, alt: roleName };
   }

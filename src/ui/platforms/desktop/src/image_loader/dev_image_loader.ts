@@ -6,6 +6,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
+import { ImageProps } from 'props/image_props';
 import { CharacterSkinInfo } from 'skins/skins';
 import { getSkillButtonImages } from './dev_button_image_loader';
 import { getLobbyButtonImage } from './dev_button_image_loader';
@@ -61,13 +62,20 @@ export class DevImageLoader implements ImageLoader {
     return getSkillButtonImages(skillType, size, cosRepo);
   }
 
-  public async getPlayerRoleCard(roleName: PlayerRole, gameMode: GameMode) {
-    const roleText = Functional.getPlayerRoleRawText(roleName, gameMode);
+  public async getPlayerRoleCard(role: PlayerRole, gameMode: GameMode, selfRole?: PlayerRole) {
+    const roleName =
+      gameMode === GameMode.TwoVersusTwo && selfRole !== undefined
+        ? role === selfRole
+          ? 'ally'
+          : 'enemy'
+        : Functional.getPlayerRoleRawText(role, gameMode);
+
     return {
-      src: `${cosRepo}/images/system/death/${roleText}.png`,
-      alt: roleText,
+      src: `${cosRepo}/images/system/death/${roleName}.png`,
+      alt: roleName,
     };
   }
+
   public async getOthersEquipCard(cardName: string) {
     return { src: `${cosRepo}/images/others_equips/${cardName}.png`, alt: cardName };
   }

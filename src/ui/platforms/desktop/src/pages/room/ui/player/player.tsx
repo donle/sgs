@@ -383,6 +383,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       const image = await this.props.imageLoader.getPlayerRoleCard(
         this.props.player.Role,
         this.props.store.room.Info.gameMode,
+        this.props.presenter.ClientPlayer?.Role,
       );
       mobx.runInAction(() => {
         this.PlayerRoleCard = () => <Picture className={styles.playerRoleCard} image={image} />;
