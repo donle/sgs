@@ -51,6 +51,12 @@ export type MoveCardEventInfos = {
   placeAtTheBottomOfDrawStack?: boolean;
 } & BaseGameEvent;
 
+export type OptionPromptProps = {
+  option: string;
+  optionDetail?: string;
+  sideTip?: string | PatchedTranslationObject;
+}
+
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {
     name: string;
@@ -390,6 +396,7 @@ export interface ServerEvent extends EventUtilities {
     options: string[];
     conversation: string | PatchedTranslationObject;
     toId: PlayerId;
+    optionPrompt?: OptionPromptProps[];
   };
   [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
     players: PlayerId[];
