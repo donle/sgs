@@ -682,28 +682,21 @@ export class StandardGameProcessor extends GameProcessor {
   protected async onPlayerDropCardStage(phase: PlayerPhase) {
     this.logger.debug(`${this.currentPhasePlayer.Id} enter drop cards phase`);
     const maxCardHold = this.currentPhasePlayer.getMaxCardHold(this.room);
-    let discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
+    const discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
     this.logger.debug(`${this.currentPhasePlayer.Id},  Upper Limit: ${maxCardHold}`);
 
-    const droppedCards: CardId[] = [];
-    while (discardAmount > 0 && this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length > 0) {
-      const response = await this.room.askForCardDrop(
-        this.currentPhasePlayer.Id,
-        discardAmount === 1 ? discardAmount : [1, discardAmount],
-        [PlayerCardsArea.HandArea],
-        true,
-        droppedCards,
-        undefined,
-        undefined,
-        true,
-      );
+    const response = await this.room.askForCardDrop(
+      this.currentPhasePlayer.Id,
+      discardAmount,
+      [PlayerCardsArea.HandArea],
+      true,
+      undefined,
+      undefined,
+      undefined,
+      true,
+    );
 
-      response.droppedCards.length > 0 && droppedCards.push(...response.droppedCards);
-
-      discardAmount = discardAmount - response.droppedCards.length;
-    }
-
-    await this.room.dropCards(CardMoveReason.SelfDrop, droppedCards, this.currentPhasePlayer.Id);
+    await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, this.currentPhasePlayer.Id);
   }
 
   private async onPhase(phase: PlayerPhase) {
