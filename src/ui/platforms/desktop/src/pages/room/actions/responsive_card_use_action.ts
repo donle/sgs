@@ -69,12 +69,7 @@ export class ResponsiveUseCardAction<
     if (this.isCardFromParticularArea(card)) {
       return true;
     }
-    if (this.selectedSkillToPlay !== undefined) {
-      const skill = this.selectedSkillToPlay;
-      if (skill instanceof ActiveSkill) {
-        return skill.availableCardAreas().includes(PlayerCardsArea.OutsideArea);
-      }
-    }
+
     return false;
   }
 
@@ -253,7 +248,7 @@ export class ResponsiveUseCardAction<
       );
       this.presenter.setupClientPlayerOutsideCardActionsMatcher(
         (card: Card) =>
-          this.isOutsideCardShowOnSkillTriggered(card, this.matcher) &&
+          this.isOutsideCardShowOnSkillTriggered(card, this.matcher) ||
           this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.OutsideArea, this.matcher),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>

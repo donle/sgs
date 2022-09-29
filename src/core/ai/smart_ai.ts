@@ -133,7 +133,13 @@ export class SmartAI extends PlayerAI {
       const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
       const aiSkill = skill.tryToCallAiTrigger<TriggerSkillTriggerClass>();
 
-      const triggerEvent = aiSkill?.skillTrigger(room, from, skill, triggeredOnEvent);
+      let skillCardId: CardId | undefined;
+      if (from.getEquipSkills().includes(skill)) {
+        skillCardId = from
+          .getCardIds(PlayerCardsArea.EquipArea)
+          .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
+      }
+      const triggerEvent = aiSkill?.skillTrigger(room, from, skill, triggeredOnEvent, skillCardId);
       if (triggerEvent) {
         return triggerEvent;
       }
@@ -161,15 +167,22 @@ export class SmartAI extends PlayerAI {
       GameEventIdentifiers.AskForCardResponseEvent
     >;
     const toPlayer = room.getPlayerById(toId);
-    const availableCards = AiLibrary.findAvailableCardsToResponse(
-      room,
-      toPlayer,
-      content,
-      new CardMatcher(cardMatcher),
-    );
+    const cardMatcherInstance = new CardMatcher(cardMatcher);
+    const availableCards = AiLibrary.findAvailableCardsToResponse(room, toPlayer, content, cardMatcherInstance);
 
     for (const skillName of content.triggeredBySkills || []) {
       const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForCardResponseEvent?.(content, room, availableCards);
+      if (response) {
+        return response;
+      }
+    }
+
+    const cardNames = cardMatcherInstance.Matcher.generalName || cardMatcherInstance.Matcher.name || [];
+    for (const cardName of cardNames) {
+      const skill = Sanguosha.getSkillBySkillName(cardName);
       const aiSkill = skill.tryToCallAiTrigger();
 
       const response = aiSkill?.onAskForCardResponseEvent?.(content, room, availableCards);
@@ -209,12 +222,7 @@ export class SmartAI extends PlayerAI {
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     const toPlayer = room.getPlayerById(toId);
     const cardMatcherInstance = new CardMatcher(cardMatcher);
-    let availableCards = AiLibrary.findCardsByMatcher(room, toPlayer, cardMatcherInstance).filter(cardId =>
-      toPlayer.canUseCard(room, cardId, cardMatcherInstance),
-    );
-    for (const skill of toPlayer.getSkills<FilterSkill>('filter')) {
-      availableCards = availableCards.filter(cardId => skill.canUseCard(cardId, room, toPlayer.Id));
-    }
+    const availableCards = AiLibrary.findAvailableCardsToUse(room, toPlayer, cardMatcherInstance);
 
     for (const skillName of content.triggeredBySkills || []) {
       const skill = Sanguosha.getSkillBySkillName(skillName);

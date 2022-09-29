@@ -6,6 +6,7 @@ import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/sta
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
+import { QiZhengXiangShengSkill } from 'core/skills/cards/character_skills/qizhengxiangsheng';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -91,7 +92,7 @@ export class DingHan extends TriggerSkill {
     } else {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         toId: fromId,
-        options: Sanguosha.getCardNameByType(types => types.includes(CardType.Trick)),
+        options: [...Sanguosha.getCardNameByType(types => types.includes(CardType.Trick)), QiZhengXiangShengSkill.Name],
         askedBy: fromId,
         conversation: TranslationPack.translationJsonPatcher(
           '{0}: please choose a dinghan option',

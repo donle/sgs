@@ -4,8 +4,8 @@ import { EventPacker } from 'core/event/event_packer';
 import { Player } from 'core/player/player';
 import { PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Algorithm } from 'core/shares/libs/algorithm';
+import { pveLongShenSkills } from 'core/skills/game_mode/pve/pve_longshen_skills';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { pveLongShenSkills } from '../../../core/skills/game_mode/pve/pve_longshen_skills';
 import { Sanguosha } from '../engine';
 import { PveClassicGameProcessor } from './game_processor.pve_classic';
 

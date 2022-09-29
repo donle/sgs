@@ -50,6 +50,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'god_liubei', target: '神劉備' },
   { source: 'longnu', target: '龍怒' },
+  { source: 'fire_longnu', target: '龍怒' },
   { source: 'liu_jieying', target: '結營' },
 
   { source: 'god_luxun', target: '神陸遜' },

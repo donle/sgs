@@ -108,9 +108,7 @@ export class SkillUseAction extends BaseAction {
     if (this.isCardFromParticularArea(card)) {
       return true;
     }
-    if (this.selectedSkillToPlay instanceof TriggerSkill) {
-      return this.selectedSkillToPlay.availableCardAreas().includes(PlayerCardsArea.OutsideArea);
-    }
+
     return false;
   }
 
@@ -162,7 +160,7 @@ export class SkillUseAction extends BaseAction {
     );
     this.presenter.setupClientPlayerOutsideCardActionsMatcher(
       (card: Card) =>
-        this.isOutsideCardShowOnSkillTriggered(card) &&
+        this.isOutsideCardShowOnSkillTriggered(card) ||
         this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.OutsideArea),
     );
     this.presenter.setupCardSkillSelectionMatcher((card: Card) =>

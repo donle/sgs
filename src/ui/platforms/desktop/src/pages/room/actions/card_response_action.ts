@@ -200,7 +200,7 @@ export class CardResponseAction extends BaseAction {
       );
       this.presenter.setupClientPlayerOutsideCardActionsMatcher(
         (card: Card) =>
-          this.isOutsideCardShowOnResponse(card) &&
+          this.isOutsideCardShowOnResponse(card) ||
           this.isCardEnabledOnResponse(
             card,
             PlayerCardsArea.OutsideArea,
