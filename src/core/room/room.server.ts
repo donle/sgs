@@ -874,11 +874,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         event.except = event.except || [];
         event.except.push(...realResponse.droppedCards);
 
-        const response = await askForDropCardsFunc();
+        const subResponse = await askForDropCardsFunc();
 
-        if (response.droppedCards.length > 0) {
-          totalCount -= response.droppedCards.length;
-          realResponse.droppedCards.push(...response.droppedCards);
+        if (subResponse.droppedCards.length > 0) {
+          totalCount -= subResponse.droppedCards.length;
+          realResponse.droppedCards.push(...subResponse.droppedCards);
         } else {
           break;
         }
