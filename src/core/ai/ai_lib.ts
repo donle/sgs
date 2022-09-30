@@ -400,7 +400,7 @@ export abstract class AiLibrary {
 
   static findAvailableCardsToUse(room: Room, player: Player, cardMatcher?: CardMatcher) {
     let cards = AiLibrary.findCardsByMatcher(room, player, cardMatcher).filter(cardId =>
-      player.canUseCard(room, cardId),
+      player.canUseCard(room, cardId, cardMatcher),
     );
 
     if (!cardMatcher) {

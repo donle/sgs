@@ -6,7 +6,6 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
-import { ImageProps } from 'props/image_props';
 import { CharacterSkinInfo } from 'skins/skins';
 import { getSkillButtonImages } from './dev_button_image_loader';
 import { getLobbyButtonImage } from './dev_button_image_loader';
