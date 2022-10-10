@@ -187,6 +187,10 @@ export class GameSettings extends React.Component<GameSettingsProps> {
   };
 
   private readonly addOrRemoveForbiddenCharactersById = (character: Character) => {
+    if (!this.props.controlable) {
+      return;
+    }
+
     this.props.presenter.updateGameSettings(this.props.store, {
       ...this.props.store.gameSettings,
       excludedCharacters: this.props.store.gameSettings.excludedCharacters.includes(character.Id)

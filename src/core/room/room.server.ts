@@ -564,9 +564,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     } catch (e) {
       this.logger.error(e);
-      const message = TranslationPack.patchPureTextParameter(
+      const message = TranslationPack.translationJsonPatcher(
         'Room running with exceptions, please re-create your room',
-      );
+      ).toString();
       this.broadcast(GameEventIdentifiers.UserMessageEvent, {
         message,
         originalMessage: message,
