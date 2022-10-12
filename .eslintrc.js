@@ -126,8 +126,8 @@ module.exports = {
       'error',
       {
         alphabetize: {
-          order: 'asc' /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
-          caseInsensitive: false /* ignore case. Options: [true, false] */,
+          order: 'asc',
+          caseInsensitive: false,
         },
         groups: ['index', 'sibling', 'parent', 'internal', 'external', 'builtin', 'object', 'type'],
       },
