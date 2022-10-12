@@ -23,10 +23,11 @@
     "prettier": "^2.7.1",
     "prettier-eslint": "^15.0.1",
     "ts-node": "^8.6.2",
+    "tslint": "6.0.0",
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "prettier": "prettier --write \"./**/*.{ts,tsx,css,json}\"",
+    "prettier": "prettier --config ./.prettierrc --write \"./**/*.{ts,tsx,css,json}\"",
     "lint": "eslint --max-warnings 0 -c .eslintrc.js \"./src/**/*.{ts,tsx}\"",
     "build": "rm -rf build && tsc",
     "transpile": "cd ./src/server && yarn install && yarn build",

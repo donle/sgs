@@ -17,7 +17,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['plugin:prettier/recommended', 'prettier'],
+  extends: ['plugin:prettier/recommended'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: ['./tsconfig.json'],
@@ -117,7 +117,6 @@ module.exports = {
     'object-shorthand': 'error',
     'prefer-const': 'error',
     'prefer-object-spread': 'error',
-    'prettier/prettier': 'error',
     quotes: 'off',
     radix: 'error',
     'use-isnan': 'error',
@@ -125,11 +124,7 @@ module.exports = {
     'import/order': [
       'error',
       {
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: false,
-        },
-        groups: ['index', 'sibling', 'parent', 'internal', 'external', 'builtin', 'object', 'type'],
+        groups: ['index', 'sibling', 'parent', 'internal', 'builtin', 'object', 'type', 'external'],
       },
     ],
   },
