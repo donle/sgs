@@ -26,7 +26,7 @@ jobs:
       - run: npm install -g yarn
       - run: yarn
       - run: yarn lint
-      - run: yarn transpile --if-present
-      - run: yarn transpile:client --if-present
+      - run: yarn transpile
+      - run: yarn transpile:client
         env:
           CI: true
