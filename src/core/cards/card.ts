@@ -1,3 +1,8 @@
+import { Sanguosha } from 'core/game/engine';
+import { GameCardExtensions } from 'core/game/game_props';
+import { Algorithm } from 'core/shares/libs/algorithm';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { Skill, ViewAsSkill } from 'core/skills/skill';
 import {
   CardColor,
   CardId,
@@ -7,11 +12,6 @@ import {
   VirtualCardId,
   VirtualCardIdProps,
 } from './libs/card_props';
-import { Sanguosha } from 'core/game/engine';
-import { GameCardExtensions } from 'core/game/game_props';
-import { Algorithm } from 'core/shares/libs/algorithm';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { Skill, ViewAsSkill } from 'core/skills/skill';
 
 export function None<T extends Card>(constructor: new (...args: any) => any): any {
   return class extends constructor {

@@ -1,6 +1,3 @@
-import styles from './move_instant_card.module.css';
-import { Point } from '../position';
-import { UiAnimation } from '../ui_animation';
 import { Card, CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -12,6 +9,9 @@ import { RoomStore } from 'pages/room/room.store';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ClientCard } from 'ui/card/card';
+import styles from './move_instant_card.module.css';
+import { Point } from '../position';
+import { UiAnimation } from '../ui_animation';
 
 type MoveCardProps = { cardId: CardId; public: boolean };
 

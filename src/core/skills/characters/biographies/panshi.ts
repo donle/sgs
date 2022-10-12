@@ -1,4 +1,3 @@
-import { CiXiao } from './cixiao';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -15,6 +14,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { CiXiao } from './cixiao';
 
 @CompulsorySkill({ name: 'panshi', description: 'panshi_description' })
 export class PanShi extends TriggerSkill {

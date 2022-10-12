@@ -1,4 +1,3 @@
-import { HeXian, JiXian, LieXian, RouXian } from './qingxiancanpu';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -9,6 +8,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { FilterSkill, OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { HeXian, JiXian, LieXian, RouXian } from './qingxiancanpu';
 
 @CommonSkill({ name: 'juexiang', description: 'juexiang_description' })
 export class JueXiang extends TriggerSkill {

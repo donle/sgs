@@ -1,5 +1,3 @@
-import { Room, RoomId, TimeLimitVariant } from './room';
-import { RoomEventStacker } from './utils/room_event_stack';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
@@ -63,6 +61,8 @@ import {
 } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { Room, RoomId, TimeLimitVariant } from './room';
+import { RoomEventStacker } from './utils/room_event_stack';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];

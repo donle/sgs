@@ -1,12 +1,3 @@
-import styles from './player.module.css';
-import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
-import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
-import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
-import { Mask } from '../mask/mask';
-import { PlayingBar } from '../playing_bar/playing_bar';
-import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import classNames from 'classnames';
 import { Card, CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
@@ -35,6 +26,15 @@ import { FlatClientCard } from 'ui/card/flat_card';
 import { Hp } from 'ui/hp/hp';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import styles from './player.module.css';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
+import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
+import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
+import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
+import { Mask } from '../mask/mask';
+import { PlayingBar } from '../playing_bar/playing_bar';
+import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 
 type PlayerCardProps = {
   player: ClientPlayer | undefined;

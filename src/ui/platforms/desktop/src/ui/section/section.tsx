@@ -1,7 +1,7 @@
-import styles from './section.module.css';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Spacing } from 'ui/layout/spacing';
+import styles from './section.module.css';
 
 export const enum SectionVariant {
   FULL_WIDTH = 'fullWidth',

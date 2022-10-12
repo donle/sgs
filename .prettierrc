@@ -4,6 +4,7 @@
   "trailingComma": "all",
   "jsxSingleQuote": false,
   "arrowParens": "avoid",
+  "endOfLine": "auto",
   "overrides": [
     {
       "files": "*.css",

@@ -1,6 +1,3 @@
-import { App } from './app';
-import { emojiLoader } from './emoji_loader/emoji_loader';
-import * as serviceWorker from './serviceWorker';
 import { getClientConfig } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
 import { createLogger } from 'core/shares/libs/logger/create';
@@ -15,6 +12,9 @@ import { ClientFlavor } from 'props/config_props';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
+import { App } from './app';
+import { emojiLoader } from './emoji_loader/emoji_loader';
+import * as serviceWorker from './serviceWorker';
 import './index.css';
 
 const mode = (process.env.REACT_APP_DEV_MODE as ClientFlavor) || ClientFlavor.Dev;

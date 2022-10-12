@@ -1,5 +1,5 @@
-import { ClientSocket } from './socket.client';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientSocket } from './socket.client';
 
 export class ClientOfflineSocket extends ClientSocket {
   constructor(roomId: string) {

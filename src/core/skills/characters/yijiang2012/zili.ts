@@ -1,4 +1,3 @@
-import { PaiYi } from './paiyi';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
@@ -6,6 +5,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { AwakeningSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PaiYi } from './paiyi';
 
 @AwakeningSkill({ name: 'zili', description: 'zili_description' })
 export class ZiLi extends TriggerSkill {

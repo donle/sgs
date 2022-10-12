@@ -1,10 +1,10 @@
 import { AiLibrary } from 'core/ai/ai_lib';
 import { ActiveSkillTriggerClass } from 'core/ai/skills/base/active_skill_trigger';
-import { BingLiangCunDuanSkill } from 'core/skills';
 import type { CardId } from 'core/cards/libs/card_props';
 import type { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import type { Player } from 'core/player/player';
 import type { Room } from 'core/room/room';
+import { BingLiangCunDuanSkill } from 'core/skills';
 
 export class BingLiangCunDuanSkillTrigger extends ActiveSkillTriggerClass<BingLiangCunDuanSkill> {
   skillTrigger = (

@@ -1,8 +1,8 @@
-import { CardSuit, RealCardId } from '../libs/card_props';
-import { Slash } from '../standard/slash';
 import { GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { FireSlashSkill } from 'core/skills/cards/legion_fight/fire_slash';
+import { CardSuit, RealCardId } from '../libs/card_props';
+import { Slash } from '../standard/slash';
 
 export class FireSlash extends Slash {
   constructor(id: RealCardId, cardNumber: number, suit: CardSuit) {

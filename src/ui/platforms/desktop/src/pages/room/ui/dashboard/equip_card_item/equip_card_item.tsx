@@ -1,4 +1,3 @@
-import styles from './equip_card_item.module.css';
 import classNames from 'classnames';
 import { Card, CardType } from 'core/cards/card';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -11,6 +10,7 @@ import { CardSuitItem } from 'ui/card/card_suit';
 
 import { CardDescription } from 'ui/card_description/card_description';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import styles from './equip_card_item.module.css';
 
 type EquipCardItemProps = {
   disabled?: boolean;

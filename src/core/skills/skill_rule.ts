@@ -1,10 +1,10 @@
-import { DuJiang, SheQue, YangWei } from '.';
+import { Card, CardType } from 'core/cards/card';
+import { Player } from 'core/player/player';
 import { QingGangSkill } from './cards/standard/qinggang';
 import { XianZhenNullify } from './characters/yijiang2011/xianzhen';
 import { BenXi } from './characters/yijiang2014/benxi';
 import { Skill, SkillProhibitedSkill } from './skill';
-import { Card, CardType } from 'core/cards/card';
-import { Player } from 'core/player/player';
+import { DuJiang, SheQue, YangWei } from '.';
 
 export class UniqueSkillRule {
   // eslint-disable-next-line @typescript-eslint/no-empty-function

@@ -1,4 +1,3 @@
-import { ExtralCardSkillProperty } from '../interface/extral_property';
 import { GuoHeChaiQiaoSkillTrigger } from 'core/ai/skills/cards/guohechaiqiao';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -6,6 +5,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(GuoHeChaiQiaoSkillTrigger)
 @CommonSkill({ name: 'guohechaiqiao', description: 'guohechaiqiao_description' })

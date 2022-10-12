@@ -1,7 +1,3 @@
-import styles from './game_settings.module.css';
-import { createTranslationMessages } from './messages';
-import { WaitingRoomPresenter } from '../waiting_room.presenter';
-import { WaitingRoomStore } from '../waiting_room.store';
 import classNames from 'classnames';
 import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
@@ -20,6 +16,10 @@ import { Input } from 'ui/input/input';
 import { Spacing } from 'ui/layout/spacing';
 import { Text } from 'ui/text/text';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import styles from './game_settings.module.css';
+import { createTranslationMessages } from './messages';
+import { WaitingRoomPresenter } from '../waiting_room.presenter';
+import { WaitingRoomStore } from '../waiting_room.store';
 
 export type GameSettingsProps = {
   controlable: boolean;

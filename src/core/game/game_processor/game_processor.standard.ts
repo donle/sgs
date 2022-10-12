@@ -1,5 +1,3 @@
-import { GameProcessor } from './game_processor';
-import { DamageType, UPPER_LIMIT_OF_ARMOR } from '../game_props';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
@@ -54,6 +52,8 @@ import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { GameProcessor } from './game_processor';
+import { DamageType, UPPER_LIMIT_OF_ARMOR } from '../game_props';
 
 export class StandardGameProcessor extends GameProcessor {
   protected playerPositionIndex = 0;

@@ -1,5 +1,3 @@
-import { BaseAction } from './base_action';
-import { ResponsiveUseCardAction } from './responsive_card_use_action';
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -10,6 +8,8 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { BaseAction } from './base_action';
+import { ResponsiveUseCardAction } from './responsive_card_use_action';
 
 export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifiers.AskForPeachEvent> {
   public static readonly isSkillDisabled =

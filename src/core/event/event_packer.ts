@@ -1,5 +1,5 @@
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from './event';
 import { GameRunningInfo } from 'core/game/game_props';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from './event';
 
 const enum PrivateTagEnum {
   DamageSignatureInCardUse = 'DamageSignatureInCardUse',

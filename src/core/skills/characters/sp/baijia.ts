@@ -1,4 +1,3 @@
-import { GuJu } from './guju';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -7,6 +6,7 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { GuJu } from './guju';
 
 @AwakeningSkill({ name: 'baijia', description: 'baijia_description' })
 export class BaiJia extends TriggerSkill {

@@ -1,4 +1,3 @@
-import { ExtralCardSkillProperty } from '../interface/extral_property';
 import { SlashSkillTrigger } from 'core/ai/skills/cards/slash';
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
@@ -12,6 +11,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TagEnum } from 'core/shares/types/tag_list';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(SlashSkillTrigger)
 @CommonSkill({ name: 'slash', description: 'slash_description' })

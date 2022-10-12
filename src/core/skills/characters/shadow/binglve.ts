@@ -1,4 +1,3 @@
-import { FeiJun } from './feijun';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { AllStage, SkillEffectStage } from 'core/game/stage_processor';
@@ -6,6 +5,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { FeiJun } from './feijun';
 
 @CompulsorySkill({ name: 'binglve', description: 'binglve_description' })
 export class BingLve extends TriggerSkill {

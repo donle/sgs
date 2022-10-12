@@ -1,3 +1,4 @@
+import { Character } from 'core/characters/character';
 import { BeiMiHu } from './beimihu';
 import { CaoAng } from './caoang';
 import { CaoHong } from './caohong';
@@ -45,7 +46,6 @@ import { ZhangLing } from './zhangling';
 import { ZhouQun } from './zhouqun';
 import { ZhuGeDan } from './zhugedan';
 import { ZuMao } from './zumao';
-import { Character } from 'core/characters/character';
 
 export const SpPackage: (index: number) => Character[] = index => [
   new YangXiu(index++),

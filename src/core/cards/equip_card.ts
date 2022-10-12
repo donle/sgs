@@ -1,7 +1,7 @@
-import { Card, CardType } from './card';
-import { CardSuit, RealCardId } from './libs/card_props';
 import { GameCardExtensions } from 'core/game/game_props';
 import { RulesBreakerSkill, Skill } from 'core/skills/skill';
+import { Card, CardType } from './card';
+import { CardSuit, RealCardId } from './libs/card_props';
 
 export abstract class EquipCard extends Card {
   protected cardType = [CardType.Equip];

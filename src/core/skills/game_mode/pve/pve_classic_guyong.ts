@@ -1,9 +1,3 @@
-import { PveClassicLianZhen } from './pve_classic_lianzhen';
-import { PveClassicQiSha } from './pve_classic_qisha';
-import { PveClassicTianJi } from './pve_classic_tianji';
-import { PveClassicTianLiang } from './pve_classic_tianliang';
-import { PveClassicTianTong } from './pve_classic_tiantong';
-import { PveClassicTianXiang } from './pve_classic_tianxiang';
 import { CardType, VirtualCard } from 'core/cards/card';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Duel } from 'core/cards/standard/duel';
@@ -33,6 +27,12 @@ import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_prop
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill, CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PveClassicLianZhen } from './pve_classic_lianzhen';
+import { PveClassicQiSha } from './pve_classic_qisha';
+import { PveClassicTianJi } from './pve_classic_tianji';
+import { PveClassicTianLiang } from './pve_classic_tianliang';
+import { PveClassicTianTong } from './pve_classic_tiantong';
+import { PveClassicTianXiang } from './pve_classic_tianxiang';
 
 @AwakeningSkill({ name: 'pve_classic_guyong', description: 'pve_classic_guyong_description' })
 export class PveClassicGuYong extends TriggerSkill {

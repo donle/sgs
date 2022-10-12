@@ -1,10 +1,10 @@
-import { LiuShi } from './liushi';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { LiuShi } from './liushi';
 
 @CompulsorySkill({ name: 'zhanwan', description: 'zhanwan_description' })
 export class ZhanWan extends TriggerSkill {

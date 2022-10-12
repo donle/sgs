@@ -1,5 +1,3 @@
-import styles from './card_category_dialog.module.css';
-import { BaseDialog } from '../base_dialog';
 import { CardType } from 'core/cards/card';
 import { Sanguosha } from 'core/game/engine';
 import { Functional } from 'core/shares/libs/functional';
@@ -7,6 +5,8 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { FlatDemoCard } from 'ui/card/flat_demo_card';
+import styles from './card_category_dialog.module.css';
+import { BaseDialog } from '../base_dialog';
 
 export type CardCategoryDialogProps = {
   translator: ClientTranslationModule;

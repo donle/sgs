@@ -1,6 +1,3 @@
-import styles from './character.module.css';
-import { NationalityBadge } from '../badge/badge';
-import { CharacterHp } from '../hp/hp';
 import classNames from 'classnames';
 import { Character, getNationalityRawText } from 'core/characters/character';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -9,6 +6,9 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { Armor } from 'ui/armor/armor';
+import styles from './character.module.css';
+import { NationalityBadge } from '../badge/badge';
+import { CharacterHp } from '../hp/hp';
 
 export type CharacterCardProps = {
   character: Character;

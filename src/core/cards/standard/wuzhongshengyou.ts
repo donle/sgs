@@ -1,9 +1,9 @@
 import { CardSuit } from 'core/cards/libs/card_props';
+import type { RealCardId } from 'core/cards/libs/card_props';
 import { TrickCard } from 'core/cards/trick_card';
 import { GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { WuZhongShengYouSkill } from 'core/skills/cards/standard/wuzhongshengyou';
-import type { RealCardId } from 'core/cards/libs/card_props';
 
 export class WuZhongShengYou extends TrickCard {
   constructor(id: RealCardId, cardNumber: number, suit: CardSuit) {

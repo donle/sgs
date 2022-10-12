@@ -1,4 +1,3 @@
-import { ExtralCardSkillProperty } from '../interface/extral_property';
 import { WuGuFengDengSkillTrigger } from 'core/ai/skills/cards/wugufengdeng';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -9,6 +8,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 type SelectedCard = {
   card: CardId;

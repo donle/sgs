@@ -1,6 +1,6 @@
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventEmitterProps } from './event_emitter_props';
 import { ClientSocket } from '../socket.client';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 
 export class LocalClientEmitter extends ClientSocket {
   constructor(private emitter: EventEmitterProps, roomId: string) {

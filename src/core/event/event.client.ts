@@ -1,3 +1,7 @@
+import { CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
+import { DamageType, GameInfo, TemporaryRoomCreationInfo, WaitingRoomGameSettings } from 'core/game/game_props';
+import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import {
   EventUtilities,
   GameEventIdentifiers,
@@ -5,10 +9,6 @@ import {
   WaitingRoomEvent,
   WaitingRoomEventUtilities,
 } from './event';
-import { CardId } from 'core/cards/libs/card_props';
-import { CharacterId } from 'core/characters/character';
-import { DamageType, GameInfo, TemporaryRoomCreationInfo, WaitingRoomGameSettings } from 'core/game/game_props';
-import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 
 export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {

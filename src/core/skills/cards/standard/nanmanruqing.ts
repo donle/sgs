@@ -1,4 +1,3 @@
-import { ExtralCardSkillProperty } from '../interface/extral_property';
 import { NanManRuQingSkillTrigger } from 'core/ai/skills/cards/nanmanruqing';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -11,6 +10,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(NanManRuQingSkillTrigger)
 @CommonSkill({ name: 'nanmanruqing', description: 'nanmanruqing_description' })

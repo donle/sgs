@@ -1,5 +1,3 @@
-import { RoomPresenter } from '../room.presenter';
-import { RoomStore } from '../room.store';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -9,6 +7,8 @@ import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 
 export abstract class BaseAction {
   public static disableSkills = (skill: Skill) => {

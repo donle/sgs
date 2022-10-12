@@ -1,3 +1,4 @@
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import {
   Languages,
   PatchedTranslationObject,
@@ -5,7 +6,6 @@ import {
   TranslationPackPatchedObject,
   TranslationsDictionary,
 } from './translation_json_tool';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export class TranslationModule {
   protected readonly dictionary: Map<Languages, TranslationsDictionary> = new Map();

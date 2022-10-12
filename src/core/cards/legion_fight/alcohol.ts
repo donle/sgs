@@ -1,8 +1,8 @@
-import { Single } from '../card';
 import { BasicCard } from 'core/cards/basic_card';
 import { GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { AlcoholSkill } from 'core/skills/cards/legion_fight/alcohol';
+import { Single } from '../card';
 import type { CardSuit, RealCardId } from '../libs/card_props';
 
 @Single

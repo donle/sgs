@@ -1,6 +1,3 @@
-import { BaseAction } from './base_action';
-import { RoomPresenter } from '../room.presenter';
-import { RoomStore } from '../room.store';
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -13,6 +10,9 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
 import { ActiveSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { BaseAction } from './base_action';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 
 export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
   constructor(

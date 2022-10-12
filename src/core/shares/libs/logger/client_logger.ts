@@ -1,5 +1,5 @@
-import { Logger } from './logger';
 import { Flavor } from 'core/shares/types/host_config';
+import { Logger } from './logger';
 
 export class ClientLogger extends Logger {
   constructor(private flavor: Flavor = Flavor.Prod) {

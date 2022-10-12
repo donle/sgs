@@ -1,4 +1,3 @@
-import { ExtralCardSkillProperty } from '../interface/extral_property';
 import { LeBuSiShuSkillTrigger } from 'core/ai/skills/cards/lebusishu';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -11,6 +10,7 @@ import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers'
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(LeBuSiShuSkillTrigger)
 @CommonSkill({ name: 'lebusishu', description: 'lebusishu_description' })

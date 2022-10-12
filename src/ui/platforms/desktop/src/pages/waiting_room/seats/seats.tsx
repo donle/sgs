@@ -1,10 +1,3 @@
-import { Messages } from './messages';
-import styles from './seats.module.css';
-import { RoomAvatarService } from '../services/avatar_service';
-import { WaitingRoomSender } from '../services/sender_service';
-import { StatusBadge } from '../status_badge/status_badge';
-import { WaitingRoomPresenter } from '../waiting_room.presenter';
-import { WaitingRoomSeatInfo, WaitingRoomStore } from '../waiting_room.store';
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
@@ -16,6 +9,13 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { Picture } from 'ui/picture/picture';
+import { Messages } from './messages';
+import styles from './seats.module.css';
+import { RoomAvatarService } from '../services/avatar_service';
+import { WaitingRoomSender } from '../services/sender_service';
+import { StatusBadge } from '../status_badge/status_badge';
+import { WaitingRoomPresenter } from '../waiting_room.presenter';
+import { WaitingRoomSeatInfo, WaitingRoomStore } from '../waiting_room.store';
 
 export type SeatsProps = {
   imageLoader: ImageLoader;

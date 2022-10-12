@@ -1,3 +1,6 @@
+import { CharacterId } from 'core/characters/character';
+import { HuaShenInfo, Player } from 'core/player/player';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import {
   PlayerCards,
   PlayerCardsArea,
@@ -6,9 +9,6 @@ import {
   PlayerShortcutInfo,
   PlayerStatus,
 } from './player_props';
-import { CharacterId } from 'core/characters/character';
-import { HuaShenInfo, Player } from 'core/player/player';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 export class ClientPlayer extends Player {
   private visibleOutsideAreas: string[] = [];

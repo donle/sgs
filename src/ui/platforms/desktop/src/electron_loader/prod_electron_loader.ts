@@ -1,5 +1,3 @@
-import { ElectronData } from './electron_data';
-import { ElectronLoader } from './electron_loader';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
@@ -15,6 +13,8 @@ import {
   SET_DATA,
 } from 'electron.port';
 import { ReplayDataType } from 'types/replay_props';
+import { ElectronData } from './electron_data';
+import { ElectronLoader } from './electron_loader';
 
 export class ProdElectronLoader extends ElectronLoader {
   private saveJson: any = {

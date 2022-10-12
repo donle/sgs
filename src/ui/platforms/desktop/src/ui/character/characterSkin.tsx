@@ -1,6 +1,3 @@
-import styles from './character.module.css';
-import { NationalityBadge } from '../badge/badge';
-import { CharacterHp } from '../hp/hp';
 import classNames from 'classnames';
 import { Character, getNationalityRawText } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
@@ -13,6 +10,9 @@ import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { Armor } from 'ui/armor/armor';
 import { AudioService } from 'ui/audio/install';
+import styles from './character.module.css';
+import { NationalityBadge } from '../badge/badge';
+import { CharacterHp } from '../hp/hp';
 
 export type CharacterSkinCardProps = {
   character: Character;

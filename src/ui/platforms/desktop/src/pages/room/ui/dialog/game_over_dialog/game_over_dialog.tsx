@@ -1,5 +1,3 @@
-import styles from './game_over_dialog.module.css';
-import { Messages } from './messages';
 import classNames from 'classnames';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
@@ -14,6 +12,8 @@ import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import styles from './game_over_dialog.module.css';
+import { Messages } from './messages';
 
 const PlayerInfoTable = (props: {
   translator: ClientTranslationModule;

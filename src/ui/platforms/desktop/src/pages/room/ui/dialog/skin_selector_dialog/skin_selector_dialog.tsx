@@ -1,6 +1,3 @@
-import styles from './skin_selector_dialog.module.css';
-import { getSkinName } from '../../switch_avatar/switch_skin';
-import { BaseDialog } from '../base_dialog';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -8,6 +5,9 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { SkinCard } from 'ui/skin/skin';
+import styles from './skin_selector_dialog.module.css';
+import { getSkinName } from '../../switch_avatar/switch_skin';
+import { BaseDialog } from '../base_dialog';
 
 type SkinSelectorDialogProps = {
   translator: ClientTranslationModule;

@@ -1,5 +1,3 @@
-import { Precondition } from './precondition/precondition';
-import { MarkEnum } from '../types/mark_list';
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterNationality } from 'core/characters/character';
@@ -15,6 +13,8 @@ import { ZhanYi } from 'core/skills/characters/mobile/zhanyi';
 import { MouLi } from 'core/skills/characters/sincerity/mouli';
 import { GuJu } from 'core/skills/characters/sp/guju';
 import { LiangZhu } from 'core/skills/characters/sp/liangzhu';
+import { Precondition } from './precondition/precondition';
+import { MarkEnum } from '../types/mark_list';
 
 export namespace System {
   export const MainThread = {

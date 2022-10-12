@@ -1,4 +1,3 @@
-import { YuWei } from './yuwei';
 import { CharacterNationality } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
@@ -8,6 +7,7 @@ import { Room } from 'core/room/room';
 import { OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { YuWei } from './yuwei';
 
 const enum ShiYuanEffect {
   MoreHp,

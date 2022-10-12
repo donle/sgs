@@ -1,10 +1,10 @@
-import { WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 import { Sanguosha } from 'core/game/engine';
 import { WaitingRoomGameSettings } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
 import * as mobx from 'mobx';
 import { ChatPacketObject } from 'services/connection_service/connection_service';
+import { WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 
 export class WaitingRoomPresenter {
   static readonly defaultNumberOfPlayers = 8;

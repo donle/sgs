@@ -1,4 +1,3 @@
-import { ChanYuan } from './chanyuan';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
@@ -18,6 +17,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ChanYuan } from './chanyuan';
 
 @CommonSkill({ name: 'guhuo', description: 'guhuo_description' })
 export class GuHuo extends ViewAsSkill {

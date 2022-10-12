@@ -1,4 +1,3 @@
-import { GameEventStage, PlayerPhase, PlayerPhaseStages, StageProcessor } from '../stage_processor';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { BaseGameEvent, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -8,6 +7,7 @@ import { PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GameEventStage, PlayerPhase, PlayerPhaseStages, StageProcessor } from '../stage_processor';
 
 export abstract class GameProcessor {
   protected playerPositionIndex: number;

@@ -1,6 +1,6 @@
-import styles from './characters_list.module.css';
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { CharacterNationality } from 'core/characters/character';
+import type { CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameCharacterExtensions } from 'core/game/game_props';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
@@ -20,7 +20,7 @@ import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import type { CharacterId } from 'core/characters/character';
+import styles from './characters_list.module.css';
 
 export type CharactersListProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;

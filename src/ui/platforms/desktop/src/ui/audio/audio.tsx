@@ -1,5 +1,5 @@
-import styles from './audio.module.css';
 import * as React from 'react';
+import styles from './audio.module.css';
 
 export type AudioPlayerProps = {
   url: string;

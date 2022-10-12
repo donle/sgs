@@ -1,12 +1,12 @@
-import { TiaoXin } from '../mountain/tiaoxin';
-import { PaoXiao } from '../standard/paoxiao';
-import { ShenSu } from '../wind/shensu';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { TiaoXin } from '../mountain/tiaoxin';
+import { PaoXiao } from '../standard/paoxiao';
+import { ShenSu } from '../wind/shensu';
 
 @CompulsorySkill({ name: 'baobian', description: 'baobian_description' })
 export class BaoBian extends TriggerSkill {

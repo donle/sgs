@@ -1,10 +1,3 @@
-import styles from './player_avatar.module.css';
-import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
-import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
-import { Mask } from '../mask/mask';
-import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
@@ -30,6 +23,13 @@ import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import styles from './player_avatar.module.css';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
+import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
+import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
+import { Mask } from '../mask/mask';
+import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 
 type PlayerAvatarProps = {
   store: RoomStore;

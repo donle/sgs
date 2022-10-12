@@ -1,4 +1,3 @@
-import { JiBing } from './jibing';
 import { VirtualCard } from 'core/cards/card';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -10,6 +9,7 @@ import { Room } from 'core/room/room';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { JiBing } from './jibing';
 
 @CompulsorySkill({ name: 'wangjing', description: 'wangjing_description' })
 export class WangJing extends TriggerSkill {

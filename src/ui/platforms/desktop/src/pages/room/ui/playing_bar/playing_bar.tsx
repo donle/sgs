@@ -1,6 +1,6 @@
-import styles from './playing_bar.module.css';
 import classNames from 'classnames';
 import * as React from 'react';
+import styles from './playing_bar.module.css';
 
 export const PlayingBar = (props: { playTime?: number; className?: string }) => {
   const processingStyle: React.CSSProperties = {

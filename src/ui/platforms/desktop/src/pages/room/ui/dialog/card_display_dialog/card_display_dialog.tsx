@@ -1,5 +1,3 @@
-import styles from './card_display_dialog.module.css';
-import { BaseDialog } from '../base_dialog';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
@@ -9,6 +7,8 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
+import styles from './card_display_dialog.module.css';
+import { BaseDialog } from '../base_dialog';
 
 type CardDisplayDialogProps = {
   translator: ClientTranslationModule;

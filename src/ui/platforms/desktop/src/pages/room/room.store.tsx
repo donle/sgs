@@ -1,16 +1,16 @@
-import { AnimationPosition } from './animations/position';
 import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers } from 'core/event/event';
+import type { ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
+import type { PlayerId } from 'core/player/player_props';
 import { ClientRoom } from 'core/room/room.client';
 import { Skill } from 'core/skills/skill';
 import * as mobx from 'mobx';
 import * as React from 'react';
-import type { ServerEventFinder } from 'core/event/event';
-import type { PlayerId } from 'core/player/player_props';
+import { AnimationPosition } from './animations/position';
 
 export type ClientRoomInfo = {
   roomId: number;

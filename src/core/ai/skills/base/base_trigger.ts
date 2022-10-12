@@ -1,6 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { Room } from 'core/room/room';
 import type { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Room } from 'core/room/room';
 
 export class BaseSkillTrigger {
   onAskForCardResponseEvent?<T extends GameEventIdentifiers.AskForCardResponseEvent>(

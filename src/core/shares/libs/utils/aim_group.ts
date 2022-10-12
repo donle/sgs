@@ -1,7 +1,7 @@
-import { TargetGroupUtil } from './target_group';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from './target_group';
 
 export const enum AimStatus {
   Undone,

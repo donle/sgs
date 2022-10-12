@@ -1,9 +1,9 @@
-import styles from './hp.module.css';
-import { CharaterMagatama } from './magatama/character_magatama';
-import { DamagedMagatama, HealthyStatusType, Magatama } from './magatama/magatama';
 import classNames from 'classnames';
 import { Character, CharacterNationality } from 'core/characters/character';
 import * as React from 'react';
+import styles from './hp.module.css';
+import { CharaterMagatama } from './magatama/character_magatama';
+import { DamagedMagatama, HealthyStatusType, Magatama } from './magatama/magatama';
 
 const getStatus = (hp: number, maxHp: number): HealthyStatusType => {
   if (maxHp === hp) {

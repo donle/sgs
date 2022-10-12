@@ -1,9 +1,9 @@
-import { PlayerPhase } from './stage_processor';
 import { VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerPhase } from './stage_processor';
 
 type RecordCurrentType = 'phase' | 'round' | 'circle';
 

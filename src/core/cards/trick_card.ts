@@ -1,7 +1,7 @@
-import { Card, CardType } from './card';
-import { CardSuit, RealCardId } from './libs/card_props';
 import { GameCardExtensions } from 'core/game/game_props';
 import { Skill } from 'core/skills/skill';
+import { Card, CardType } from './card';
+import { CardSuit, RealCardId } from './libs/card_props';
 
 export function DelayedTrick<T extends TrickCard>(
   constructor: new (

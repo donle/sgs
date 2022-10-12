@@ -1,4 +1,3 @@
-import { App } from './app';
 import { ClientLogger } from 'core/shares/libs/logger/client_logger';
 import { Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -6,6 +5,7 @@ import { FakeElectronLoader } from 'electron_loader/fake_electron_loader';
 import { ClientFlavor, ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import * as renderer from 'react-test-renderer';
+import { App } from './app';
 
 test('renders learn react link', () => {
   const appDocument = (

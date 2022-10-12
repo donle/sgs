@@ -1,8 +1,3 @@
-import { LobbyEventChannel } from './channels/lobby';
-import { WaitingRoomSocket } from './channels/waiting_room';
-import { SimplifiedChinese } from './languages';
-import { getServerConfig, ServerConfig } from './server_config';
-import { RoomService } from './services/room_service';
 import { WorkPlace } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
@@ -29,6 +24,11 @@ import { Languages } from 'core/translations/translation_json_tool';
 import { TranslationModule } from 'core/translations/translation_module';
 import * as SocketIO from 'socket.io';
 import * as http from 'http';
+import { LobbyEventChannel } from './channels/lobby';
+import { WaitingRoomSocket } from './channels/waiting_room';
+import { SimplifiedChinese } from './languages';
+import { getServerConfig, ServerConfig } from './server_config';
+import { RoomService } from './services/room_service';
 
 const mode = (process.env.REACT_APP_DEV_MODE as Flavor) || Flavor.Dev;
 const config = getServerConfig(mode);

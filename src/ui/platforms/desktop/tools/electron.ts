@@ -1,7 +1,3 @@
-import { FileSplitter } from './file_splitter';
-import { getTranslations, Language } from './languages';
-import { Replay, ReplayOtherInfo } from './replay';
-import { Store } from './store';
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, shell } from 'electron';
 import Extract from 'extract-zip';
 import fetch from 'node-fetch';
@@ -9,6 +5,10 @@ import * as fs from 'original-fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
+import { FileSplitter } from './file_splitter';
+import { getTranslations, Language } from './languages';
+import { Replay, ReplayOtherInfo } from './replay';
+import { Store } from './store';
 
 export const FLASH_WINDOW = 'flashWindow';
 export const SET_DATA = 'setData';

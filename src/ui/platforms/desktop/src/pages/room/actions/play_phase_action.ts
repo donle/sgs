@@ -1,4 +1,3 @@
-import { BaseAction } from './base_action';
 import { Card } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -7,6 +6,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
+import { BaseAction } from './base_action';
 
 export class PlayPhaseAction extends BaseAction {
   public static isPlayPhaseSkillsDisabled =

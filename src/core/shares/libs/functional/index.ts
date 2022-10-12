@@ -1,4 +1,3 @@
-import { Precondition } from '../precondition/precondition';
 import { Card, CardType } from 'core/cards/card';
 import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CharacterEquipSections, CharacterNationality } from 'core/characters/character';
@@ -6,6 +5,7 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
+import { Precondition } from '../precondition/precondition';
 
 export abstract class Functional {
   static getPlayerPhaseRawText(stage: PlayerPhase) {

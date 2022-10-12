@@ -1,4 +1,3 @@
-import { JuTu } from './jutu';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { DamageCardEnum } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
@@ -22,6 +21,7 @@ import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CircleSkill, CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { JuTu } from './jutu';
 
 @CircleSkill
 @CommonSkill({ name: 'yaohu', description: 'yaohu_description' })

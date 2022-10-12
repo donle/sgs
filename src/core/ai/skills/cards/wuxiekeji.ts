@@ -1,10 +1,10 @@
-import { BaseSkillTrigger } from '../base/base_trigger';
 import { AiLibrary } from 'core/ai/ai_lib';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { Sanguosha } from 'core/game/engine';
 import type { CardId } from 'core/cards/libs/card_props';
 import type { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import type { Room } from 'core/room/room';
+import { BaseSkillTrigger } from '../base/base_trigger';
 
 export class WuXieKeJiSkillTrigger extends BaseSkillTrigger {
   public onAskForCardUseEvent(

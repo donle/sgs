@@ -1,4 +1,3 @@
-import styles from './banner.module.css';
 import classNames from 'classnames';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ServerHostTag } from 'props/config_props';
@@ -7,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { Button } from 'ui/button/button';
 import { SignalBar } from 'ui/signal_bar/signal_bar';
+import styles from './banner.module.css';
 
 export type BannerProps = {
   roomName: string;

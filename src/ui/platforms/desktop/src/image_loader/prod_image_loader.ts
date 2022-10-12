@@ -1,3 +1,11 @@
+import { CharacterEquipSections } from 'core/characters/character';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
+import { Functional } from 'core/shares/libs/functional';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GameMode } from 'core/shares/types/room_props';
+import { SkillType } from 'core/skills/skill';
+import { LobbyButton } from 'props/game_props';
+import { CharacterSkinInfo } from 'skins/skins';
 import { ImageLoader } from './image_loader';
 
 import cardBackImage from './images/cards/cardback.webp';
@@ -33,14 +41,6 @@ import turnedOverCoverImage from './images/system/turn_over.png';
 import waitingRoomBackgroundImage from './images/system/waiting_room_background.jpg';
 
 import { getLobbyButtonImage, getSkillButtonImages } from './prod_button_image_loader';
-import { CharacterEquipSections } from 'core/characters/character';
-import { PlayerId, PlayerRole } from 'core/player/player_props';
-import { Functional } from 'core/shares/libs/functional';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { GameMode } from 'core/shares/types/room_props';
-import { SkillType } from 'core/skills/skill';
-import { LobbyButton } from 'props/game_props';
-import { CharacterSkinInfo } from 'skins/skins';
 
 const gameModeIcons = {
   [GameMode.Standard]: generalModeIcon,

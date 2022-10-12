@@ -1,4 +1,3 @@
-import { CuiJian, CuiJianEX, CuiJianI, CuiJianII } from './cuijian';
 import { CardType } from 'core/cards/card';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -11,6 +10,7 @@ import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_prop
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { CuiJian, CuiJianEX, CuiJianI, CuiJianII } from './cuijian';
 
 @CompulsorySkill({ name: 'tongyuan', description: 'tongyuan_description' })
 export class TongYuan extends TriggerSkill {

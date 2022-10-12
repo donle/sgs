@@ -1,4 +1,3 @@
-import { YaoHu } from './yaohu';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -10,6 +9,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { YaoHu } from './yaohu';
 
 @CompulsorySkill({ name: 'jutu', description: 'jutu_description' })
 export class JuTu extends TriggerSkill {

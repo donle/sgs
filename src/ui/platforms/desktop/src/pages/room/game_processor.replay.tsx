@@ -1,6 +1,3 @@
-import { GameClientProcessor } from './game_processor';
-import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
-import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameEventIdentifiers, ServerEventFinder, serverResponsiveListenerEvents } from 'core/event/event';
@@ -10,6 +7,9 @@ import { Player } from 'core/player/player';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import React from 'react';
+import { GameClientProcessor } from './game_processor';
+import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
+import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 
 export class ReplayClientProcessor extends GameClientProcessor {
   protected eventFilter<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {

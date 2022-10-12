@@ -1,4 +1,3 @@
-import { UncompulsoryBlocker } from './uncompulsory_blocker';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
@@ -25,6 +24,7 @@ import {
 } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { UncompulsoryBlocker } from './uncompulsory_blocker';
 
 @CommonSkill({ name: 'yijue', description: 'yijue_description' })
 export class YiJue extends ActiveSkill {

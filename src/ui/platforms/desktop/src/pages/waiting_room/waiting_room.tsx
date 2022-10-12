@@ -1,11 +1,3 @@
-import { ChatBox } from './chat_box/chat_box';
-import { GameSettings } from './game_settings/game_settings';
-import { HeaderBar } from './header_bar/header_bar';
-import { installServices } from './install';
-import { Seats } from './seats/seats';
-import styles from './waiting_room.module.css';
-import { WaitingRoomPresenter } from './waiting_room.presenter';
-import { WaitingRoomStore } from './waiting_room.store';
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { WaitingRoomEvent } from 'core/event/event';
 import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
@@ -26,6 +18,14 @@ import { match } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import IOSocketClient from 'socket.io-client';
 import { PagePropsWithConfig } from 'types/page_props';
+import { ChatBox } from './chat_box/chat_box';
+import { GameSettings } from './game_settings/game_settings';
+import { HeaderBar } from './header_bar/header_bar';
+import { installServices } from './install';
+import { Seats } from './seats/seats';
+import styles from './waiting_room.module.css';
+import { WaitingRoomPresenter } from './waiting_room.presenter';
+import { WaitingRoomStore } from './waiting_room.store';
 
 type WaitingRoomProps = PagePropsWithConfig<{
   match: match<{ slug: string }>;

@@ -1,4 +1,3 @@
-import { FuNan, FuNanEX } from './funan';
 import { CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -9,6 +8,7 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { FuNan, FuNanEX } from './funan';
 
 @CommonSkill({ name: 'jiexun', description: 'jiexun_description' })
 export class JieXun extends TriggerSkill {

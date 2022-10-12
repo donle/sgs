@@ -1,8 +1,3 @@
-import { FangZhu } from '../forest/fangzhu';
-import { WanSha } from '../forest/wansha';
-import { GuiCai } from '../standard/guicai';
-import { JiZhi } from '../standard/jizhi';
-import { ZhiHeng } from '../standard/zhiheng';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
@@ -12,6 +7,11 @@ import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { ActiveSkill, CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { FangZhu } from '../forest/fangzhu';
+import { WanSha } from '../forest/wansha';
+import { GuiCai } from '../standard/guicai';
+import { JiZhi } from '../standard/jizhi';
+import { ZhiHeng } from '../standard/zhiheng';
 
 @CommonSkill({ name: 'jilve', description: 'jilve_description' })
 export class JiLve extends ActiveSkill {

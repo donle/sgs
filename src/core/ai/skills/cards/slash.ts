@@ -1,8 +1,8 @@
 import { AiLibrary } from 'core/ai/ai_lib';
 import { ActiveSkillTriggerClass } from 'core/ai/skills/base/active_skill_trigger';
-import { DamageType } from 'core/game/game_props';
 import type { CardId } from 'core/cards/libs/card_props';
 import type { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { DamageType } from 'core/game/game_props';
 import type { Player } from 'core/player/player';
 import type { PlayerId } from 'core/player/player_props';
 import type { Room } from 'core/room/room';

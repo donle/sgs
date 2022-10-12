@@ -1,5 +1,3 @@
-import styles from './card_selector_dialog.module.css';
-import { BaseDialog } from '../base_dialog';
 import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
@@ -12,6 +10,8 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { ClientCard } from 'ui/card/card';
 import { CharacterCard } from 'ui/character/character';
+import styles from './card_selector_dialog.module.css';
+import { BaseDialog } from '../base_dialog';
 
 type CardSelectorProps = {
   translator: ClientTranslationModule;

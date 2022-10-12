@@ -1,8 +1,8 @@
-import { CheckBox, CheckBoxProps } from './check_box';
-import styles from './check_box.module.css';
 import classNames from 'classnames';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { CheckBox, CheckBoxProps } from './check_box';
+import styles from './check_box.module.css';
 
 export type CheckBoxGroupProps = {
   options: Omit<CheckBoxProps, 'onChecked'>[];

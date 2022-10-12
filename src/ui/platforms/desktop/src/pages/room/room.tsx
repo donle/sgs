@@ -1,14 +1,3 @@
-import { GameClientProcessor } from './game_processor';
-import { installService, RoomBaseService } from './install_service';
-import styles from './room.module.css';
-import { RoomPresenter } from './room.presenter';
-import { RoomStore } from './room.store';
-import { Background } from './ui/background/background';
-import { Banner } from './ui/banner/banner';
-import { Dashboard } from './ui/dashboard/dashboard';
-import { GameDialog } from './ui/game_dialog/game_dialog';
-import { GameBoard } from './ui/gameboard/gameboard';
-import { SeatsLayout } from './ui/seats_layout/seats_layout';
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -35,6 +24,17 @@ import { ConnectionService } from 'services/connection_service/connection_servic
 import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
+import { GameClientProcessor } from './game_processor';
+import { installService, RoomBaseService } from './install_service';
+import styles from './room.module.css';
+import { RoomPresenter } from './room.presenter';
+import { RoomStore } from './room.store';
+import { Background } from './ui/background/background';
+import { Banner } from './ui/banner/banner';
+import { Dashboard } from './ui/dashboard/dashboard';
+import { GameDialog } from './ui/game_dialog/game_dialog';
+import { GameBoard } from './ui/gameboard/gameboard';
+import { SeatsLayout } from './ui/seats_layout/seats_layout';
 
 @mobxReact.observer
 export class RoomPage extends React.Component<

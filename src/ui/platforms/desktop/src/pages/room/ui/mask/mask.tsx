@@ -1,3 +1,7 @@
+import classNames from 'classnames';
+import { PlayerRole } from 'core/player/player_props';
+import { GameMode } from 'core/shares/types/room_props';
+import * as React from 'react';
 import lord1v2Mask from './images/1v2_lord.png';
 import rebel1v2Mask from './images/1v2_rebel.png';
 import loyalist2v2Mask from './images/2v2_loyalist.png';
@@ -8,10 +12,6 @@ import rebelMask from './images/rebel.png';
 import renegadeMask from './images/renegade.png';
 import unknownMask from './images/unknown.png';
 import styles from './mask.module.css';
-import classNames from 'classnames';
-import { PlayerRole } from 'core/player/player_props';
-import { GameMode } from 'core/shares/types/room_props';
-import * as React from 'react';
 
 const maskImages: { [K in PlayerRole]: string } = {
   [PlayerRole.Lord]: lordMask,

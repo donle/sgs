@@ -1,3 +1,7 @@
+import classNames from 'classnames';
+import { MarkEnum } from 'core/shares/types/mark_list';
+import * as React from 'react';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
 import baoliIcon from './images/baoli.png';
 import danlieIcon from './images/danlie.png';
@@ -48,10 +52,6 @@ import zhongIcon from './images/zhong.png';
 import ziweiIcon from './images/ziwei.png';
 
 import styles from './mark.module.css';
-import classNames from 'classnames';
-import { MarkEnum } from 'core/shares/types/mark_list';
-import * as React from 'react';
-import { Tooltip } from 'ui/tooltip/tooltip';
 
 const markIconMaps: {
   [K in MarkEnum]: string;

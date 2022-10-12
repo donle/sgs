@@ -1,18 +1,18 @@
-import { PlayerAI } from './ai';
-import { AiLibrary } from './ai_lib';
-import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
-import { TriggerSkillTriggerClass } from './skills/base/trigger_skill_trigger';
 import { CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import type { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
+import type { Room } from 'core/room/room';
 import { System } from 'core/shares/libs/system';
 import { ActiveSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
-import type { CardId } from 'core/cards/libs/card_props';
-import type { Room } from 'core/room/room';
+import { PlayerAI } from './ai';
+import { AiLibrary } from './ai_lib';
+import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
+import { TriggerSkillTriggerClass } from './skills/base/trigger_skill_trigger';
 
 export class SmartAI extends PlayerAI {
   public static get Instance() {

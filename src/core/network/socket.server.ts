@@ -1,4 +1,3 @@
-import IOSocketServer from 'socket.io';
 import {
   ClientEventFinder,
   GameEventIdentifiers,
@@ -16,6 +15,7 @@ import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
   private socket: IOSocketServer.Namespace;

@@ -1,4 +1,3 @@
-import { LveMing } from './lveming';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -7,6 +6,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
 import { LimitSkill } from 'core/skills/skill_wrappers';
+import { LveMing } from './lveming';
 
 @LimitSkill({ name: 'tunjun', description: 'tunjun_description' })
 export class TunJun extends ActiveSkill {

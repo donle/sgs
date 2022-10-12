@@ -1,3 +1,4 @@
+import { Character } from 'core/characters/character';
 import { BaoSanNiang } from './baosanniang';
 import { CaoChun } from './caochun';
 import { CaoShuang } from './caoshuang';
@@ -19,7 +20,6 @@ import { XuRong } from './xurong';
 import { YangWan } from './yangwan';
 import { ZhouYi } from './zhouyi';
 import { ZhuGeGuo } from './zhugeguo';
-import { Character } from 'core/characters/character';
 
 export const LimitedPackage: (index: number) => Character[] = index => [
   new ChenLin(index++),

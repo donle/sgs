@@ -1,6 +1,6 @@
-import styles from './switch_avatar.module.css';
 import classNames from 'classnames';
 import * as React from 'react';
+import styles from './switch_avatar.module.css';
 
 export type SwitchAvatarProps = {
   mainImage?: string;

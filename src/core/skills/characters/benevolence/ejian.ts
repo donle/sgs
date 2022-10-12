@@ -1,4 +1,3 @@
-import { BoMing } from './boming';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
@@ -10,6 +9,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { BoMing } from './boming';
 
 @CompulsorySkill({ name: 'ejian', description: 'ejian_description' })
 export class EJian extends TriggerSkill {

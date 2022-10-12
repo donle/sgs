@@ -1,5 +1,3 @@
-import { PlayerAI } from './ai';
-import { AiLibrary } from './ai_lib';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -8,6 +6,8 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { System } from 'core/shares/libs/system';
+import { PlayerAI } from './ai';
+import { AiLibrary } from './ai_lib';
 
 export class TrustAI extends PlayerAI {
   public static get Instance() {

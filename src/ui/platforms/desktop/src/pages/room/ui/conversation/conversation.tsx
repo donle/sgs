@@ -1,9 +1,9 @@
-import styles from './conversation.module.css';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
+import styles from './conversation.module.css';
 
 export type ConversationProps = {
   translator: ClientTranslationModule;

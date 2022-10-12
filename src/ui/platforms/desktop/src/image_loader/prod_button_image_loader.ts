@@ -1,3 +1,5 @@
+import { SkillType } from 'core/skills/skill';
+import { LobbyButton } from 'props/game_props';
 import { SkillButtonImageSize } from './image_loader';
 
 import lobbyAcknowledgeButtonImage from './images/lobby/acknowledge_button.png';
@@ -38,8 +40,6 @@ import wideLimitDisabledImage from './images/skills/wide_limit_disabled.png';
 import wideLimitDownImage from './images/skills/wide_limit_down.png';
 import wideLimitHoverImage from './images/skills/wide_limit_hover.png';
 import wideLimitImage from './images/skills/wide_limit_normal.png';
-import { SkillType } from 'core/skills/skill';
-import { LobbyButton } from 'props/game_props';
 
 const lobbyButtons: {
   [T in LobbyButton]: string;

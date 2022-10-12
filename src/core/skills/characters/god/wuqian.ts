@@ -1,4 +1,3 @@
-import { WuShuang } from '../standard/wushuang';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import {
   AllStage,
@@ -14,6 +13,7 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { WuShuang } from '../standard/wushuang';
 
 @CommonSkill({ name: 'wuqian', description: 'wuqian_description' })
 export class WuQian extends ActiveSkill {

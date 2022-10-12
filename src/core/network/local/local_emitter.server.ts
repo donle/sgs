@@ -1,5 +1,3 @@
-import { EventEmitterProps } from './event_emitter_props';
-import { LocalServerEmitterInterface } from './event_emitter_props';
 import {
   ClientEventFinder,
   GameEventIdentifiers,
@@ -13,6 +11,8 @@ import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { LocalServerEmitterInterface } from './event_emitter_props';
+import { EventEmitterProps } from './event_emitter_props';
 
 export class LocalServerEmitter implements LocalServerEmitterInterface {
   private room: ServerRoom | undefined;

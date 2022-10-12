@@ -1,4 +1,3 @@
-import { TunChu } from './tunchu';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
@@ -8,6 +7,7 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { TunChu } from './tunchu';
 
 @CommonSkill({ name: 'shuliang', description: 'shuliang_description' })
 export class ShuLiang extends TriggerSkill {

@@ -1,7 +1,7 @@
-import { OptionButtonProps } from './button';
-import styles from './button.module.css';
 import classNames from 'classnames';
 import * as React from 'react';
+import { OptionButtonProps } from './button';
+import styles from './button.module.css';
 
 export const LinkButton = (props: Pick<OptionButtonProps, Exclude<keyof OptionButtonProps, 'variant' | 'type'>>) => (
   <button

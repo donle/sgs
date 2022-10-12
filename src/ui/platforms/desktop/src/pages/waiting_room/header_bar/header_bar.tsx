@@ -1,4 +1,3 @@
-import styles from './header_bar.module.css';
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
@@ -12,6 +11,7 @@ import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { AudioService } from 'ui/audio/install';
+import styles from './header_bar.module.css';
 
 export type HeaderBarProps = {
   electronLoader: ElectronLoader;

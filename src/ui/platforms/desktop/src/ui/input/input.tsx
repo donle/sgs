@@ -1,6 +1,6 @@
-import styles from './input.module.css';
 import classNames from 'classnames';
 import * as React from 'react';
+import styles from './input.module.css';
 
 export type InputProps = {
   className?: string;

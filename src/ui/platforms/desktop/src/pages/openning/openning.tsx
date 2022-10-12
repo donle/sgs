@@ -1,8 +1,8 @@
-import styles from './openning.module.css';
 import descriptionImage from 'assets/images/lobby/description.png';
 import logoImage from 'assets/images/lobby/logo.png';
 import * as React from 'react';
 import { PagePropsWithConfig } from 'types/page_props';
+import styles from './openning.module.css';
 
 export class OpenningPage extends React.PureComponent<PagePropsWithConfig> {
   private timeoutId: NodeJS.Timeout;

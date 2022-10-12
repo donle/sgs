@@ -1,7 +1,3 @@
-import { ChaoFeng } from './chaofeng';
-import { ChuanYun } from './chuanyun';
-import { StdLongDan } from '../sp/std_longdan';
-import { CongJian } from '../thunder/congjian';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { AllStage, PhaseStageChangeStage, PlayerDiedStage, PlayerPhaseStages } from 'core/game/stage_processor';
@@ -9,6 +5,10 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { LimitSkill } from 'core/skills/skill_wrappers';
+import { ChaoFeng } from './chaofeng';
+import { ChuanYun } from './chuanyun';
+import { StdLongDan } from '../sp/std_longdan';
+import { CongJian } from '../thunder/congjian';
 
 @LimitSkill({ name: 'chuanshu', description: 'chuanshu_description' })
 export class ChuanShu extends TriggerSkill {

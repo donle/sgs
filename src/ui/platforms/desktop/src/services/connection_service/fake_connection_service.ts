@@ -1,3 +1,9 @@
+import { GameCardExtensions } from 'core/game/game_props';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { RoomId } from 'core/room/room';
+import { ChatSocketEvent } from 'core/shares/types/server_types';
+import { ClientConfig, ServerHostTag } from 'props/config_props';
+import SocketIOClient from 'socket.io-client';
 import {
   ChatPacketObject,
   ConnectionService,
@@ -6,12 +12,6 @@ import {
   RoomListListenerResponse,
   VersionCheckListenerResponse,
 } from './connection_service';
-import { GameCardExtensions } from 'core/game/game_props';
-import { TemporaryRoomCreationInfo } from 'core/game/game_props';
-import { RoomId } from 'core/room/room';
-import { ChatSocketEvent } from 'core/shares/types/server_types';
-import { ClientConfig, ServerHostTag } from 'props/config_props';
-import SocketIOClient from 'socket.io-client';
 
 export class FakeConnectionService extends ConnectionService {
   protected chatSocket: SocketIOClient.Socket;

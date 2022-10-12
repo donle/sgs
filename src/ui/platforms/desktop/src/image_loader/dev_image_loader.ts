@@ -1,6 +1,3 @@
-import { getSkillButtonImages } from './dev_button_image_loader';
-import { getLobbyButtonImage } from './dev_button_image_loader';
-import { ImageLoader } from './image_loader';
 import { CharacterEquipSections } from 'core/characters/character';
 import { PlayerRole } from 'core/player/player_props';
 import { PlayerId } from 'core/player/player_props';
@@ -10,6 +7,9 @@ import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
 import { CharacterSkinInfo } from 'skins/skins';
+import { getLobbyButtonImage } from './dev_button_image_loader';
+import { getSkillButtonImages } from './dev_button_image_loader';
+import { ImageLoader } from './image_loader';
 
 const baseHost: string = '/cdn';
 const cosRepo: string = 'https://sgs-static-1256205614.cos.ap-nanjing.myqcloud.com/backup_remote';

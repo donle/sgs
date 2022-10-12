@@ -1,4 +1,3 @@
-import { YuXu } from './yuxu';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -10,6 +9,7 @@ import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { YuXu } from './yuxu';
 
 @CommonSkill({ name: 'shijian', description: 'shijian_description' })
 export class ShiJian extends TriggerSkill implements OnDefineReleaseTiming {

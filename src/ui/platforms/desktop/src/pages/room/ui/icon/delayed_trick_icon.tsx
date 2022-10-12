@@ -1,4 +1,3 @@
-import styles from './delayed_trick_icon.module.css';
 import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -7,6 +6,7 @@ import * as React from 'react';
 import { CardDescription } from 'ui/card_description/card_description';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import styles from './delayed_trick_icon.module.css';
 
 export const DelayedTrickIcon = (props: {
   card: Card;

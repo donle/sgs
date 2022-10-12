@@ -1,3 +1,5 @@
+import classNames from 'classnames';
+import * as React from 'react';
 import styles from './button.module.css';
 
 import cancelButton from './images/cancel.png';
@@ -12,8 +14,6 @@ import finishButton from './images/finish.png';
 import finishButtonDisabled from './images/finish_disabled.png';
 import finishButtonDown from './images/finish_down.png';
 import finishButtonHover from './images/finish_hover.png';
-import classNames from 'classnames';
-import * as React from 'react';
 
 type AutoButtonProps = {
   onMouseEnter?(): void;

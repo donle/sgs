@@ -2,10 +2,10 @@ import { AiLibrary } from 'core/ai/ai_lib';
 import { TriggerSkillTriggerClass } from 'core/ai/skills/base/trigger_skill_trigger';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PlayerCardsArea } from 'core/player/player_props';
-import { JieYue } from 'core/skills';
 import type { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import type { Room } from 'core/room/room';
+import { JieYue } from 'core/skills';
 
 export class JieYueSkillTrigger extends TriggerSkillTriggerClass<JieYue> {
   public readonly skillTrigger = (room: Room, ai: Player, skill: JieYue) => {

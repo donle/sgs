@@ -124,7 +124,11 @@ module.exports = {
     'import/order': [
       'error',
       {
-        groups: ['index', 'sibling', 'parent', 'internal', 'builtin', 'object', 'type', 'external'],
+        groups: ['external', 'builtin', 'internal', 'sibling', 'parent', 'index'],
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: false,
+        },
       },
     ],
   },

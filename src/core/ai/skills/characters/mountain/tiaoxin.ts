@@ -1,13 +1,13 @@
 import { AiLibrary } from 'core/ai/ai_lib';
 import { ActiveSkillTriggerClass } from 'core/ai/skills/base/active_skill_trigger';
+import type { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { PlayerCardsArea } from 'core/player/player_props';
-import { ActiveSkill } from 'core/skills/skill';
-import type { CardId } from 'core/cards/libs/card_props';
 import type { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import type { Room } from 'core/room/room';
 import type { TiaoXin } from 'core/skills';
+import { ActiveSkill } from 'core/skills/skill';
 
 export class TiaoXinSkillTrigger extends ActiveSkillTriggerClass<TiaoXin> {
   skillTrigger = (room: Room, ai: Player, skill: TiaoXin) => {

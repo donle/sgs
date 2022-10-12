@@ -1,4 +1,3 @@
-import styles from './skin.module.css';
 import classNames from 'classnames';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -6,6 +5,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
+import styles from './skin.module.css';
 
 export type SkinCardProps = {
   character: string;

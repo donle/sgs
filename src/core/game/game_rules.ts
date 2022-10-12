@@ -1,10 +1,10 @@
-import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { GlobalRulesBreakerSkill, RulesBreakerSkill } from 'core/skills/skill';
+import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 
 export class GameCommonRules {
   // constructor() {}

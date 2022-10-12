@@ -1,7 +1,3 @@
-import { StandardGameProcessor } from './game_processor.standard';
-import { Sanguosha } from '../engine';
-import { GameCharacterExtensions } from '../game_props';
-import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 import { VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender } from 'core/characters/character';
@@ -23,6 +19,10 @@ import { GameMode } from 'core/shares/types/room_props';
 import { PveClassicGuYong } from 'core/skills';
 import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { StandardGameProcessor } from './game_processor.standard';
+import { Sanguosha } from '../engine';
+import { GameCharacterExtensions } from '../game_props';
+import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   protected level: number = 0;

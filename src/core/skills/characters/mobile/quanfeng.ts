@@ -1,4 +1,3 @@
-import { HongYi } from './hongyi';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { AllStage, PlayerDiedStage, PlayerDyingStage } from 'core/game/stage_processor';
@@ -7,6 +6,7 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { LimitSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { HongYi } from './hongyi';
 
 @LimitSkill({ name: 'quanfeng', description: 'quanfeng_description' })
 export class QuanFeng extends TriggerSkill {

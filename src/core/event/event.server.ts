@@ -1,15 +1,3 @@
-import {
-  BaseGameEvent,
-  CardDrawReason,
-  CardMoveArea,
-  CardMoveReason,
-  ClientEventFinder,
-  EventUtilities,
-  GameEventIdentifiers,
-  ServerEventFinder,
-  WaitingRoomEvent,
-  WaitingRoomEventUtilities,
-} from './event';
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterEquipSections, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
@@ -30,6 +18,18 @@ import { AimGroup } from 'core/shares/libs/utils/aim_group';
 import { TargetGroup } from 'core/shares/libs/utils/target_group';
 import { RoomInfo, RoomShortcutInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
+import {
+  BaseGameEvent,
+  CardDrawReason,
+  CardMoveArea,
+  CardMoveReason,
+  ClientEventFinder,
+  EventUtilities,
+  GameEventIdentifiers,
+  ServerEventFinder,
+  WaitingRoomEvent,
+  WaitingRoomEventUtilities,
+} from './event';
 
 export type MovingCardProps = {
   card: CardId;

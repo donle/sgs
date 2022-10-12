@@ -1,7 +1,7 @@
-import { CardId, CardSuit } from './card_props';
 import { Card, CardType } from 'core/cards/card';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { CardId, CardSuit } from './card_props';
 
 export type CardMatcherProps = {
   suit?: CardSuit[];

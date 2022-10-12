@@ -1,8 +1,8 @@
-import { Multiple } from '../card';
 import { BasicCard } from 'core/cards/basic_card';
 import { GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { SlashSkill } from 'core/skills/cards/standard/slash';
+import { Multiple } from '../card';
 import type { CardSuit, RealCardId } from '../libs/card_props';
 
 @Multiple

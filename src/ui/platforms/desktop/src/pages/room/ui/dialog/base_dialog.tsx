@@ -1,7 +1,7 @@
-import styles from './base_dialog.module.css';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Dialog } from 'ui/dialog/dialog';
+import styles from './base_dialog.module.css';
 
 export const BaseDialog = (props: { className?: string; title?: string | JSX.Element; children?: React.ReactNode }) => {
   const { title, children, className } = props;

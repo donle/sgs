@@ -1,5 +1,3 @@
-import styles from './create_room_dialog.module.css';
-import { Messages } from './messages';
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';
@@ -17,6 +15,8 @@ import { CheckBox } from 'ui/check_box/check_box';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Dialog } from 'ui/dialog/dialog';
 import { Picture } from 'ui/picture/picture';
+import styles from './create_room_dialog.module.css';
+import { Messages } from './messages';
 
 @observer
 export class CreateRoomDialog extends React.Component<{
