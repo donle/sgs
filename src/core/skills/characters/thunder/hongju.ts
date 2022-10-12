@@ -1,3 +1,4 @@
+import { ZhengRong } from './zhengrong';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -5,7 +6,6 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { AwakeningSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { ZhengRong } from './zhengrong';
 
 @AwakeningSkill({ name: 'hongju', description: 'hongju_description' })
 export class HongJu extends TriggerSkill {

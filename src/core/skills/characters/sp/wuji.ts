@@ -1,3 +1,4 @@
+import { HuXiao } from './huxiao';
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -10,7 +11,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill } from 'core/skills/skill_wrappers';
-import { HuXiao } from './huxiao';
 
 @AwakeningSkill({ name: 'wuji', description: 'wuji_description' })
 export class WuJi extends TriggerSkill {
@@ -69,9 +69,9 @@ export class WuJi extends TriggerSkill {
           continue;
         }
 
-        const actualCards = player.getCardIds(PlayerCardsArea.JudgeArea).reduce<CardId[]>((cardIds, cardId) => {
-          return cardIds.concat(...VirtualCard.getActualCards([cardId]));
-        }, []);
+        const actualCards = player
+          .getCardIds(PlayerCardsArea.JudgeArea)
+          .reduce<CardId[]>((cardIds, cardId) => cardIds.concat(...VirtualCard.getActualCards([cardId])), []);
         currentQinglong = actualCards.find(cardId => Sanguosha.getCardById(cardId).Name === QingLongYanYueDao.name);
         if (currentQinglong) {
           fromArea = CardMoveArea.JudgeArea;

@@ -1,3 +1,4 @@
+import { WuKu } from './wuku';
 import { CardType, VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -16,7 +17,6 @@ import {
   ViewAsSkill,
 } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { WuKu } from './wuku';
 
 @CommonSkill({ name: 'miewu', description: 'miewu_description' })
 export class MieWu extends ViewAsSkill {

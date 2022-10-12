@@ -1,5 +1,5 @@
-import { TranslationsDictionary, Word } from 'languages';
 import * as dictionaryBooks from './translations';
+import { TranslationsDictionary, Word } from 'languages';
 
 function wordsToDictionary(words: Word[]): TranslationsDictionary {
   const dict: TranslationsDictionary = {};

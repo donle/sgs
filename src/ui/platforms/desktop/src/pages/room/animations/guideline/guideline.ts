@@ -1,7 +1,7 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { RoomStore } from 'pages/room/room.store';
 import { Point } from '../position';
 import { UiAnimation } from '../ui_animation';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { RoomStore } from 'pages/room/room.store';
 
 export type Step = [Point, Point[]];
 
@@ -9,7 +9,7 @@ export class GuideLine extends UiAnimation {
   constructor(private store: RoomStore, private animationTime: number, private remainTime: number) {
     super();
   }
-  private readonly includedEvents: ReadonlyArray<GameEventIdentifiers> = [
+  private readonly includedEvents: readonly GameEventIdentifiers[] = [
     GameEventIdentifiers.CardUseEvent,
     GameEventIdentifiers.SkillUseEvent,
   ];

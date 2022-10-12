@@ -25,5 +25,5 @@
     "noEmit": false,
     "isolatedModules": false
   },
-  "exclude": ["./src/ui/platforms/**/*.*"]
+  "exclude": ["./src/ui/platforms/core/**/*.*", "node_modules"]
 }

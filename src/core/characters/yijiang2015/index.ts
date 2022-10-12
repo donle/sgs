@@ -1,4 +1,3 @@
-import { Character } from '../character';
 import { CaoRui } from './caorui';
 import { CaoXiu } from './caoxiu';
 import { GongSunYuan } from './gongsunyuan';
@@ -10,6 +9,7 @@ import { XiaHouShi } from './xiahoushi';
 import { ZhangNi } from './zhangni';
 import { ZhongYao } from './zhongyao';
 import { ZhuZhi } from './zhuzhi';
+import { Character } from '../character';
 
 export const YiJiang2015Package: (index: number) => Character[] = index => [
   new CaoRui(index++),

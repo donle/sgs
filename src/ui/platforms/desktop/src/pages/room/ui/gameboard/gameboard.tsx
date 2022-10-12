@@ -1,3 +1,4 @@
+import styles from './gameboard.module.css';
 import classNames from 'classnames';
 import { PlayerRole } from 'core/player/player_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -5,7 +6,6 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import * as mobxReact from 'mobx-react';
 import { RoomStore } from 'pages/room/room.store';
 import * as React from 'react';
-import styles from './gameboard.module.css';
 
 export type GameBoardProps = {
   store: RoomStore;

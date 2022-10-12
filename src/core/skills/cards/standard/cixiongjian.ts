@@ -53,9 +53,10 @@ export class CiXiongJianSkill extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent, fromId } = event;
-    const aimEvent = Precondition.exists(triggeredOnEvent, 'Cannot find aim event in cixiongjian') as ServerEventFinder<
-      GameEventIdentifiers.AimEvent
-    >;
+    const aimEvent = Precondition.exists(
+      triggeredOnEvent,
+      'Cannot find aim event in cixiongjian',
+    ) as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
     const from = room.getPlayerById(fromId);
     const { toId } = aimEvent;

@@ -1,9 +1,9 @@
+import { Skill } from './skill';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Skill } from './skill';
 
 export interface OnDefineReleaseTiming {
   afterLosingSkill?(
@@ -27,31 +27,31 @@ export interface OnDefineReleaseTiming {
 
 export class SkillLifeCycle {
   public static isHookedAfterLosingSkill(skill: Skill) {
-    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    const hookedSkill = skill as unknown as OnDefineReleaseTiming;
     return hookedSkill.afterLosingSkill;
   }
   public static isHookedAfterDead(skill: Skill) {
-    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    const hookedSkill = skill as unknown as OnDefineReleaseTiming;
     return hookedSkill.afterDead;
   }
   public static async executeHookOnObtainingSkill(skill: Skill, room: Room, owner: Player) {
-    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    const hookedSkill = skill as unknown as OnDefineReleaseTiming;
     hookedSkill.whenObtainingSkill && (await hookedSkill.whenObtainingSkill(room, owner));
   }
   public static async executeHookOnLosingSkill(skill: Skill, room: Room, owner: Player) {
-    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    const hookedSkill = skill as unknown as OnDefineReleaseTiming;
     hookedSkill.whenLosingSkill && (await hookedSkill.whenLosingSkill(room, owner));
   }
   public static async executeHookedOnDead(skill: Skill, room: Room, owner: Player) {
-    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    const hookedSkill = skill as unknown as OnDefineReleaseTiming;
     hookedSkill.whenDead && (await hookedSkill.whenDead(room, owner));
   }
   public static async executeHookedOnNullifying(skill: Skill, room: Room, owner: Player) {
-    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    const hookedSkill = skill as unknown as OnDefineReleaseTiming;
     hookedSkill.whenNullifying && (await hookedSkill.whenNullifying(room, owner));
   }
   public static async executeHookedOnEffecting(skill: Skill, room: Room, owner: Player) {
-    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    const hookedSkill = skill as unknown as OnDefineReleaseTiming;
     hookedSkill.whenEffecting && (await hookedSkill.whenEffecting(room, owner));
   }
 }

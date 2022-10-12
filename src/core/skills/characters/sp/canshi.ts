@@ -1,3 +1,4 @@
+import { GuiMing } from './guiming';
 import { CharacterNationality } from 'core/characters/character';
 import { CardDrawReason, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -9,7 +10,6 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { GuiMing } from './guiming';
 
 @CommonSkill({ name: 'canshi', description: 'canshi_description' })
 export class CanShi extends TriggerSkill {

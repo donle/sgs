@@ -1,3 +1,4 @@
+import { ZhengJian } from './zhengjian';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -9,7 +10,6 @@ import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { ZhengJian } from './zhengjian';
 
 @CommonSkill({ name: 'gaoyuan', description: 'gaoyuan_description' })
 export class GaoYuan extends TriggerSkill {

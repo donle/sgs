@@ -1,3 +1,4 @@
+import { QiXing } from './qixing';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -18,7 +19,6 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { QiXing } from './qixing';
 
 @CommonSkill({ name: 'dawu', description: 'dawu_description' })
 export class DaWu extends TriggerSkill implements OnDefineReleaseTiming {

@@ -1,9 +1,3 @@
-import { GameCardExtensions } from 'core/game/game_props';
-import { TemporaryRoomCreationInfo } from 'core/game/game_props';
-import { RoomId } from 'core/room/room';
-import { ChatSocketEvent } from 'core/shares/types/server_types';
-import { ClientConfig, ServerHostTag } from 'props/config_props';
-import SocketIOClient from 'socket.io-client';
 import {
   ChatPacketObject,
   ConnectionService,
@@ -12,6 +6,12 @@ import {
   RoomListListenerResponse,
   VersionCheckListenerResponse,
 } from './connection_service';
+import { GameCardExtensions } from 'core/game/game_props';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { RoomId } from 'core/room/room';
+import { ChatSocketEvent } from 'core/shares/types/server_types';
+import { ClientConfig, ServerHostTag } from 'props/config_props';
+import SocketIOClient from 'socket.io-client';
 
 export class FakeConnectionService extends ConnectionService {
   protected chatSocket: SocketIOClient.Socket;
@@ -25,16 +25,16 @@ export class FakeConnectionService extends ConnectionService {
   }
 
   protected readonly lobbyService = {
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     getRoomList: (callback: (response: RoomListListenerResponse) => void) => {},
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     checkCoreVersion: (callback: (response: VersionCheckListenerResponse) => void) => {},
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean, ping: number) => void) => {},
     createWaitingRoom(
       gameInfo: TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateWaitingRoomListenerResponse) => void,
-      // tslint:disable-next-line: no-empty
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
     ): void {},
     /**
      * @deprecated game won't be created from lobby anymore.
@@ -44,9 +44,9 @@ export class FakeConnectionService extends ConnectionService {
         cardExtensions: GameCardExtensions[];
       } & TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateGameListenerResponse) => void,
-      // tslint:disable-next-line:no-empty
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
     ) => {},
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     ping: (hostTag: ServerHostTag, callback: (ping: number) => void) => {},
   };
 
@@ -75,9 +75,7 @@ export class FakeConnectionService extends ConnectionService {
         action(data);
       });
     },
-    chatHistory: () => {
-      return this.chatHistory;
-    },
+    chatHistory: () => this.chatHistory,
   };
 
   public close() {

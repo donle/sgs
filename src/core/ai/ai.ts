@@ -58,17 +58,17 @@ export abstract class PlayerAI {
     room: Room,
   ): ClientEventFinder<T>;
   protected abstract onAskForChoosingCardFromPlayerEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
+    T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T>;
   protected abstract onAskForPlaceCardsInDileEvent<T extends GameEventIdentifiers.AskForPlaceCardsInDileEvent>(
     content: ServerEventFinder<T>,
     room: Room,
   ): ClientEventFinder<T>;
   protected abstract onAskForContinuouslyChoosingCardEvent<
-    T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent
+    T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T>;
   protected abstract onAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T>;
 
   onAction(room: Room, e: GameEventIdentifiers, content: ServerEventFinder<typeof e>): ClientEventFinder<typeof e> {

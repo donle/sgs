@@ -124,17 +124,16 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
         options.push('qiaoshuo: reduce');
       }
 
-      const cardSkill = (card.Skill as unknown) as ExtralCardSkillProperty;
+      const cardSkill = card.Skill as unknown as ExtralCardSkillProperty;
       const pendingTargets = room
         .getAlivePlayersFrom()
         .map(player => player.Id)
-        .filter(playerId => {
-          return (
+        .filter(
+          playerId =>
             !realTargets.includes(playerId) &&
             room.isAvailableTarget(card.Id, fromId, playerId) &&
-            cardSkill.isCardAvailableTarget(fromId, room, playerId, [], [], card.Id)
-          );
-        });
+            cardSkill.isCardAvailableTarget(fromId, room, playerId, [], [], card.Id),
+        );
 
       if (pendingTargets.length) {
         options.push('qiaoshuo: add');
@@ -185,19 +184,18 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
 
         TargetGroupUtil.removeTarget(targetGroup, selectedPlayers![0]);
       } else {
-        const { selectedPlayers } = await room.doAskForCommonly<
-          GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
-        >(
-          GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
-          {
-            user: fromId,
-            cardId: cardUseEvent.cardId,
-            exclude: realTargets,
-            conversation: 'qiaoshuo: please select a player to append to card targets',
-            triggeredBySkills: [this.Name],
-          },
-          fromId,
-        );
+        const { selectedPlayers } =
+          await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
+            GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+            {
+              user: fromId,
+              cardId: cardUseEvent.cardId,
+              exclude: realTargets,
+              conversation: 'qiaoshuo: please select a player to append to card targets',
+              triggeredBySkills: [this.Name],
+            },
+            fromId,
+          );
 
         if (selectedPlayers) {
           room.broadcast(GameEventIdentifiers.CustomGameDialog, {
@@ -268,9 +266,8 @@ export class QiaoShuoLose extends TriggerSkill implements OnDefineReleaseTiming 
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const askForCardDropEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.AskForCardDropEvent
-    >;
+    const askForCardDropEvent =
+      skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
     const player = room.getPlayerById(askForCardDropEvent.toId);
     const tricks = player
       .getCardIds(PlayerCardsArea.HandArea)

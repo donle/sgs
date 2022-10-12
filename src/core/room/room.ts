@@ -1,3 +1,4 @@
+import { RoomEventStacker } from './utils/room_event_stack';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
@@ -28,7 +29,6 @@ import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo, RoomShortcutInfo } from 'core/shares/types/server_types';
 import { FilterSkill, GlobalRulesBreakerSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
-import { RoomEventStacker } from './utils/room_event_stack';
 
 export type RoomId = number;
 
@@ -549,7 +549,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {
     for (const skill of this.getPlayerById(target).getSkills<FilterSkill>('filter')) {
-      if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
+      if (!skill.canBeUsedCard(cardId, this as unknown as Room, target, attacker)) {
         return false;
       }
     }

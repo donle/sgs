@@ -1,3 +1,6 @@
+import { BaseAction } from './base_action';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -10,9 +13,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
 import { ActiveSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter } from '../room.presenter';
-import { RoomStore } from '../room.store';
-import { BaseAction } from './base_action';
 
 export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
   constructor(
@@ -62,9 +62,12 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       }
 
       this.presenter.onClickPlayer((player: Player, selected: boolean) => {
-        selected
-          ? this.presenter.selectPlayer(player as ClientPlayer)
-          : this.presenter.unselectPlayer(player as ClientPlayer);
+        if (selected) {
+          this.presenter.selectPlayer(player as ClientPlayer);
+        } else {
+          this.presenter.unselectPlayer(player as ClientPlayer);
+        }
+
         if (selected) {
           selectedPlayers.push(player.Id);
         } else {
@@ -109,7 +112,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
 
       const selectedTargets: PlayerId[] = [];
       const cardSkill = card.Skill as ActiveSkill;
-      const skillExtralProp = (card.Skill as unknown) as ExtralCardSkillProperty;
+      const skillExtralProp = card.Skill as unknown as ExtralCardSkillProperty;
       let numberOfCardTargets = cardSkill.numberOfTargets();
       numberOfCardTargets = (numberOfCardTargets instanceof Array ? numberOfCardTargets[0] : numberOfCardTargets) || 1;
 
@@ -122,19 +125,20 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           ? skillExtralProp.isCardAvailableTarget(this.playerId, this.store.room, playerId, [], selectedTargets, cardId)
           : cardSkill.isAvailableCard(this.playerId, this.store.room, playerId, [], selectedTargets, cardId);
 
-      this.presenter.setupPlayersSelectionMatcher((player: Player) => {
-        return (
+      this.presenter.setupPlayersSelectionMatcher(
+        (player: Player) =>
           (excludeInvalidTargets(player.Id) &&
             selectedTargets.length < numberOfCardTargets &&
             isAvailableTarget(player.Id)) ||
-          selectedTargets.includes(player.Id)
-        );
-      });
+          selectedTargets.includes(player.Id),
+      );
 
       this.presenter.onClickPlayer((player: Player, selected: boolean) => {
-        selected
-          ? this.presenter.selectPlayer(player as ClientPlayer)
-          : this.presenter.unselectPlayer(player as ClientPlayer);
+        if (selected) {
+          this.presenter.selectPlayer(player as ClientPlayer);
+        } else {
+          this.presenter.unselectPlayer(player as ClientPlayer);
+        }
         if (selected) {
           selectedTargets.push(player.Id);
         } else {
@@ -281,6 +285,6 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
     this.presenter.broadcastUIUpdate();
   };
 
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async onPlay() {}
 }

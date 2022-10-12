@@ -1,3 +1,4 @@
+import { DuJiang } from './dujiang';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -7,7 +8,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, FilterSkill, RulesBreakerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { DuJiang } from './dujiang';
 
 const enum MouKeJiOption {
   Discard,

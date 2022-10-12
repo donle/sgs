@@ -1,3 +1,10 @@
+import styles from './player_avatar.module.css';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
+import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
+import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
+import { Mask } from '../mask/mask';
+import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
@@ -23,13 +30,6 @@ import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
-import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
-import { Mask } from '../mask/mask';
-import { SwitchAvatar } from '../switch_avatar/switch_avatar';
-import styles from './player_avatar.module.css';
 
 type PlayerAvatarProps = {
   store: RoomStore;
@@ -328,7 +328,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           <div className={styles.skillInfo} key={index}>
             <div className={styles.skillItem}>
               <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
-              <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.dynamicDescription(presenter.ClientPlayer!)) }} />
+              <span
+                dangerouslySetInnerHTML={{ __html: translator.tr(skill.dynamicDescription(presenter.ClientPlayer!)) }}
+              />
             </div>
           </div>
         ));

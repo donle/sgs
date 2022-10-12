@@ -1,3 +1,4 @@
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 import { FireAttackSkillTrigger } from 'core/ai/skills/cards/fire_attack';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -10,7 +11,6 @@ import { Functional } from 'core/shares/libs/functional';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(FireAttackSkillTrigger)
 @CommonSkill({ name: 'fire_attack', description: 'fire_attack_description' })

@@ -47,14 +47,13 @@ export class GuoLun extends ActiveSkill {
       [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
     };
 
-    const chooseCardEvent = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
-    >({
-      fromId,
-      toId: toIds![0],
-      options,
-      triggeredBySkills: [this.Name],
-    });
+    const chooseCardEvent =
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>({
+        fromId,
+        toId: toIds![0],
+        options,
+        triggeredBySkills: [this.Name],
+      });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,

@@ -55,9 +55,10 @@ export class GuanShiFuSkill extends TriggerSkill {
 
     await room.dropCards(CardMoveReason.SelfDrop, cardIds, event.fromId);
     const { triggeredOnEvent } = event;
-    const slashEvent = Precondition.exists(triggeredOnEvent, 'Unable to get slash event') as ServerEventFinder<
-      GameEventIdentifiers.CardEffectEvent
-    >;
+    const slashEvent = Precondition.exists(
+      triggeredOnEvent,
+      'Unable to get slash event',
+    ) as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
     slashEvent.isCancelledOut = false;
     return true;
   }

@@ -185,9 +185,8 @@ export class YongJinMove extends TriggerSkill {
       const fromEquipArea = from.getCardIds(PlayerCardsArea.EquipArea);
 
       return (
-        fromEquipArea.find(id => {
-          return room.canPlaceCardTo(id, target) && (banIds ? !banIds.includes(id) : true);
-        }) !== undefined
+        fromEquipArea.find(id => room.canPlaceCardTo(id, target) && (banIds ? !banIds.includes(id) : true)) !==
+        undefined
       );
     }
 

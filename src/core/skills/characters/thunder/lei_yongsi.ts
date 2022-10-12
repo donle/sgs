@@ -48,9 +48,7 @@ export class LeiYongSi extends TriggerSkill {
       ) {
         const events = room.Analytics.getDamageRecord(owner.Id, 'phase');
         if (events.length > 0) {
-          damage = events.reduce<number>((sum, event) => {
-            return sum + event.damage;
-          }, 0);
+          damage = events.reduce<number>((sum, event) => sum + event.damage, 0);
         } else if (owner.getCardIds(PlayerCardsArea.HandArea).length < owner.Hp) {
           damage = 0;
         }

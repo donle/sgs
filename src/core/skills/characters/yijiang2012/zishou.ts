@@ -92,13 +92,10 @@ export class ZiShouReforge extends TriggerSkill {
       content.toStage === PlayerPhaseStages.FinishStageStart &&
       owner.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.CardUseEvent>(
-        event => {
-          return (
-            event.fromId === owner.Id &&
-            event.targetGroup !== undefined &&
-            TargetGroupUtil.getRealTargets(event.targetGroup).find(player => player !== owner.Id) !== undefined
-          );
-        },
+        event =>
+          event.fromId === owner.Id &&
+          event.targetGroup !== undefined &&
+          TargetGroupUtil.getRealTargets(event.targetGroup).find(player => player !== owner.Id) !== undefined,
         owner.Id,
         'round',
         undefined,

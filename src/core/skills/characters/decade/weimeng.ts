@@ -69,9 +69,10 @@ export class WeiMeng extends ActiveSkill {
       proposer: event.fromId,
       triggeredBySkills: [this.Name],
     });
-    const numberGained = response.selectedCards.reduce<number>((sum, cardId) => {
-      return sum + Sanguosha.getCardById(cardId).CardNumber;
-    }, 0);
+    const numberGained = response.selectedCards.reduce<number>(
+      (sum, cardId) => sum + Sanguosha.getCardById(cardId).CardNumber,
+      0,
+    );
 
     if (room.getPlayerById(event.fromId).getPlayerCards().length > 0 && !room.getPlayerById(event.toIds[0]).Dead) {
       const amount = Math.min(room.getPlayerById(event.fromId).getPlayerCards().length, gainedNum);
@@ -98,9 +99,10 @@ export class WeiMeng extends ActiveSkill {
         resp.selectedCards.length > 0
           ? resp.selectedCards
           : Algorithm.randomPick(amount, room.getPlayerById(event.fromId).getPlayerCards());
-      const numberGiven = resp.selectedCards.reduce<number>((sum, cardId) => {
-        return sum + Sanguosha.getCardById(cardId).CardNumber;
-      }, 0);
+      const numberGiven = resp.selectedCards.reduce<number>(
+        (sum, cardId) => sum + Sanguosha.getCardById(cardId).CardNumber,
+        0,
+      );
 
       await room.moveCards({
         movingCards: resp.selectedCards.map(card => ({

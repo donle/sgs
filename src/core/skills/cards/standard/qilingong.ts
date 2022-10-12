@@ -44,9 +44,10 @@ export class QiLinGongSkill extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const event = Precondition.exists(triggeredOnEvent, 'Unable to get damage event') as ServerEventFinder<
-      GameEventIdentifiers.DamageEvent
-    >;
+    const event = Precondition.exists(
+      triggeredOnEvent,
+      'Unable to get damage event',
+    ) as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     const to = room.getPlayerById(event.toId);
 
     const chooseCardEvent = {

@@ -9,18 +9,32 @@
     "@types/react": "^16.9.23",
     "@types/socket.io": "2.1.13",
     "@types/socket.io-client": "^1.4.32",
-    "prettier": "^2.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "eslint": "^8.25.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^27.1.1",
+    "eslint-plugin-jsdoc": "^39.3.6",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "prettier": "^2.7.1",
+    "prettier-eslint": "^15.0.1",
     "ts-node": "^8.6.2",
-    "tslint": "^6.1.2",
     "typescript": "^4.3.5"
   },
   "scripts": {
     "prettier": "prettier --write \"./**/*.{ts,tsx,css,json}\"",
-    "tslint": "tslint -c ./tslint.json \"./src/**/*.{ts,tsx}\"",
+    "lint": "eslint -c .eslintrc.js \"./src/**/*.{ts,tsx}\"",
     "build": "rm -rf build && tsc",
     "transpile": "cd ./src/server && yarn install && yarn build",
     "transpile:client": "cd ./src/ui/platforms/desktop && yarn install && yarn build:mac",
     "patch": "ts-node ./src/pre_release.ts",
     "check-translations": "tsc -p ./tools/tsconfig.json && node --max-old-space-size=8192 ./tools/missing_translation_check.js"
+  },
+  "dependencies": {
+    "eslint-config-prettier": "^8.5.0"
   }
 }

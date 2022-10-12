@@ -62,13 +62,15 @@ export class LuoYing extends TriggerSkill {
       );
 
       luoyingCard.push(
-        ...infos.reduce<CardId[]>((cardIds, info) => {
-          return cardIds.concat(
-            info.movingCards
-              .filter(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)
-              .map(node => node.card),
-          );
-        }, []),
+        ...infos.reduce<CardId[]>(
+          (cardIds, info) =>
+            cardIds.concat(
+              info.movingCards
+                .filter(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)
+                .map(node => node.card),
+            ),
+          [],
+        ),
       );
     }
 

@@ -1,3 +1,12 @@
+import styles from './player.module.css';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
+import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
+import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
+import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
+import { Mask } from '../mask/mask';
+import { PlayingBar } from '../playing_bar/playing_bar';
+import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import classNames from 'classnames';
 import { Card, CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
@@ -26,15 +35,6 @@ import { FlatClientCard } from 'ui/card/flat_card';
 import { Hp } from 'ui/hp/hp';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
-import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
-import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
-import { Mask } from '../mask/mask';
-import { PlayingBar } from '../playing_bar/playing_bar';
-import { SwitchAvatar } from '../switch_avatar/switch_avatar';
-import styles from './player.module.css';
 
 type PlayerCardProps = {
   player: ClientPlayer | undefined;
@@ -467,16 +467,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   };
 
   render() {
-    const {
-      disabled,
-      translator,
-      inAction,
-      player,
-      playerPhase,
-      imageLoader,
-      incomingMessage,
-      actionTimeLimit,
-    } = this.props;
+    const { disabled, translator, inAction, player, playerPhase, imageLoader, incomingMessage, actionTimeLimit } =
+      this.props;
     if (this.PlayerCharacter && (!this.mainImage || this.mainImage.alt !== this.PlayerCharacter.Name)) {
       this.renderCharacterImage();
     }

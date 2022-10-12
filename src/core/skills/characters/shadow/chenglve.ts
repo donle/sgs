@@ -72,9 +72,7 @@ export class ChengLve extends ActiveSkill {
       suits,
       TranslationPack.translationJsonPatcher(
         'chenglve suits: {0}',
-        suits.reduce<string>((suitString, suit) => {
-          return suitString + Functional.getCardSuitCharText(suit);
-        }, ''),
+        suits.reduce<string>((suitString, suit) => suitString + Functional.getCardSuitCharText(suit), ''),
       ).toString(),
     );
 

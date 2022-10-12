@@ -319,9 +319,11 @@ export abstract class Player implements PlayerInfo {
   }
 
   public useSkill(skillName: string) {
-    this.skillUsedHistory[skillName] !== undefined
-      ? this.skillUsedHistory[skillName]++
-      : (this.skillUsedHistory[skillName] = 1);
+    if (this.skillUsedHistory[skillName] !== undefined) {
+      this.skillUsedHistory[skillName]++;
+    } else {
+      this.skillUsedHistory[skillName] = 1;
+    }
 
     const skill = Sanguosha.getSkillBySkillName(skillName);
     if (skill.isSwitchSkill() && skill.isSwitchable()) {
@@ -342,15 +344,15 @@ export abstract class Player implements PlayerInfo {
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
+      return [...handCards, ...judgeCards, ...equipCards] as unknown as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return (this.playerCards[area] as unknown) as T[];
+      return this.playerCards[area] as unknown as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
+      return this.playerOutsideCards[outsideAreaName] as unknown as T[];
     }
   }
 
@@ -776,9 +778,7 @@ export abstract class Player implements PlayerInfo {
 
   public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card => Sanguosha.getCardById(card));
-    const skills = equipCards.reduce<Skill[]>((skills, card) => {
-      return skills.concat([card.Skill, ...card.ShadowSkills]);
-    }, []);
+    const skills = equipCards.reduce<Skill[]>((skills, card) => skills.concat([card.Skill, ...card.ShadowSkills]), []);
     if (skillType === undefined) {
       return skills as T[];
     }
@@ -913,7 +913,11 @@ export abstract class Player implements PlayerInfo {
     }
 
     this.hookedSkills = this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
-    insertIndex !== undefined ? this.playerSkills.splice(insertIndex, 0, skill) : this.playerSkills.push(skill);
+    if (insertIndex !== undefined) {
+      this.playerSkills.splice(insertIndex, 0, skill);
+    } else {
+      this.playerSkills.push(skill);
+    }
     for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
       this.hookedSkills = this.hookedSkills.filter(hookedSkill => hookedSkill !== shadowSkill);
       this.playerSkills.push(shadowSkill);

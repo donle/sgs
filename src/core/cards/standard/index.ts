@@ -1,5 +1,3 @@
-import { Card } from '../card';
-import { CardSuit } from '../libs/card_props';
 import { BaGuaZhen } from './baguazhen';
 import { ChiTu } from './chitu';
 import { CiXiongJian } from './cixiongjian';
@@ -32,6 +30,8 @@ import { ZhangBaSheMao } from './zhangbashemao';
 import { ZhuaHuangFeiDian } from './zhuahuangfeidian';
 import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXing } from './zixing';
+import { Card } from '../card';
+import { CardSuit } from '../libs/card_props';
 
 export const StandardCardPackage: (index: number) => Card[] = index => [
   new Slash(index++, 7, CardSuit.Spade),

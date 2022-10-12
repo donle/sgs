@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-type PartInfo = { number: number; start: number; end: number };
+type PartInfo = { indexNumber: number; start: number; end: number };
 
 export abstract class FileSplitter {
   static readonly splitFile = (file: string, parts: number) => {
@@ -28,7 +28,7 @@ export abstract class FileSplitter {
 
     for (let i = 0; i < parts; i++) {
       partInfo[i] = {
-        number: i + 1,
+        indexNumber: i + 1,
         start: i * splitSize,
         end: i * splitSize + splitSize,
       };
@@ -38,7 +38,7 @@ export abstract class FileSplitter {
       }
     }
 
-    return FileSplitter.__splitFile(file, partInfo);
+    return FileSplitter.internalFileSplitProcessor(file, partInfo);
   };
 
   private static merge(file: string, writer: fs.WriteStream) {
@@ -81,7 +81,7 @@ export abstract class FileSplitter {
       for (let i = 0; i < maxPaddingCount; i++) {
         currentPad += '0';
       }
-      const unpaddedPartNumber = `${info.number}`;
+      const unpaddedPartNumber = `${info.indexNumber}`;
       const partNumber = currentPad.substring(0, currentPad.length - unpaddedPartNumber.length) + unpaddedPartNumber;
       const partName = `${file}.part${partNumber}`;
 
@@ -93,7 +93,7 @@ export abstract class FileSplitter {
     });
   }
 
-  private static async __splitFile(file: string, partInfo: PartInfo[]) {
+  private static async internalFileSplitProcessor(file: string, partInfo: PartInfo[]) {
     const partFiles: string[] = [];
 
     for (const info of partInfo) {

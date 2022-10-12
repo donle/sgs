@@ -1,3 +1,4 @@
+import { TunTian } from './tuntian';
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -6,7 +7,6 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
-import { TunTian } from './tuntian';
 
 @CommonSkill({ name: 'jixi', description: 'jixi_description' })
 export class JiXi extends ViewAsSkill {

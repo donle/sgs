@@ -95,9 +95,7 @@ export class HuGuan extends TriggerSkill {
       originalSuits,
       TranslationPack.translationJsonPatcher(
         'huguan suits: {0}',
-        originalSuits.reduce<string>((suitString, suit) => {
-          return suitString + Functional.getCardSuitCharText(suit);
-        }, ''),
+        originalSuits.reduce<string>((suitString, suit) => suitString + Functional.getCardSuitCharText(suit), ''),
       ).toString(),
     );
 

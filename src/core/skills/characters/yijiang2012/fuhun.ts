@@ -1,3 +1,5 @@
+import { PaoXiao } from '../standard/paoxiao';
+import { WuSheng } from '../standard/wusheng';
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -10,8 +12,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, OnDefineReleaseTiming, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ShadowSkill } from 'core/skills/skill_wrappers';
-import { PaoXiao } from '../standard/paoxiao';
-import { WuSheng } from '../standard/wusheng';
 
 @CommonSkill({ name: 'fuhun', description: 'fuhun_description' })
 export class FuHun extends ViewAsSkill {

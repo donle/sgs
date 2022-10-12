@@ -22,9 +22,7 @@ export class PveClassicTianJi extends TriggerSkill {
       PlayerPhaseStages.FinishStageEnd === content.toStage &&
       owner.getPlayerCards().length > 0 &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
-        event => {
-          return EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent;
-        },
+        event => EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent,
         content.playerId,
         'round',
         undefined,

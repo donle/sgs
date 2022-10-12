@@ -1,6 +1,6 @@
-import { ReplayDataType } from 'types/replay_props';
 import { ElectronData } from './electron_data';
 import { ElectronLoader } from './electron_loader';
+import { ReplayDataType } from 'types/replay_props';
 
 export class DevElectronLoader extends ElectronLoader {
   constructor() {
@@ -9,7 +9,7 @@ export class DevElectronLoader extends ElectronLoader {
       window.localStorage.setItem('language', navigator.language);
     }
   }
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public flashFrame() {}
 
   public setData<T>(key: ElectronData, value: T) {
@@ -22,10 +22,10 @@ export class DevElectronLoader extends ElectronLoader {
       if (data) {
         return JSON.parse(data);
       } else {
-        return (data as unknown) as T;
+        return data as unknown as T;
       }
     } catch {
-      return (data as unknown) as T;
+      return data as unknown as T;
     }
   }
 
@@ -40,11 +40,11 @@ export class DevElectronLoader extends ElectronLoader {
     return window.sessionStorage.getItem(key);
   }
 
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public refreshReplayDataFlow() {}
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public sendReplayEventFlow(): void {}
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async saveReplay(): Promise<void> {}
   public async readReplay(): Promise<ReplayDataType | undefined> {
     return;
@@ -52,6 +52,6 @@ export class DevElectronLoader extends ElectronLoader {
   public get ReplayEnabled(): boolean {
     return false;
   }
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public whenUpdate() {}
 }

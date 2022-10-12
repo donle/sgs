@@ -1,3 +1,5 @@
+import { EventEmitterProps } from './event_emitter_props';
+import { LocalServerEmitterInterface } from './event_emitter_props';
 import {
   ClientEventFinder,
   GameEventIdentifiers,
@@ -11,8 +13,6 @@ import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { EventEmitterProps } from './event_emitter_props';
-import { LocalServerEmitterInterface } from './event_emitter_props';
 
 export class LocalServerEmitter implements LocalServerEmitterInterface {
   private room: ServerRoom | undefined;
@@ -106,7 +106,7 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
         TranslationPack.patchPureTextParameter(content.message),
       ).toString();
       content.ignoreNotifiedStatus = true;
-      this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
+      this.broadcast(identifier, content as unknown as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
     }
   }
 
@@ -210,7 +210,7 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
     this.socket.send('server-' + type.toString(), EventPacker.minifyPayload(content));
   }
 
-  // tslint:disable-next-line: no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public clearSubscriber(identifier: GameEventIdentifiers, to: PlayerId) {}
 
   public async waitForResponse<T extends GameEventIdentifiers>(identifier: T, playerId: PlayerId) {

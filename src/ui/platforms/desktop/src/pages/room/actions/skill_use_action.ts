@@ -1,3 +1,6 @@
+import { BaseAction } from './base_action';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 import { Card } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -7,20 +10,16 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Skill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter } from '../room.presenter';
-import { RoomStore } from '../room.store';
-import { BaseAction } from './base_action';
 
 export class SkillUseAction extends BaseAction {
-  public static isSkillDisabled = (event: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>) => (
-    skill: Skill,
-  ) => {
-    if (skill instanceof TriggerSkill && event.invokeSkillNames.includes(skill.Name)) {
-      return false;
-    }
+  public static isSkillDisabled =
+    (event: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>) => (skill: Skill) => {
+      if (skill instanceof TriggerSkill && event.invokeSkillNames.includes(skill.Name)) {
+        return false;
+      }
 
-    return true;
-  };
+      return true;
+    };
 
   private askForEvent: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>;
 

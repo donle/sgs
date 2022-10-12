@@ -1,3 +1,5 @@
+import styles from './game_dialog.module.css';
+import { MessageDialog } from '../message_dialog/message_dialog';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -5,8 +7,6 @@ import { RoomPresenter } from 'pages/room/room.presenter';
 import { RoomStore } from 'pages/room/room.store';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
-import { MessageDialog } from '../message_dialog/message_dialog';
-import styles from './game_dialog.module.css';
 
 export type GameDialogProps = {
   translator: ClientTranslationModule;

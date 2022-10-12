@@ -1,3 +1,6 @@
+import { GameClientProcessor } from './game_processor';
+import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
+import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameEventIdentifiers, ServerEventFinder, serverResponsiveListenerEvents } from 'core/event/event';
@@ -7,9 +10,6 @@ import { Player } from 'core/player/player';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import React from 'react';
-import { GameClientProcessor } from './game_processor';
-import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
-import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 
 export class ReplayClientProcessor extends GameClientProcessor {
   protected eventFilter<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
@@ -163,7 +163,7 @@ export class ReplayClientProcessor extends GameClientProcessor {
   protected async onHandlePlayCardStage<T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>(
     type: T,
     content: ServerEventFinder<T>,
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {}
 
   protected async onHandleAskForCardUseEvent<T extends GameEventIdentifiers.AskForCardUseEvent>(
@@ -193,7 +193,7 @@ export class ReplayClientProcessor extends GameClientProcessor {
     } else {
       const dummyHandlers: any = {};
       for (const skill of content.invokeSkillNames) {
-        // tslint:disable-next-line:no-empty
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         dummyHandlers[skill] = () => {};
       }
 
@@ -229,7 +229,7 @@ export class ReplayClientProcessor extends GameClientProcessor {
   }
 
   protected onHandleAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
   >(type: T, content: ServerEventFinder<T>) {
     this.presenter.createDialog(
       <CardSelectorDialog
@@ -267,7 +267,7 @@ export class ReplayClientProcessor extends GameClientProcessor {
     const { options, conversation } = content;
     const actionHandlers = {};
     options.forEach(option => {
-      // tslint:disable-next-line:no-empty
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       actionHandlers[option] = () => {};
     });
 

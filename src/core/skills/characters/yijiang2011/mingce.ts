@@ -25,9 +25,9 @@ export class MingCe extends ActiveSkill {
     if (targets[0]) {
       const first = room.getPlayerById(targets[0]);
 
-      canSlash = room.getOtherPlayers(targets[0]).find(player => {
-        return room.canAttack(first, player) && room.withinAttackDistance(first, player);
-      })
+      canSlash = room
+        .getOtherPlayers(targets[0])
+        .find(player => room.canAttack(first, player) && room.withinAttackDistance(first, player))
         ? true
         : false;
     }

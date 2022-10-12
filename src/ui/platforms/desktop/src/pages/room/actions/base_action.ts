@@ -1,3 +1,5 @@
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -7,8 +9,6 @@ import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter } from '../room.presenter';
-import { RoomStore } from '../room.store';
 
 export abstract class BaseAction {
   public static disableSkills = (skill: Skill) => {
@@ -42,7 +42,11 @@ export abstract class BaseAction {
         this.presenter.closeDialog();
       }
 
-      selected ? this.selectPlayer(player) : this.unselectePlayer(player);
+      if (selected) {
+        this.selectPlayer(player);
+      } else {
+        this.unselectePlayer(player);
+      }
       this.onClickPlayer(player, selected);
     });
     this.presenter.onClickPlayerCard((card: Card, selected: boolean) => {
@@ -50,7 +54,11 @@ export abstract class BaseAction {
         this.presenter.closeDialog();
       }
 
-      selected ? this.selectCard(card.Id) : this.unselectCard(card.Id);
+      if (selected) {
+        this.selectCard(card.Id);
+      } else {
+        this.unselectCard(card.Id);
+      }
       this.onClickCard(card, selected);
     });
     this.presenter.onClickEquipment((card: Card, selected: boolean) => {
@@ -69,7 +77,11 @@ export abstract class BaseAction {
         }
       }
 
-      selected ? this.selectCard(card.Id) : this.unselectCard(card.Id);
+      if (selected) {
+        this.selectCard(card.Id);
+      } else {
+        this.unselectCard(card.Id);
+      }
       this.onClickCard(card, selected);
     });
     this.presenter.onClickSkill((skill: Skill, selected: boolean) => {
@@ -77,7 +89,11 @@ export abstract class BaseAction {
         this.presenter.closeDialog();
       }
 
-      selected ? this.selectSkill(skill) : this.unselectSkill(skill);
+      if (selected) {
+        this.selectSkill(skill);
+      } else {
+        this.unselectSkill(skill);
+      }
       this.onClickSkill(skill, selected);
     });
   }
@@ -533,9 +549,11 @@ export abstract class BaseAction {
   }
 
   private callToActionCheck() {
-    this.enableToCallAction()
-      ? this.presenter.enableActionButton('confirm')
-      : this.presenter.disableActionButton('confirm');
+    if (this.enableToCallAction()) {
+      this.presenter.enableActionButton('confirm');
+    } else {
+      this.presenter.disableActionButton('confirm');
+    }
     this.presenter.broadcastUIUpdate();
   }
 
@@ -742,20 +760,24 @@ export abstract class BaseAction {
     }
     if (!selected) {
       this.resetAction();
-      this.selectedSkillToPlay || this.selectedCardToPlay
-        ? this.presenter.enableActionButton('cancel')
-        : this.presenter.disableActionButton('cancel');
+      if (this.selectedSkillToPlay || this.selectedCardToPlay) {
+        this.presenter.enableActionButton('cancel');
+      } else {
+        this.presenter.disableActionButton('cancel');
+      }
     }
     this.delightItems();
     this.callToActionCheck();
   }
 
   protected onClickPlayer(player: Player, selected: boolean): void {
-    selected
-      ? this.presenter.selectPlayer(player as ClientPlayer)
-      : this.presenter.unselectPlayer(player as ClientPlayer);
+    if (selected) {
+      this.presenter.selectPlayer(player as ClientPlayer);
+    } else {
+      this.presenter.unselectPlayer(player as ClientPlayer);
+    }
     this.callToActionCheck();
   }
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected onResetAction() {}
 }

@@ -1,3 +1,4 @@
+import styles from './banner.module.css';
 import classNames from 'classnames';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ServerHostTag } from 'props/config_props';
@@ -6,7 +7,6 @@ import { useHistory } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { Button } from 'ui/button/button';
 import { SignalBar } from 'ui/signal_bar/signal_bar';
-import styles from './banner.module.css';
 
 export type BannerProps = {
   roomName: string;
@@ -21,18 +21,16 @@ export type BannerProps = {
   variant?: 'room' | 'waitingRoom';
 };
 
-const BreadCrumb = (props: { content: string[] }) => {
-  return (
-    <div className={styles.breadcrumb}>
-      {props.content.map((layer, index) => (
-        <span className={styles.layer} key={index}>
-          {layer}
-          {index === props.content.length - 1 ? '' : ' /\u00a0'}
-        </span>
-      ))}
-    </div>
-  );
-};
+const BreadCrumb = (props: { content: string[] }) => (
+  <div className={styles.breadcrumb}>
+    {props.content.map((layer, index) => (
+      <span className={styles.layer} key={index}>
+        {layer}
+        {index === props.content.length - 1 ? '' : ' /\u00a0'}
+      </span>
+    ))}
+  </div>
+);
 
 export const Banner = (props: BannerProps) => {
   const history = useHistory();

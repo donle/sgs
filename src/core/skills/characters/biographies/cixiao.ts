@@ -1,3 +1,4 @@
+import { PanShi } from './panshi';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
@@ -6,7 +7,6 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { PanShi } from './panshi';
 
 @CommonSkill({ name: 'cixiao', description: 'cixiao_description' })
 export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {

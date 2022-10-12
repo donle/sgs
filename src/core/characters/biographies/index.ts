@@ -1,4 +1,3 @@
-import { Character } from 'core/characters/character';
 import { CaoAnMin } from './caoanmin';
 import { CaoSong } from './caosong';
 import { DingYuan } from './dingyuan';
@@ -8,6 +7,7 @@ import { QiuLiJu } from './qiuliju';
 import { WangRong } from './wangrong';
 import { XuShao } from './xushao';
 import { YanRou } from './yanrou';
+import { Character } from 'core/characters/character';
 
 export const BiographiesPackage: (index: number) => Character[] = index => [
   new CaoSong(index++),

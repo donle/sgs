@@ -197,17 +197,19 @@ export class ZhiWeiChained extends TriggerSkill {
         );
       }
     } else {
-      const availableIds = (event.triggeredOnEvent as ServerEventFinder<
-        GameEventIdentifiers.MoveCardEvent
-      >).infos.reduce<CardId[]>((cardIds, info) => {
-        return info.moveReason === CardMoveReason.SelfDrop
-          ? cardIds.concat(
-              ...info.movingCards
-                .filter(cardInfo => room.isCardInDropStack(cardInfo.card))
-                .map(cardInfo => cardInfo.card),
-            )
-          : cardIds;
-      }, []);
+      const availableIds = (
+        event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>
+      ).infos.reduce<CardId[]>(
+        (cardIds, info) =>
+          info.moveReason === CardMoveReason.SelfDrop
+            ? cardIds.concat(
+                ...info.movingCards
+                  .filter(cardInfo => room.isCardInDropStack(cardInfo.card))
+                  .map(cardInfo => cardInfo.card),
+              )
+            : cardIds,
+        [],
+      );
 
       await room.moveCards({
         movingCards: availableIds.map(card => ({ card, fromArea: CardMoveArea.DropStack })),

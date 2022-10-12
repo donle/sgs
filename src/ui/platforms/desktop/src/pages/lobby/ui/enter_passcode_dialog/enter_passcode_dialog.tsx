@@ -1,10 +1,10 @@
+import styles from './enter_passcode_dialog.module.css';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { Dialog } from 'ui/dialog/dialog';
 import { Picture } from 'ui/picture/picture';
-import styles from './enter_passcode_dialog.module.css';
 
 export const EnterPasscodeDialog = ({
   imageLoader,

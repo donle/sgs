@@ -106,7 +106,11 @@ export class KouLve extends TriggerSkill {
     });
 
     if (hasRed) {
-      room.getPlayerById(fromId).LostHp > 0 ? await room.changeMaxHp(fromId, -1) : await room.loseHp(fromId, 1);
+      if (room.getPlayerById(fromId).LostHp > 0) {
+        await room.changeMaxHp(fromId, -1);
+      } else {
+        await room.loseHp(fromId, 1);
+      }
       await room.drawCards(2, event.fromId, 'top', event.fromId, this.Name);
     }
 

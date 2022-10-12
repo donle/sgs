@@ -24,9 +24,8 @@ export class GuZheng extends TriggerSkill {
     }
 
     const events = room.Analytics.getCardDropRecord(content.playerId, 'phase');
-    const findFunc = (event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) => {
-      return event.infos.find(info => info.movingCards.find(card => card.fromArea === CardMoveArea.HandArea));
-    };
+    const findFunc = (event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) =>
+      event.infos.find(info => info.movingCards.find(card => card.fromArea === CardMoveArea.HandArea));
     return events.find(findFunc) !== undefined;
   }
 
@@ -38,14 +37,11 @@ export class GuZheng extends TriggerSkill {
     const { fromId, triggeredOnEvent } = skillUseEvent;
 
     const events = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
-      event => {
-        return (
-          EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-          event.infos.find(
-            info => info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop,
-          ) !== undefined
-        );
-      },
+      event =>
+        EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
+        event.infos.find(
+          info => info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop,
+        ) !== undefined,
       undefined,
       'round',
       [PlayerPhase.DropCardStage],
@@ -62,13 +58,7 @@ export class GuZheng extends TriggerSkill {
       for (const info of event.infos) {
         const isGuzhengee = info.fromId === guzhengee;
         info.movingCards.forEach(({ card, fromArea }) => {
-          if (
-            !allCards
-              .map(card => {
-                return card.cardId;
-              })
-              .includes(card)
-          ) {
+          if (!allCards.map(card => card.cardId).includes(card)) {
             if (room.isCardInDropStack(card)) {
               if (isGuzhengee === true && fromArea === CardMoveArea.HandArea) {
                 allCards.push({ cardId: card, enableToReturn: true });
@@ -77,9 +67,9 @@ export class GuZheng extends TriggerSkill {
               }
             }
           } else {
-            const index = allCards.findIndex(({ cardId, enableToReturn }) => {
-              return cardId === card && enableToReturn === false;
-            });
+            const index = allCards.findIndex(
+              ({ cardId, enableToReturn }) => cardId === card && enableToReturn === false,
+            );
             if (index >= 0) {
               allCards[index].enableToReturn = true;
             }
@@ -154,9 +144,7 @@ export class GuZheng extends TriggerSkill {
 
       if (selectedOption === 'yes') {
         await room.moveCards({
-          movingCards: obtainCards.map(card => {
-            return { card, fromArea: CardMoveArea.DropStack };
-          }),
+          movingCards: obtainCards.map(card => ({ card, fromArea: CardMoveArea.DropStack })),
           toId: fromId,
           toArea: CardMoveArea.HandArea,
           moveReason: CardMoveReason.ActiveMove,

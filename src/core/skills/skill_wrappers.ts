@@ -1,8 +1,8 @@
+import { Skill, SkillType } from './skill';
 import { BaseSkillTrigger } from 'core/ai/skills/base/base_trigger';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { Skill, SkillType } from './skill';
 
 type SKillConstructor<T extends Skill> = new () => T;
 function onCalculatingSkillUsageWrapper(
@@ -98,36 +98,26 @@ function skillPropertyWrapper(
   } as any;
 }
 
-export const CommonSkill = (skill: { name: string; description: string }) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return onCalculatingSkillUsageWrapper(SkillType.Common, skill.name, skill.description, constructorFunction as any);
-};
-export const AwakeningSkill = (skill: { name: string; description: string }) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return onCalculatingSkillUsageWrapper(SkillType.Awaken, skill.name, skill.description, constructorFunction as any);
-};
-export const LimitSkill = (skill: { name: string; description: string }) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return onCalculatingSkillUsageWrapper(SkillType.Limit, skill.name, skill.description, constructorFunction as any);
-};
-export const CompulsorySkill = (skill: { name: string; description: string }) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return onCalculatingSkillUsageWrapper(
-    SkillType.Compulsory,
-    skill.name,
-    skill.description,
-    constructorFunction as any,
-  );
-};
-export const QuestSkill = (skill: { name: string; description: string }) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return onCalculatingSkillUsageWrapper(SkillType.Quest, skill.name, skill.description, constructorFunction as any);
-};
+export const CommonSkill =
+  (skill: { name: string; description: string }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    onCalculatingSkillUsageWrapper(SkillType.Common, skill.name, skill.description, constructorFunction as any);
+export const AwakeningSkill =
+  (skill: { name: string; description: string }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    onCalculatingSkillUsageWrapper(SkillType.Awaken, skill.name, skill.description, constructorFunction as any);
+export const LimitSkill =
+  (skill: { name: string; description: string }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    onCalculatingSkillUsageWrapper(SkillType.Limit, skill.name, skill.description, constructorFunction as any);
+export const CompulsorySkill =
+  (skill: { name: string; description: string }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    onCalculatingSkillUsageWrapper(SkillType.Compulsory, skill.name, skill.description, constructorFunction as any);
+export const QuestSkill =
+  (skill: { name: string; description: string }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    onCalculatingSkillUsageWrapper(SkillType.Quest, skill.name, skill.description, constructorFunction as any);
 export function LordSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {
@@ -159,17 +149,16 @@ export const ShadowSkill = <T extends Skill>(constructorFunction: SKillConstruct
   } as any;
 };
 
-export const PersistentSkill = (option?: { stubbornSkill?: boolean }) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return skillPropertyWrapper(
-    {
-      persistentSkill: true,
-      stubbornSkill: option?.stubbornSkill,
-    },
-    constructorFunction as any,
-  );
-};
+export const PersistentSkill =
+  (option?: { stubbornSkill?: boolean }) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    skillPropertyWrapper(
+      {
+        persistentSkill: true,
+        stubbornSkill: option?.stubbornSkill,
+      },
+      constructorFunction as any,
+    );
 
 export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
@@ -203,27 +192,25 @@ export function CircleSkill<T extends Skill>(constructorFunction: SKillConstruct
   );
 }
 
-export const SwitchSkill = (switchable: boolean = true) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return skillPropertyWrapper(
-    {
-      switchSkill: true,
-      switchable,
-    },
-    constructorFunction as any,
-  );
-};
+export const SwitchSkill =
+  (switchable: boolean = true) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    skillPropertyWrapper(
+      {
+        switchSkill: true,
+        switchable,
+      },
+      constructorFunction as any,
+    );
 
-export const AI = (instance: typeof BaseSkillTrigger) => <T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) => {
-  return skillPropertyWrapper(
-    {
-      ai: instance,
-    },
-    constructorFunction as any,
-  );
-};
+export const AI =
+  (instance: typeof BaseSkillTrigger) =>
+  <T extends Skill>(constructorFunction: SKillConstructor<T>) =>
+    skillPropertyWrapper(
+      {
+        ai: instance,
+      },
+      constructorFunction as any,
+    );
 
 export type SkillPrototype<T extends Skill> = new () => T;

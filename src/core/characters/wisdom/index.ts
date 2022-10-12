@@ -1,4 +1,3 @@
-import { Character } from 'core/characters/character';
 import { BianFuRen } from './bianfuren';
 import { ChenZhen } from './chenzhen';
 import { FeiYi } from './feiyi';
@@ -7,6 +6,7 @@ import { ZhiDuYu } from './zhi_duyu';
 import { ZhiSunShao } from './zhi_sunshao';
 import { ZhiWangCan } from './zhi_wangcan';
 import { ZhiXunChen } from './zhi_xunchen';
+import { Character } from 'core/characters/character';
 
 export const WisdomPackage: (index: number) => Character[] = index => [
   new ZhiWangCan(index++),

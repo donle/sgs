@@ -36,10 +36,7 @@ export class MinSi extends ActiveSkill {
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return (
-      cards.length > 0 &&
-      cards.reduce<number>((sum, id) => {
-        return (sum += Sanguosha.getCardById(id).CardNumber);
-      }, 0) === 13
+      cards.length > 0 && cards.reduce<number>((sum, id) => (sum += Sanguosha.getCardById(id).CardNumber), 0) === 13
     );
   }
 
@@ -51,10 +48,7 @@ export class MinSi extends ActiveSkill {
     if (selectedCards.length > 0) {
       return (
         Sanguosha.getCardById(cardId).CardNumber <=
-        13 -
-          selectedCards.reduce<number>((sum, id) => {
-            return (sum += Sanguosha.getCardById(id).CardNumber);
-          }, 0)
+        13 - selectedCards.reduce<number>((sum, id) => (sum += Sanguosha.getCardById(id).CardNumber), 0)
       );
     }
 
@@ -145,12 +139,11 @@ export class MinSiShadow extends TriggerSkill implements OnDefineReleaseTiming {
 
       if (cardIds && cardIds.length > 0) {
         const hands = player.getCardIds(PlayerCardsArea.HandArea);
-        const minSiCards = hands.filter(card => {
-          return (
+        const minSiCards = hands.filter(
+          card =>
             cardIds.includes(VirtualCard.getActualCards([card])[0]) &&
-            Sanguosha.getCardById(card).Color === CardColor.Red
-          );
-        });
+            Sanguosha.getCardById(card).Color === CardColor.Red,
+        );
         const discardAmount = hands.length - minSiCards.length - player.getMaxCardHold(room);
 
         askForCardDropEvent.cardAmount = discardAmount;

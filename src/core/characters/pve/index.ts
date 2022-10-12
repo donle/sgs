@@ -1,7 +1,7 @@
-import { Character } from '../character';
-import { GuanSuo } from '../limited/guansuo';
 import { PveLongShen } from './pve_longshen';
 import { PveLianZhen, PveQiSha, PveSoldier, PveTianJi, PveTianLiang, PveTianTong, PveTianXiang } from './pve_soldier';
+import { Character } from '../character';
+import { GuanSuo } from '../limited/guansuo';
 
 export const PvePackage: (index: number) => Character[] = index => [
   new PveLongShen(index++),

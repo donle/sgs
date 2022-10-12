@@ -51,9 +51,10 @@ export class TongYe extends TriggerSkill {
 
     response.selectedOption = response.selectedOption || TongYe.Options[0];
 
-    const currentEquipsNum = room.AlivePlayers.reduce<number>((sum, player) => {
-      return sum + player.getCardIds(PlayerCardsArea.EquipArea).length;
-    }, 0);
+    const currentEquipsNum = room.AlivePlayers.reduce<number>(
+      (sum, player) => sum + player.getCardIds(PlayerCardsArea.EquipArea).length,
+      0,
+    );
     room.setFlag<string>(
       event.fromId,
       this.Name,
@@ -125,9 +126,10 @@ export class TongYeShadow extends TriggerSkill implements OnDefineReleaseTiming 
       room.removeFlag(event.fromId, this.GeneralName);
       room.getPlayerById(event.fromId).removeFlag(this.Name);
 
-      const currentEquipsNum = room.AlivePlayers.reduce<number>((sum, player) => {
-        return sum + player.getCardIds(PlayerCardsArea.EquipArea).length;
-      }, 0);
+      const currentEquipsNum = room.AlivePlayers.reduce<number>(
+        (sum, player) => sum + player.getCardIds(PlayerCardsArea.EquipArea).length,
+        0,
+      );
 
       if (
         (tongyeRecord[0] === TongYe.Options[0] && parseInt(tongyeRecord[1], 10) !== currentEquipsNum) ||

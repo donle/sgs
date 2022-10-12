@@ -1,3 +1,5 @@
+import { GameProcessor } from './game_processor';
+import { DamageType, UPPER_LIMIT_OF_ARMOR } from '../game_props';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
@@ -52,8 +54,6 @@ import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { DamageType, UPPER_LIMIT_OF_ARMOR } from '../game_props';
-import { GameProcessor } from './game_processor';
 
 export class StandardGameProcessor extends GameProcessor {
   protected playerPositionIndex = 0;
@@ -463,51 +463,49 @@ export class StandardGameProcessor extends GameProcessor {
         ignoreNotifiedStatus: true,
       };
 
-      allChangeCardActions.push(
-        async (): Promise<void> => {
-          let changeLimit = this.room.WaitingRoomInfo.roomInfo.fortuneCardsExchangeLimit || 0;
-          while (changeLimit-- > 0) {
-            this.room.notify(GameEventIdentifiers.AskForFortuneCardExchangeEvent, fortuneCardUse, player.Id);
-            const resp = await this.room.onReceivingAsyncResponseFrom(
-              GameEventIdentifiers.AskForFortuneCardExchangeEvent,
-              player.Id,
-            );
+      allChangeCardActions.push(async (): Promise<void> => {
+        let changeLimit = this.room.WaitingRoomInfo.roomInfo.fortuneCardsExchangeLimit || 0;
+        while (changeLimit-- > 0) {
+          this.room.notify(GameEventIdentifiers.AskForFortuneCardExchangeEvent, fortuneCardUse, player.Id);
+          const resp = await this.room.onReceivingAsyncResponseFrom(
+            GameEventIdentifiers.AskForFortuneCardExchangeEvent,
+            player.Id,
+          );
 
-            const { doChange } = resp;
-            if (!doChange) {
-              return;
-            }
-
-            const handCards = player.getCardIds(PlayerCardsArea.HandArea).slice();
-            const handCardsNum = handCards.length;
-            player.dropCards(...handCards);
-            this.room.bury(...handCards);
-
-            const newCardIds = this.room.getCards(handCardsNum, 'top');
-            player.obtainCardIds(...newCardIds);
-
-            this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
-              infos: [
-                {
-                  moveReason: CardMoveReason.PlaceToDropStack,
-                  toArea: CardMoveArea.DropStack,
-                  fromId: player.Id,
-                  movingCards: handCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
-                  engagedPlayerIds: [player.Id],
-                },
-                {
-                  moveReason: CardMoveReason.CardDraw,
-                  toArea: CardMoveArea.HandArea,
-                  toId: player.Id,
-                  movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-                  engagedPlayerIds: [player.Id],
-                },
-              ],
-              ignoreNotifiedStatus: true,
-            });
+          const { doChange } = resp;
+          if (!doChange) {
+            return;
           }
-        },
-      );
+
+          const handCards = player.getCardIds(PlayerCardsArea.HandArea).slice();
+          const handCardsNum = handCards.length;
+          player.dropCards(...handCards);
+          this.room.bury(...handCards);
+
+          const newCardIds = this.room.getCards(handCardsNum, 'top');
+          player.obtainCardIds(...newCardIds);
+
+          this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
+            infos: [
+              {
+                moveReason: CardMoveReason.PlaceToDropStack,
+                toArea: CardMoveArea.DropStack,
+                fromId: player.Id,
+                movingCards: handCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
+                engagedPlayerIds: [player.Id],
+              },
+              {
+                moveReason: CardMoveReason.CardDraw,
+                toArea: CardMoveArea.HandArea,
+                toId: player.Id,
+                movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+                engagedPlayerIds: [player.Id],
+              },
+            ],
+            ignoreNotifiedStatus: true,
+          });
+        }
+      });
     }
 
     await Promise.all(allChangeCardActions.map(caller => caller()));
@@ -2047,12 +2045,12 @@ export class StandardGameProcessor extends GameProcessor {
           }
         } else if (toArea === CardMoveArea.OutsideArea) {
           to.getCardIds(
-            (toArea as unknown) as PlayerCardsArea,
+            toArea as unknown as PlayerCardsArea,
             Precondition.exists(toOutsideArea, 'outside area must have an area name'),
           ).push(...actualCardIds);
         } else if (toArea === CardMoveArea.HandArea) {
           this.room.transformCard(to, actualCardIds, PlayerCardsArea.HandArea);
-          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...actualCardIds);
+          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...actualCardIds);
         } else {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -2073,7 +2071,7 @@ export class StandardGameProcessor extends GameProcessor {
 
             return cardId;
           });
-          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...transformedDelayedTricks);
+          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...transformedDelayedTricks);
         }
       }
     }
@@ -2089,7 +2087,7 @@ export class StandardGameProcessor extends GameProcessor {
 
     let ownerId = this.room.getCardOwnerId(judgeCardId);
     if (ownerId) {
-      const cardArea = (this.room.getPlayerById(ownerId).cardFrom(judgeCardId) as any) as CardMoveArea | undefined;
+      const cardArea = this.room.getPlayerById(ownerId).cardFrom(judgeCardId) as any as CardMoveArea | undefined;
       fromArea = cardArea === undefined ? fromArea : cardArea;
     }
 

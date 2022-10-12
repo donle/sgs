@@ -1,8 +1,8 @@
+import styles from './text.module.css';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Spacing } from 'ui/layout/spacing';
-import styles from './text.module.css';
 
 export type TextProps = {
   className?: string;
@@ -15,8 +15,8 @@ export type TextProps = {
   color?: 'white' | 'grey' | 'highlight' | 'black';
 };
 
-export const Text = observer((props: TextProps) => {
-  return React.createElement(
+export const Text = observer((props: TextProps) =>
+  React.createElement(
     props.tag || 'span',
     {
       className: classNames(
@@ -30,5 +30,5 @@ export const Text = observer((props: TextProps) => {
       ),
     },
     props.children,
-  );
-});
+  ),
+);

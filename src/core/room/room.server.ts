@@ -1,3 +1,5 @@
+import { Room, RoomId, TimeLimitVariant } from './room';
+import { RoomEventStacker } from './utils/room_event_stack';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
@@ -61,8 +63,6 @@ import {
 } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { Room, RoomId, TimeLimitVariant } from './room';
-import { RoomEventStacker } from './utils/room_event_stack';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];
@@ -408,9 +408,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             } = {};
             for (const skill of canTriggerSkills) {
               const priority = skill.getPriority(this, player, content);
-              skillsInPriorities[priority]
-                ? skillsInPriorities[priority].push(skill)
-                : (skillsInPriorities[priority] = [skill]);
+              if (skillsInPriorities[priority]) {
+                skillsInPriorities[priority].push(skill);
+              } else {
+                skillsInPriorities[priority] = [skill];
+              }
               skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content, player);
             }
 
@@ -583,7 +585,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       const toUnhook = p.HookedSkills.filter(skill => {
-        const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+        const hookedSkill = skill as unknown as OnDefineReleaseTiming;
         if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, p.Id, content, stage)) {
           return true;
         }
@@ -1271,9 +1273,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         aimEventCollaborators[toId] = aimEventCollaborators[toId] || [];
         if (!(EventPacker.isTerminated(aimEvent) || this.getPlayerById(toId).Dead)) {
-          initialEvent
-            ? aimEventCollaborators[toId].push(aimEvent)
-            : (aimEventCollaborators[toId][collabroatorsIndex[toId]] = aimEvent);
+          if (initialEvent) {
+            aimEventCollaborators[toId].push(aimEvent);
+          } else {
+            aimEventCollaborators[toId][collabroatorsIndex[toId]] = aimEvent;
+          }
           collabroatorsIndex[toId]++;
         }
 
@@ -2423,10 +2427,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return this.gameProcessor.CurrentProcessingStage;
   }
 
-  public get DrawStack(): ReadonlyArray<CardId> {
+  public get DrawStack(): readonly CardId[] {
     return this.drawStack;
   }
-  public get DropStack(): ReadonlyArray<CardId> {
+  public get DropStack(): readonly CardId[] {
     return this.dropStack;
   }
 

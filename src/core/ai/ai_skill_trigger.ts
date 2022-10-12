@@ -1,9 +1,9 @@
 import { VirtualCard } from 'core/cards/card';
+import { ActiveSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import type { CardId } from 'core/cards/libs/card_props';
 import type { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import type { Player } from 'core/player/player';
 import type { Room } from 'core/room/room';
-import { ActiveSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 
 export type ActiveSkillTrigger<T extends ActiveSkill> = ActiveCharacterSkillTrigger<T> | ActiveCardSkillTrigger<T>;
 
@@ -31,20 +31,20 @@ export type ViewAsSkillTrigger<
   I extends
     | GameEventIdentifiers.AskForCardUseEvent
     | GameEventIdentifiers.AskForCardResponseEvent
-    | GameEventIdentifiers.AskForPeachEvent
+    | GameEventIdentifiers.AskForPeachEvent,
 > = ViewAsCharacterSkillTrigger<I> | ViewAsCardSkillTrigger<I>;
 
 type ViewAsCharacterSkillTrigger<
   I extends
     | GameEventIdentifiers.AskForCardUseEvent
     | GameEventIdentifiers.AskForCardResponseEvent
-    | GameEventIdentifiers.AskForPeachEvent
+    | GameEventIdentifiers.AskForPeachEvent,
 > = (room: Room, ai: Player, skill: ViewAsSkill, onEvent: ServerEventFinder<I>) => VirtualCard | undefined;
 type ViewAsCardSkillTrigger<
   I extends
     | GameEventIdentifiers.AskForCardUseEvent
     | GameEventIdentifiers.AskForCardResponseEvent
-    | GameEventIdentifiers.AskForPeachEvent
+    | GameEventIdentifiers.AskForPeachEvent,
 > = (
   room: Room,
   ai: Player,

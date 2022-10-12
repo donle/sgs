@@ -1,5 +1,5 @@
-import { Flavor } from 'core/shares/types/host_config';
 import { Logger } from './logger';
+import { Flavor } from 'core/shares/types/host_config';
 
 export class ClientLogger extends Logger {
   constructor(private flavor: Flavor = Flavor.Prod) {
@@ -23,6 +23,6 @@ export class ClientLogger extends Logger {
     }
   }
 
-  // tslint:disable-next-line: no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async dump() {}
 }

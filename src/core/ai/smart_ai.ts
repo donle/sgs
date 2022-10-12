@@ -1,18 +1,18 @@
-import { CardType } from 'core/cards/card';
-import { EquipCard } from 'core/cards/equip_card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
-import type { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { EventPacker } from 'core/event/event_packer';
-import { Sanguosha } from 'core/game/engine';
-import { PlayerCardsArea } from 'core/player/player_props';
-import type { Room } from 'core/room/room';
-import { System } from 'core/shares/libs/system';
-import { ActiveSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { PlayerAI } from './ai';
 import { AiLibrary } from './ai_lib';
 import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
 import { TriggerSkillTriggerClass } from './skills/base/trigger_skill_trigger';
+import { CardType } from 'core/cards/card';
+import { EquipCard } from 'core/cards/equip_card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
+import { Sanguosha } from 'core/game/engine';
+import { PlayerCardsArea } from 'core/player/player_props';
+import { System } from 'core/shares/libs/system';
+import { ActiveSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
+import type { CardId } from 'core/cards/libs/card_props';
+import type { Room } from 'core/room/room';
 
 export class SmartAI extends PlayerAI {
   public static get Instance() {
@@ -124,9 +124,8 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { invokeSkillNames, toId, triggeredOnEvent } = content as ServerEventFinder<
-      GameEventIdentifiers.AskForSkillUseEvent
-    >;
+    const { invokeSkillNames, toId, triggeredOnEvent } =
+      content as ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>;
 
     const from = room.getPlayerById(toId);
     for (const skillName of invokeSkillNames) {
@@ -163,9 +162,8 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { toId, cardMatcher, byCardId, cardUserId } = content as ServerEventFinder<
-      GameEventIdentifiers.AskForCardResponseEvent
-    >;
+    const { toId, cardMatcher, byCardId, cardUserId } =
+      content as ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
     const toPlayer = room.getPlayerById(toId);
     const cardMatcherInstance = new CardMatcher(cardMatcher);
     const availableCards = AiLibrary.findAvailableCardsToResponse(room, toPlayer, content, cardMatcherInstance);
@@ -279,9 +277,8 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { toId, cardAmount, fromArea, except } = content as ServerEventFinder<
-      GameEventIdentifiers.AskForCardDropEvent
-    >;
+    const { toId, cardAmount, fromArea, except } =
+      content as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
     const to = room.getPlayerById(toId);
     const availableCards = fromArea.reduce<CardId[]>((savedCards, area) => {
       for (const card of to.getCardIds(area)) {
@@ -309,9 +306,10 @@ export class SmartAI extends PlayerAI {
     };
 
     if (EventPacker.isUncancellableEvent(content) || content.triggeredBySkills !== undefined) {
-      let cards = fromArea.reduce<CardId[]>((allCards, area) => {
-        return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
-      }, []);
+      let cards = fromArea.reduce<CardId[]>(
+        (allCards, area) => [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))],
+        [],
+      );
 
       if (cards.length === 0) {
         return cardDrop;
@@ -626,7 +624,7 @@ export class SmartAI extends PlayerAI {
   }
 
   protected onAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T> {
     const { amount, customCardFields, cardIds, cardFilter, involvedTargets, triggeredBySkills } = content;
 

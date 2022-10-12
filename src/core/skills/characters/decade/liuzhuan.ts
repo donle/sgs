@@ -12,11 +12,15 @@ import { CommonSkill, CompulsorySkill, PersistentSkill, ShadowSkill } from 'core
 @CompulsorySkill({ name: 'liuzhuan', description: 'liuzhuan_description' })
 export class LiuZhuan extends TriggerSkill implements OnDefineReleaseTiming {
   public async whenLosingSkill(room: Room) {
-    room.CurrentPlayer && room.CurrentPlayer.getCardTag(this.Name) !== undefined && room.removeCardTag(room.CurrentPlayer.Id, this.Name);
+    room.CurrentPlayer &&
+      room.CurrentPlayer.getCardTag(this.Name) !== undefined &&
+      room.removeCardTag(room.CurrentPlayer.Id, this.Name);
   }
 
   public async whenDead(room: Room) {
-    room.CurrentPlayer && room.CurrentPlayer.getCardTag(this.Name) !== undefined && room.removeCardTag(room.CurrentPlayer.Id, this.Name);
+    room.CurrentPlayer &&
+      room.CurrentPlayer.getCardTag(this.Name) !== undefined &&
+      room.removeCardTag(room.CurrentPlayer.Id, this.Name);
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {

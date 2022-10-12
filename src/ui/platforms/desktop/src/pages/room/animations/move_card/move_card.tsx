@@ -1,3 +1,4 @@
+import styles from './move_card.module.css';
 import classNames from 'classnames';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -7,7 +8,6 @@ import { RoomPresenter } from 'pages/room/room.presenter';
 import { RoomStore } from 'pages/room/room.store';
 import * as React from 'react';
 import { ClientCard } from 'ui/card/card';
-import styles from './move_card.module.css';
 
 type MoveCardProps = {
   translator: ClientTranslationModule;
@@ -57,27 +57,25 @@ export class MoveCard extends React.Component<MoveCardProps> {
   render() {
     return (
       <div className={styles.displayedCards} ref={this.displayedCardsRef}>
-        {this.props.store.displayedCards.map((displayCard, index) => {
-          return (
-            <ClientCard
-              id={displayCard.animationPlayed ? undefined : displayCard.card.Id.toString()}
-              imageLoader={this.props.imageLoader}
-              key={index}
-              card={displayCard.card}
-              tags={displayCard.tag}
-              width={this.cardWidth}
-              offsetLeft={this.calculateDisplayedCardOffset(this.props.store.displayedCards.length, index)}
-              translator={this.props.translator}
-              className={classNames(styles.displayedCard, {
-                [styles.darken]: displayCard.buried,
-                [styles.focused]: this.focusedCardIndex === index,
-              })}
-              onMouseEnter={this.onDisplayCardFocused(index)}
-              onMouseLeave={this.onDisplayCardLeft}
-              style={this.props.store.displayedCardsAnimationStyles[displayCard.card.Id]}
-            />
-          );
-        })}
+        {this.props.store.displayedCards.map((displayCard, index) => (
+          <ClientCard
+            id={displayCard.animationPlayed ? undefined : displayCard.card.Id.toString()}
+            imageLoader={this.props.imageLoader}
+            key={index}
+            card={displayCard.card}
+            tags={displayCard.tag}
+            width={this.cardWidth}
+            offsetLeft={this.calculateDisplayedCardOffset(this.props.store.displayedCards.length, index)}
+            translator={this.props.translator}
+            className={classNames(styles.displayedCard, {
+              [styles.darken]: displayCard.buried,
+              [styles.focused]: this.focusedCardIndex === index,
+            })}
+            onMouseEnter={this.onDisplayCardFocused(index)}
+            onMouseLeave={this.onDisplayCardLeft}
+            style={this.props.store.displayedCardsAnimationStyles[displayCard.card.Id]}
+          />
+        ))}
       </div>
     );
   }

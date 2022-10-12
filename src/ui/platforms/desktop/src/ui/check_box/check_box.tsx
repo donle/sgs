@@ -1,7 +1,7 @@
+import styles from './check_box.module.css';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import styles from './check_box.module.css';
 
 export type CheckBoxProps<Value = string | number> = {
   onChecked?(checked: boolean): void;

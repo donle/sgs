@@ -1,3 +1,4 @@
+import { MouLi } from './mouli';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerDiedStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -5,7 +6,6 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { MouLi } from './mouli';
 
 @CompulsorySkill({ name: 'zifu', description: 'zifu_description' })
 export class ZiFu extends TriggerSkill {

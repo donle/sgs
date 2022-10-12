@@ -186,9 +186,9 @@ export class XianZhenKeep extends TriggerSkill implements OnDefineReleaseTiming 
     const { triggeredOnEvent } = skillUseEvent;
     const askForCardDropEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
     const gaoshun = room.getPlayerById(askForCardDropEvent.toId);
-    const slashes = gaoshun.getCardIds(PlayerCardsArea.HandArea).filter(cardId => {
-      return Sanguosha.getCardById(cardId).GeneralName === 'slash';
-    });
+    const slashes = gaoshun
+      .getCardIds(PlayerCardsArea.HandArea)
+      .filter(cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash');
 
     (askForCardDropEvent.cardAmount as number) -= slashes.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...slashes] : slashes;

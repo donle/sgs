@@ -1,3 +1,4 @@
+import { BaseAction } from './base_action';
 import { Card } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -6,36 +7,32 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
-import { BaseAction } from './base_action';
 
 export class PlayPhaseAction extends BaseAction {
-  public static isPlayPhaseSkillsDisabled = (
-    room: Room,
-    player: Player,
-    event: ServerEventFinder<GameEventIdentifiers>,
-  ) => (skill: Skill) => {
-    if (!room.isPlaying() || room.isGameOver() || UniqueSkillRule.isProhibited(skill, player)) {
-      return true;
-    }
-
-    if (skill instanceof TriggerSkill) {
-      return true;
-    } else if (skill instanceof ActiveSkill) {
-      return !skill.canUse(room, player);
-    } else if (skill instanceof ViewAsSkill) {
-      if (!skill.canUse(room, player, event)) {
+  public static isPlayPhaseSkillsDisabled =
+    (room: Room, player: Player, event: ServerEventFinder<GameEventIdentifiers>) => (skill: Skill) => {
+      if (!room.isPlaying() || room.isGameOver() || UniqueSkillRule.isProhibited(skill, player)) {
         return true;
       }
 
-      const canViewAs = skill.canViewAs(room, player).filter(cardName => {
-        return !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill);
-      });
+      if (skill instanceof TriggerSkill) {
+        return true;
+      } else if (skill instanceof ActiveSkill) {
+        return !skill.canUse(room, player);
+      } else if (skill instanceof ViewAsSkill) {
+        if (!skill.canUse(room, player, event)) {
+          return true;
+        }
 
-      return canViewAs.length <= 0;
-    }
+        const canViewAs = skill
+          .canViewAs(room, player)
+          .filter(cardName => !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill));
 
-    return true;
-  };
+        return canViewAs.length <= 0;
+      }
+
+      return true;
+    };
 
   private createPlayOrSkillUseEvent(
     player: PlayerId,
@@ -116,9 +113,11 @@ export class PlayPhaseAction extends BaseAction {
     return new Promise<void>(resolve => {
       this.delightItems();
       this.presenter.highlightCards();
-      this.selectedSkillToPlay || this.selectedCardToPlay
-        ? this.presenter.enableActionButton('cancel')
-        : this.presenter.disableActionButton('cancel');
+      if (this.selectedSkillToPlay || this.selectedCardToPlay) {
+        this.presenter.enableActionButton('cancel');
+      } else {
+        this.presenter.disableActionButton('cancel');
+      }
       this.presenter.defineCancelButtonActions(() => this.resetAction());
 
       this.presenter.defineFinishButtonActions(() => {

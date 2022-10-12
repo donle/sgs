@@ -1,9 +1,3 @@
-import classNames from 'classnames';
-import { CharacterNationality } from 'core/characters/character';
-import { PlayerPhase } from 'core/game/stage_processor';
-import { Functional } from 'core/shares/libs/functional';
-import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import * as React from 'react';
 import styles from './badge.module.css';
 import drawPhaseBadge from './images/draw_phase.png';
 import dropPhaseBadge from './images/drop_phase.png';
@@ -20,6 +14,12 @@ import weiBadge from './images/wei.png';
 import weiLordBadge from './images/wei_lord.png';
 import wuBadge from './images/wu.png';
 import wuLordBadge from './images/wu_lord.png';
+import classNames from 'classnames';
+import { CharacterNationality } from 'core/characters/character';
+import { PlayerPhase } from 'core/game/stage_processor';
+import { Functional } from 'core/shares/libs/functional';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import * as React from 'react';
 
 const nationalityBadgeImageMap: { [K in CharacterNationality]: string } = {
   [CharacterNationality.Wei]: weiBadge,

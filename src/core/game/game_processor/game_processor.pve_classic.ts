@@ -1,3 +1,7 @@
+import { StandardGameProcessor } from './game_processor.standard';
+import { Sanguosha } from '../engine';
+import { GameCharacterExtensions } from '../game_props';
+import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 import { VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender } from 'core/characters/character';
@@ -19,10 +23,6 @@ import { GameMode } from 'core/shares/types/room_props';
 import { PveClassicGuYong } from 'core/skills';
 import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { Sanguosha } from '../engine';
-import { GameCharacterExtensions } from '../game_props';
-import { GameEventStage, PlayerDiedStage } from '../stage_processor';
-import { StandardGameProcessor } from './game_processor.standard';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   protected level: number = 0;
@@ -199,9 +199,8 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       );
     }
 
-    const askForChoosingOptionsEvent: Promise<
-      ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>
-    >[] = [];
+    const askForChoosingOptionsEvent: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] =
+      [];
     for (const resp of await Promise.all(sequentialAsyncResponse)) {
       const options = Sanguosha.getCharacterById(resp.chosenCharacterIds[0])
         .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))

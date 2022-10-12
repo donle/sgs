@@ -1,3 +1,4 @@
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 import { QiZhengXiangShengSkillTrigger } from 'core/ai/skills/cards/qizhengxiangsheng';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
@@ -9,7 +10,6 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(QiZhengXiangShengSkillTrigger)
 @CommonSkill({ name: 'qizhengxiangsheng', description: 'qizhengxiangsheng_description' })

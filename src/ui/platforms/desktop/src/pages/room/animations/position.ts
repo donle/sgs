@@ -84,7 +84,11 @@ export class AnimationPosition {
   }
 
   public getPosition(playerId: PlayerId, isCurrentPlayer?: boolean) {
-    isCurrentPlayer ? this.calculateCurrentPlayerPosition(playerId) : this.calculatePlayerPosition(playerId);
+    if (isCurrentPlayer) {
+      this.calculateCurrentPlayerPosition(playerId);
+    } else {
+      this.calculatePlayerPosition(playerId);
+    }
 
     return Precondition.exists(
       this.positions!.find(position => position.playerId === playerId),

@@ -65,9 +65,7 @@ export class PveClassicLianZhenBuf extends TriggerSkill {
     const cardNumber = moveCardEvent.infos
       .filter(info => info.toId === owner.getFlag(this.GeneralName))
       .map(info => info.movingCards.length)
-      .reduce((aur, cur) => {
-        return aur + cur;
-      });
+      .reduce((aur, cur) => aur + cur);
     await room.drawCards(room.CurrentPlayer === owner ? cardNumber * 2 : cardNumber, owner.Id);
     return true;
   }

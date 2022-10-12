@@ -1,7 +1,7 @@
+import { SkillButtonImageProps } from './image_loader';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
-import { SkillButtonImageProps } from './image_loader';
 
 function getSkillTypeNameText(type: SkillType) {
   switch (type) {

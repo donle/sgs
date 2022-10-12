@@ -37,9 +37,7 @@ export class TiQi extends TriggerSkill {
       undefined,
       'round',
       [PlayerPhase.DrawCardStage],
-    ).reduce<number>((sum, event) => {
-      return sum + event.drawAmount;
-    }, 0);
+    ).reduce<number>((sum, event) => sum + event.drawAmount, 0);
     if (drawnNum !== 2) {
       owner.setFlag<number>(this.Name, drawnNum);
       return true;

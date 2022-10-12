@@ -1,3 +1,4 @@
+import { MingRen } from './mingren';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -8,7 +9,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, ShadowSkill, SwitchSkill, SwitchSkillState, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { MingRen } from './mingren';
 
 @SwitchSkill()
 @CommonSkill({ name: 'zhenliang', description: 'zhenliang_description' })

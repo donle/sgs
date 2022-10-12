@@ -52,7 +52,11 @@ export class JueYan extends ActiveSkill {
     ).map(section => String(section));
     if (options.length < from.AvailableEquipSections.length) {
       const index = options.findIndex(section => section === CharacterEquipSections.Precious);
-      index !== -1 ? options.splice(options.length - 1, 0, 'ride section') : options.push('ride section');
+      if (index !== -1) {
+        options.splice(options.length - 1, 0, 'ride section');
+      } else {
+        options.push('ride section');
+      }
     }
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(

@@ -1,3 +1,4 @@
+import { ZhenGe } from './zhenge';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
@@ -7,7 +8,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { ZhenGe } from './zhenge';
 
 @CompulsorySkill({ name: 'xinghan', description: 'xinghan_description' })
 export class XingHan extends TriggerSkill {

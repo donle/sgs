@@ -53,7 +53,11 @@ export class QingJiao extends TriggerSkill {
       const index = card.is(CardType.Equip)
         ? Functional.getCardTypeRawText((card as EquipCard).EquipType)
         : card.GeneralName;
-      dic[index] === undefined ? (dic[index] = []) : dic[index].push(cardId);
+      if (dic[index] === undefined) {
+        dic[index] = [];
+      } else {
+        dic[index].push(cardId);
+      }
     }
 
     const toGain: CardId[] = [];

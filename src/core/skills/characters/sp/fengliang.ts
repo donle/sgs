@@ -1,3 +1,4 @@
+import { KunFen, KunFenEX } from './kunfen';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -6,7 +7,6 @@ import { TiaoXin } from 'core/skills';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { KunFen, KunFenEX } from './kunfen';
 
 @AwakeningSkill({ name: 'fengliang', description: 'fengliang_description' })
 export class FengLiang extends TriggerSkill {

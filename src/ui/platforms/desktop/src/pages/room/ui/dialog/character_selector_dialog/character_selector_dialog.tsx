@@ -1,3 +1,5 @@
+import styles from './character_selector_dialog.module.css';
+import { BaseDialog } from '../base_dialog';
 import classNames from 'classnames';
 import { Character, CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
@@ -9,8 +11,6 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { CharacterCard } from 'ui/character/character';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import { BaseDialog } from '../base_dialog';
-import styles from './character_selector_dialog.module.css';
 
 type CharacterSelectorDialogProps = {
   translator: ClientTranslationModule;

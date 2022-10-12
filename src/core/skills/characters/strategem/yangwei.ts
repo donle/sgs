@@ -153,14 +153,16 @@ export class YangWeiRemover extends TriggerSkill implements OnDefineReleaseTimin
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const unknownEvent = event.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.PhaseChangeEvent
+      | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.PhaseStageChangeEvent
+      | GameEventIdentifiers.PhaseChangeEvent
     >;
 
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardUseEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       cardUseEvent.triggeredBySkills = cardUseEvent.triggeredBySkills || [];
-      cardUseEvent.triggeredBySkills.push(this.GeneralName); 
+      cardUseEvent.triggeredBySkills.push(this.GeneralName);
     } else if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       room.removeFlag(event.fromId, this.GeneralName);
     } else {

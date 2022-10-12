@@ -65,14 +65,14 @@ export class XuanFeng extends TriggerSkill {
               info => info.fromId === phaseStageChangeEvent.playerId && info.moveReason === CardMoveReason.SelfDrop,
             );
 
-            droppedCardNum += infos.reduce<number>((sum, info) => {
-              return (
+            droppedCardNum += infos.reduce<number>(
+              (sum, info) =>
                 sum +
                 info.movingCards.filter(
                   cardInfo => !Sanguosha.isVirtualCardId(cardInfo.card) && cardInfo.fromArea === CardMoveArea.HandArea,
-                ).length
-              );
-            }, 0);
+                ).length,
+              0,
+            );
           }
         }
 

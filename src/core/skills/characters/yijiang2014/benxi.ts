@@ -74,21 +74,14 @@ export class BenXi extends TriggerSkill {
       const availableTargets: PlayerId[] = room
         .getAlivePlayersFrom()
         .map(player => player.Id)
-        .filter(playerId => {
-          return (
+        .filter(
+          playerId =>
             !TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).includes(playerId) &&
             room.isAvailableTarget(cardUseEvent.cardId, fromId, playerId) &&
-            ((Sanguosha.getCardById(cardUseEvent.cardId)
-              .Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
-              fromId,
-              room,
-              playerId,
-              [],
-              [],
-              cardUseEvent.cardId,
-            )
-          );
-        });
+            (
+              Sanguosha.getCardById(cardUseEvent.cardId).Skill as unknown as ExtralCardSkillProperty
+            ).isCardAvailableTarget(fromId, room, playerId, [], [], cardUseEvent.cardId),
+        );
 
       availableTargets.length > 0 && options.unshift('benxi:addTarget');
 

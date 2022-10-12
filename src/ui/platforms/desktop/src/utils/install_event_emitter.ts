@@ -8,6 +8,7 @@ export function installEventEmitter() {
 }
 
 class EventEmitter implements EventEmitterProps {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
   private static instace: EventEmitter;

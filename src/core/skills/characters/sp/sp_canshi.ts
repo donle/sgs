@@ -65,22 +65,15 @@ export class SPCanShi extends TriggerSkill {
       const players = room
         .getAlivePlayersFrom()
         .map(player => player.Id)
-        .filter(playerId => {
-          return (
+        .filter(
+          playerId =>
             room.getMark(playerId, MarkEnum.Kui) > 0 &&
             !TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).includes(playerId) &&
             room.isAvailableTarget(cardUseEvent.cardId, event.fromId, playerId) &&
-            ((Sanguosha.getCardById(cardUseEvent.cardId)
-              .Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
-              event.fromId,
-              room,
-              playerId,
-              [],
-              [],
-              cardUseEvent.cardId,
-            )
-          );
-        });
+            (
+              Sanguosha.getCardById(cardUseEvent.cardId).Skill as unknown as ExtralCardSkillProperty
+            ).isCardAvailableTarget(event.fromId, room, playerId, [], [], cardUseEvent.cardId),
+        );
 
       const allTargets = TargetGroupUtil.getAllTargets(cardUseEvent.targetGroup);
       if (players.length > 0 && allTargets !== undefined) {
@@ -110,23 +103,22 @@ export class SPCanShi extends TriggerSkill {
 
           const chosen: PlayerId[][] = [];
           while (players.length > 0) {
-            const { selectedPlayers } = await room.doAskForCommonly<
-              GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
-            >(
-              GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
-              {
-                user: event.fromId,
-                cardId: cardUseEvent.cardId,
-                exclude: targets,
-                conversation: TranslationPack.translationJsonPatcher(
-                  '{0}: please select a Kui to append to {1} targets',
-                  this.Name,
-                  TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
-                ).extract(),
-                triggeredBySkills: [this.Name],
-              },
-              event.fromId,
-            );
+            const { selectedPlayers } =
+              await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
+                GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+                {
+                  user: event.fromId,
+                  cardId: cardUseEvent.cardId,
+                  exclude: targets,
+                  conversation: TranslationPack.translationJsonPatcher(
+                    '{0}: please select a Kui to append to {1} targets',
+                    this.Name,
+                    TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
+                  ).extract(),
+                  triggeredBySkills: [this.Name],
+                },
+                event.fromId,
+              );
 
             if (!selectedPlayers || selectedPlayers.length < 2) {
               break;

@@ -1,4 +1,3 @@
-import { Character } from '../character';
 import { CaoRen } from './caoren';
 import { HuangZhong } from './huangzhong';
 import { Weiyan } from './weiyan';
@@ -7,6 +6,7 @@ import { XiaoQiao } from './xiaoqiao';
 import { YuJi } from './yuji';
 import { ZhangJiao } from './zhangjiao';
 import { ZhouTai } from './zhoutai';
+import { Character } from '../character';
 
 export const WindCharacterPackage: (index: number) => Character[] = index => [
   new CaoRen(index++),

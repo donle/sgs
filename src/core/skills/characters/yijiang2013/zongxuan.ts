@@ -48,9 +48,11 @@ export class ZongXuan extends TriggerSkill {
       );
 
       cardIds.push(
-        ...infos.reduce<CardId[]>((ids, info) => {
-          return ids.concat(info.movingCards.filter(node => room.isCardInDropStack(node.card)).map(node => node.card));
-        }, []),
+        ...infos.reduce<CardId[]>(
+          (ids, info) =>
+            ids.concat(info.movingCards.filter(node => room.isCardInDropStack(node.card)).map(node => node.card)),
+          [],
+        ),
       );
     }
 

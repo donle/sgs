@@ -1,9 +1,9 @@
+import styles from './dialog.module.css';
 import classNames from 'classnames';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { Curtain } from 'ui/curtain/curtain';
-import styles from './dialog.module.css';
 
 @mobxReact.observer
 export class Dialog extends React.Component<{ className?: string; children?: React.ReactNode; onClose?(): void }> {

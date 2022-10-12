@@ -1,3 +1,4 @@
+import styles from './settings.module.css';
 import { getAllLanguages, Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
@@ -8,7 +9,6 @@ import { Button } from 'ui/button/button';
 import { Dialog } from 'ui/dialog/dialog';
 import { Picture } from 'ui/picture/picture';
 import { Slider } from 'ui/slider/slider';
-import styles from './settings.module.css';
 
 export type SettingsProps = {
   electronLoader: ElectronLoader;
@@ -43,9 +43,7 @@ export const SettingsDialog = (props: SettingsProps) => {
     setLanguage(event.currentTarget.value as Languages);
   };
 
-  const getLanguageText = () => {
-    return language;
-  };
+  const getLanguageText = () => language;
 
   return (
     <Dialog className={styles.settings} onClose={props.onConfirm}>

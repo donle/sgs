@@ -1,3 +1,4 @@
+import { JiJun } from './jijun';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -10,7 +11,6 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { JiJun } from './jijun';
 
 @CommonSkill({ name: 'fangtong', description: 'fangtong_description' })
 export class FangTong extends TriggerSkill {
@@ -79,9 +79,7 @@ export class FangTong extends TriggerSkill {
 
     if (
       Sanguosha.getCardById(cardIds[0]).CardNumber +
-        response.selectedCards.reduce<number>((sum, id) => {
-          return sum + Sanguosha.getCardById(id).CardNumber;
-        }, 0) ===
+        response.selectedCards.reduce<number>((sum, id) => sum + Sanguosha.getCardById(id).CardNumber, 0) ===
       36
     ) {
       const others = room.getOtherPlayers(fromId).map(player => player.Id);

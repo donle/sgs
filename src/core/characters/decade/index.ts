@@ -1,4 +1,3 @@
-import { Character } from 'core/characters/character';
 import { CaiMaoZhangYun } from './caimaozhangyun';
 import { CaoXing } from './caoxing';
 import { DecadeDengZhi } from './decade_dengzhi';
@@ -31,6 +30,7 @@ import { ZhangHu } from './zhanghu';
 import { ZhangJi } from './zhangji';
 import { ZhangWen } from './zhangwen';
 import { ZhaoZhong } from './zhaozhong';
+import { Character } from 'core/characters/character';
 
 export const DecadePackage: (index: number) => Character[] = index => [
   new NiuJin(index++),

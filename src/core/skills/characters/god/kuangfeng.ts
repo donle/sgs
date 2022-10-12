@@ -1,3 +1,4 @@
+import { QiXing } from './qixing';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -17,7 +18,6 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { QiXing } from './qixing';
 
 @CommonSkill({ name: 'kuangfeng', description: 'kuangfeng_description' })
 export class KuangFeng extends TriggerSkill implements OnDefineReleaseTiming {

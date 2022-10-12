@@ -1,3 +1,5 @@
+import { PlayerAI } from './ai';
+import { AiLibrary } from './ai_lib';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -6,8 +8,6 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { System } from 'core/shares/libs/system';
-import { PlayerAI } from './ai';
-import { AiLibrary } from './ai_lib';
 
 export class TrustAI extends PlayerAI {
   public static get Instance() {
@@ -124,9 +124,8 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { toId, cardAmount, fromArea, except } = content as ServerEventFinder<
-      GameEventIdentifiers.AskForCardDropEvent
-    >;
+    const { toId, cardAmount, fromArea, except } =
+      content as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
     const to = room.getPlayerById(toId);
     const cardDrop: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
       fromId: toId,
@@ -134,9 +133,10 @@ export class TrustAI extends PlayerAI {
     };
 
     if (EventPacker.isUncancellableEvent(content) || content.triggeredBySkills !== undefined) {
-      let cards = fromArea.reduce<CardId[]>((allCards, area) => {
-        return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
-      }, []);
+      let cards = fromArea.reduce<CardId[]>(
+        (allCards, area) => [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))],
+        [],
+      );
 
       if (cards.length === 0) {
         return cardDrop;
@@ -335,7 +335,7 @@ export class TrustAI extends PlayerAI {
   }
 
   protected onAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T> {
     const { amount, customCardFields, cardIds, cardFilter, involvedTargets, triggeredBySkills } = content;
 

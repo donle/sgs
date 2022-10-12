@@ -1,4 +1,3 @@
-import { Character } from '../character';
 import { ChenDao } from './chendao';
 import { GuanQiuJian } from './guanqiujian';
 import { HaoZhao } from './haozhao';
@@ -7,6 +6,7 @@ import { LuKang } from './lukang';
 import { ZhangXiu } from './zhangxiu';
 import { ZhouFei } from './zhoufei';
 import { ZhuGeZhan } from './zhugezhan';
+import { Character } from '../character';
 
 export const ThunderCharacterPackage: (index: number) => Character[] = index => [
   new HaoZhao(index++),

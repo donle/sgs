@@ -1,3 +1,5 @@
+import styles from './guanxing_dialog.module.css';
+import { BaseDialog } from '../base_dialog';
 import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -8,8 +10,6 @@ import { RoomPresenter } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { ClientCard } from 'ui/card/card';
 import { CardSlot } from 'ui/card/card_slot';
-import { BaseDialog } from '../base_dialog';
-import styles from './guanxing_dialog.module.css';
 
 export type GuanXingDialogProps = {
   cards: Card[];
@@ -104,9 +104,11 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
           this.cardPositions[cardId].left >= minMovingRange &&
           this.cardPositions[cardId].left <= maxMovingRange
         ) {
-          targetIndex <= originalIndex
-            ? (this.cardPositions[cardId].left += this.getCardLeftOffset(1))
-            : (this.cardPositions[cardId].left -= this.getCardLeftOffset(1));
+          if (targetIndex <= originalIndex) {
+            this.cardPositions[cardId].left += this.getCardLeftOffset(1);
+          } else {
+            this.cardPositions[cardId].left -= this.getCardLeftOffset(1);
+          }
         }
       }
       this.cardPositions[movingCard.Id].left = toCardOffset;
@@ -318,7 +320,11 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
       canConfirm = false;
     }
 
-    canConfirm ? presenter.enableActionButton('confirm') : presenter.disableActionButton('confirm');
+    if (canConfirm) {
+      presenter.enableActionButton('confirm');
+    } else {
+      presenter.disableActionButton('confirm');
+    }
     presenter.broadcastUIUpdate();
   }
 

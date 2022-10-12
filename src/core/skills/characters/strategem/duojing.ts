@@ -73,10 +73,7 @@ export class DuoJing extends TriggerSkill {
     }
 
     const aimEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    EventPacker.addMiddleware(
-      { tag: this.Name, data: event.fromId },
-      aimEvent,
-    );
+    EventPacker.addMiddleware({ tag: this.Name, data: event.fromId }, aimEvent);
 
     aimEvent.triggeredBySkills = aimEvent.triggeredBySkills || [];
     aimEvent.triggeredBySkills.push(this.Name);

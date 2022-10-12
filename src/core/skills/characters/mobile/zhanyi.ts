@@ -249,17 +249,17 @@ export class ZhanYiSide extends ViewAsSkill {
     const identifier = event && EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
       return (
-        Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
-          return owner.canUseCard(room, new CardMatcher({ name: [name] }), new CardMatcher(event!.cardMatcher));
-        }) !== undefined
+        Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name =>
+          owner.canUseCard(room, new CardMatcher({ name: [name] }), new CardMatcher(event!.cardMatcher)),
+        ) !== undefined
       );
     }
 
     return (
       identifier !== GameEventIdentifiers.AskForCardResponseEvent &&
-      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
-        return owner.canUseCard(room, new CardMatcher({ name: [name] }));
-      }) !== undefined
+      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name =>
+        owner.canUseCard(room, new CardMatcher({ name: [name] })),
+      ) !== undefined
     );
   }
 

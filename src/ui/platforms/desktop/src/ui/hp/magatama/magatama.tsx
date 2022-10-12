@@ -1,10 +1,10 @@
-import classNames from 'classnames';
-import * as React from 'react';
 import damagedMagatama from './images/damaged.webp';
 import dangerMagatama from './images/danger.webp';
 import dyingMagatama from './images/dying.webp';
 import healthyMagatama from './images/healthy.webp';
 import styles from './magatama.module.css';
+import classNames from 'classnames';
+import * as React from 'react';
 
 export type HealthyStatusType = 'damaged' | 'dying' | 'danger' | 'healthy';
 

@@ -1,3 +1,4 @@
+import { Lobby } from './pages/lobby/lobby';
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { Sanguosha } from 'core/game/engine';
 import { Logger } from 'core/shares/libs/logger/logger';
@@ -18,7 +19,7 @@ import { CampaignService } from 'services/campaign_service/campaign_service';
 import { getConnectionService } from 'services/connection_service/connection_service_util';
 import { CharacterSkinInfo } from 'skins/skins';
 import { installEventEmitter } from 'utils/install_event_emitter';
-import { Lobby } from './pages/lobby/lobby';
+
 @mobxReact.observer
 export class App extends React.PureComponent<{
   config: ClientConfig;
@@ -47,9 +48,8 @@ export class App extends React.PureComponent<{
     installEventEmitter();
   }
 
-  private readonly getConnectionService = (campaignMode: boolean) => {
-    return campaignMode ? this.fakeConnectionService : this.connectionService;
-  };
+  private readonly getConnectionService = (campaignMode: boolean) =>
+    campaignMode ? this.fakeConnectionService : this.connectionService;
 
   render() {
     return (

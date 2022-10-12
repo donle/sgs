@@ -1,4 +1,3 @@
-import { Character } from '../character';
 import { CaoPi } from './caopi';
 import { DongZhuo } from './dongzhuo';
 import { JiaXu } from './jiaxu';
@@ -7,6 +6,7 @@ import { MengHuo } from './menghuo';
 import { SunJian } from './sunjian';
 import { XuHuang } from './xuhuang';
 import { ZhuRong } from './zhurong';
+import { Character } from '../character';
 
 export const ForestCharacterPackage: (index: number) => Character[] = index => [
   new CaoPi(index++),

@@ -53,7 +53,7 @@ export class ZhenWei extends TriggerSkill {
       !(
         !AimGroupUtil.getAllTargets(aimEvent.allTargets).includes(event.fromId) &&
         room.isAvailableTarget(aimEvent.byCardId, aimEvent.fromId, event.fromId) &&
-        ((Sanguosha.getCardById(aimEvent.byCardId).Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
+        (Sanguosha.getCardById(aimEvent.byCardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
           aimEvent.fromId,
           room,
           event.fromId,

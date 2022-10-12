@@ -1,3 +1,4 @@
+import { BaZhen } from '../fire/bazhen';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { BaGuaZhen } from 'core/cards/standard/baguazhen';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -8,7 +9,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, OnDefineReleaseTiming, SkillType, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { BaZhen } from '../fire/bazhen';
 
 type JieZhenMapper = { [playerId: string]: string[] };
 

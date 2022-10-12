@@ -76,13 +76,12 @@ export class ZhengRong extends TriggerSkill {
       options[PlayerCardsArea.HandArea] = to.getCardIds(PlayerCardsArea.HandArea);
     }
 
-    const chooseCardEvent = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
-    >({
-      fromId,
-      toId: toIds[0],
-      options,
-    });
+    const chooseCardEvent =
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>({
+        fromId,
+        toId: toIds[0],
+        options,
+      });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,

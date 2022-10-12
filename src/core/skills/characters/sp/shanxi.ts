@@ -68,23 +68,22 @@ export class ShanXi extends TriggerSkill {
     const handCardIds = to.getCardIds(PlayerCardsArea.HandArea);
     const equipCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
 
-    const { selectedCards, selectedCardsIndex } = await room.doAskForCommonly<
-      GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
-    >(
-      GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
-      {
-        toId,
-        customCardFields: {
-          [PlayerCardsArea.HandArea]: handCardIds.length,
-          [PlayerCardsArea.EquipArea]: equipCardIds,
+    const { selectedCards, selectedCardsIndex } =
+      await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent>(
+        GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
+        {
+          toId,
+          customCardFields: {
+            [PlayerCardsArea.HandArea]: handCardIds.length,
+            [PlayerCardsArea.EquipArea]: equipCardIds,
+          },
+          customTitle: this.Name,
+          amount: [1, room.getPlayerById(event.fromId).Hp],
+          triggeredBySkills: [this.Name],
         },
-        customTitle: this.Name,
-        amount: [1, room.getPlayerById(event.fromId).Hp],
-        triggeredBySkills: [this.Name],
-      },
-      event.fromId,
-      true,
-    );
+        event.fromId,
+        true,
+      );
 
     const movingCards: { card: CardId; fromArea: PlayerCardsArea | undefined }[] = selectedCards
       ? selectedCards.map(id => ({ card: id, fromArea: to.cardFrom(id) }))

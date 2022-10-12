@@ -1,3 +1,4 @@
+import { ZhouFu } from './zhoufu';
 import { CardColor } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -7,7 +8,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { ZhouFu } from './zhoufu';
 
 @CompulsorySkill({ name: 'yingbing', description: 'yingbing_description' })
 export class YingBing extends TriggerSkill {

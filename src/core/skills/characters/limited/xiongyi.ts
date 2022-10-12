@@ -1,3 +1,6 @@
+import { YingHun } from '../forest/yinghun';
+import { HunZi } from '../mountain/hunzi';
+import { YingZi } from '../standard/yingzi';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
@@ -5,9 +8,6 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { LimitSkill } from 'core/skills/skill_wrappers';
-import { YingHun } from '../forest/yinghun';
-import { HunZi } from '../mountain/hunzi';
-import { YingZi } from '../standard/yingzi';
 
 @LimitSkill({ name: 'xiongyi', description: 'xiongyi_description' })
 export class XiongYi extends TriggerSkill {

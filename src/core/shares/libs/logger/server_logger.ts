@@ -1,6 +1,6 @@
+import { Logger } from './logger';
 import chalk from 'chalk';
 import { Flavor } from 'core/shares/types/host_config';
-import { Logger } from './logger';
 
 export class ServerLogger extends Logger {
   private readonly logFileDir = './backlog.txt';
@@ -8,9 +8,7 @@ export class ServerLogger extends Logger {
 
   translate(args: any[]) {
     if (this.translator) {
-      return args.map(arg => {
-        return typeof arg === 'string' ? this.translator!.tr(arg) : arg;
-      });
+      return args.map(arg => (typeof arg === 'string' ? this.translator!.tr(arg) : arg));
     }
 
     return args;

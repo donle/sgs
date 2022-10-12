@@ -43,9 +43,9 @@ export class HuoMo extends ViewAsSkill implements OnDefineReleaseTiming {
 
   public canViewAs(room: Room, owner: Player): string[] {
     const usedCards = owner.getFlag<string[]>(this.Name) || [];
-    return Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).filter(name => {
-      return !usedCards.includes(name);
-    });
+    return Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).filter(
+      name => !usedCards.includes(name),
+    );
   }
 
   public canUse(
@@ -57,20 +57,19 @@ export class HuoMo extends ViewAsSkill implements OnDefineReleaseTiming {
     const usedCards = owner.getFlag<string[]>(this.Name) || [];
     if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
       return (
-        Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
-          return (
+        Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(
+          name =>
             !usedCards.includes(name) &&
-            owner.canUseCard(room, new CardMatcher({ name: [name] }), new CardMatcher(event!.cardMatcher))
-          );
-        }) !== undefined
+            owner.canUseCard(room, new CardMatcher({ name: [name] }), new CardMatcher(event!.cardMatcher)),
+        ) !== undefined
       );
     }
 
     return (
       identifier !== GameEventIdentifiers.AskForCardResponseEvent &&
-      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
-        return !usedCards.includes(name) && owner.canUseCard(room, new CardMatcher({ name: [name] }));
-      }) !== undefined
+      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(
+        name => !usedCards.includes(name) && owner.canUseCard(room, new CardMatcher({ name: [name] })),
+      ) !== undefined
     );
   }
 

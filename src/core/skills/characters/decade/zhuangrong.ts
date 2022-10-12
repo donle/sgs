@@ -1,3 +1,5 @@
+import { ShenWei } from './shenwei';
+import { WuShuang } from '../standard/wushuang';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -5,8 +7,6 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill } from 'core/skills/skill_wrappers';
-import { WuShuang } from '../standard/wushuang';
-import { ShenWei } from './shenwei';
 
 @AwakeningSkill({ name: 'zhuangrong', description: 'zhuangrong_description' })
 export class ZhuangRong extends TriggerSkill {

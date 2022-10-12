@@ -74,9 +74,8 @@ export class JiJingSelect extends TriggerSkill {
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return (
       cards.length > 0 &&
-      cards.reduce<number>((sum, id) => {
-        return (sum += Sanguosha.getCardById(id).CardNumber);
-      }, 0) === room.getFlag<number>(owner.Id, JiJing.Name)
+      cards.reduce<number>((sum, id) => (sum += Sanguosha.getCardById(id).CardNumber), 0) ===
+        room.getFlag<number>(owner.Id, JiJing.Name)
     );
   }
 
@@ -89,10 +88,7 @@ export class JiJingSelect extends TriggerSkill {
     if (selectedCards.length > 0) {
       return (
         Sanguosha.getCardById(cardId).CardNumber <=
-        cardNumber -
-          selectedCards.reduce<number>((sum, id) => {
-            return (sum += Sanguosha.getCardById(id).CardNumber);
-          }, 0)
+        cardNumber - selectedCards.reduce<number>((sum, id) => (sum += Sanguosha.getCardById(id).CardNumber), 0)
       );
     }
 

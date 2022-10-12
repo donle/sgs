@@ -1,3 +1,4 @@
+import { JiBing } from './jibing';
 import { VirtualCard } from 'core/cards/card';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -10,7 +11,6 @@ import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers'
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { JiBing } from './jibing';
 
 @CommonSkill({ name: 'binghuo', description: 'binghuo_description' })
 export class BingHuo extends TriggerSkill {

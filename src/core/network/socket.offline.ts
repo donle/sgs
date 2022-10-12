@@ -1,14 +1,14 @@
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from './socket.client';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 
 export class ClientOfflineSocket extends ClientSocket {
   constructor(roomId: string) {
     super('', roomId);
   }
 
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init() {}
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public notify<I extends GameEventIdentifiers>(type: I, content: ClientEventFinder<I>) {}
 
   public on<T extends GameEventIdentifiers>(type: T, receiver: (event: ServerEventFinder<T>) => void): ClientSocket {
@@ -25,9 +25,9 @@ export class ClientOfflineSocket extends ClientSocket {
     throw new Error("Shouldn't call emitRoomStatus function in client socket");
   }
 
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onReconnected(callback: () => void) {}
 
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public disconnect() {}
 }

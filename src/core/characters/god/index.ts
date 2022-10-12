@@ -1,4 +1,3 @@
-import { Character } from '../character';
 import { GodCaoCao } from './god_caocao';
 import { GodGanNing } from './god_ganning';
 import { GodGuanYu } from './god_guanyu';
@@ -16,6 +15,7 @@ import { GodZhangLiao } from './god_zhangliao';
 import { GodZhaoYun } from './god_zhaoyun';
 import { GodZhouYu } from './god_zhouyu';
 import { GodZhuGeLiang } from './god_zhugeliang';
+import { Character } from '../character';
 
 export const GodCharacterPackage: (index: number) => Character[] = index => [
   new GodGuanYu(index++),

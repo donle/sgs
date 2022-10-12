@@ -1,9 +1,9 @@
+import styles from './button.module.css';
 import classNames from 'classnames';
 import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
-import styles from './button.module.css';
 
 type SkillButtonProps = {
   onClick?(): void;

@@ -47,12 +47,13 @@ export class SanYao extends ActiveSkill {
       (ownerPlayer.getFlag<boolean>(SanYao.MostHp) !== true &&
         room.getAlivePlayersFrom().find(player => player.Hp > targetPlayer.Hp) === undefined) ||
       (ownerPlayer.getFlag<boolean>(SanYao.MostHandNum) !== true &&
-        room.getAlivePlayersFrom().find(player => {
-          return (
-            player.getCardIds(PlayerCardsArea.HandArea).length >
-            targetPlayer.getCardIds(PlayerCardsArea.HandArea).length
-          );
-        }) === undefined)
+        room
+          .getAlivePlayersFrom()
+          .find(
+            player =>
+              player.getCardIds(PlayerCardsArea.HandArea).length >
+              targetPlayer.getCardIds(PlayerCardsArea.HandArea).length,
+          ) === undefined)
     );
   }
 
@@ -71,9 +72,12 @@ export class SanYao extends ActiveSkill {
 
     const hasMostHp = room.getOtherPlayers(toIds![0]).find(player => player.Hp > target.Hp) === undefined;
     const hasMostHandNum =
-      room.getOtherPlayers(toIds![0]).find(player => {
-        return player.getCardIds(PlayerCardsArea.HandArea).length > target.getCardIds(PlayerCardsArea.HandArea).length;
-      }) === undefined;
+      room
+        .getOtherPlayers(toIds![0])
+        .find(
+          player =>
+            player.getCardIds(PlayerCardsArea.HandArea).length > target.getCardIds(PlayerCardsArea.HandArea).length,
+        ) === undefined;
 
     if (
       hasMostHp &&

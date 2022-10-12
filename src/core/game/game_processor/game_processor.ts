@@ -1,3 +1,4 @@
+import { GameEventStage, PlayerPhase, PlayerPhaseStages, StageProcessor } from '../stage_processor';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { BaseGameEvent, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -7,7 +8,6 @@ import { PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { GameEventStage, PlayerPhase, PlayerPhaseStages, StageProcessor } from '../stage_processor';
 
 export abstract class GameProcessor {
   protected playerPositionIndex: number;
@@ -79,9 +79,9 @@ export abstract class GameProcessor {
   public abstract assignRoles(players: Player[]): void;
   public abstract fixCurrentPosition(playerPosition: number): void;
   protected abstract drawGameBeginsCards(playerInfo: PlayerInfo): Promise<void>;
-  // tslint:disable-next-line: no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected async beforeGameStartPreparation() {}
-  // tslint:disable-next-line: no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected async beforeGameBeginPreparation() {}
 
   protected abstract onPlayerJudgeStage(phase: PlayerPhase): Promise<void>;

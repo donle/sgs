@@ -87,9 +87,11 @@ export class WuRong extends ActiveSkill {
       };
       room.broadcast(GameEventIdentifiers.CardDisplayEvent, showCardEvent);
 
-      response.fromId === fromId
-        ? displayCards.unshift(response.selectedCards[0])
-        : displayCards.push(response.selectedCards[0]);
+      if (response.fromId === fromId) {
+        displayCards.unshift(response.selectedCards[0]);
+      } else {
+        displayCards.push(response.selectedCards[0]);
+      }
     }
 
     if (

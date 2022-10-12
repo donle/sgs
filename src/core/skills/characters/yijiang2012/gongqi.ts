@@ -56,9 +56,7 @@ export class GongQi extends ActiveSkill {
       suits,
       TranslationPack.translationJsonPatcher(
         'gongqi suits: {0}',
-        suits.reduce<string>((suitString, suit) => {
-          return suitString + Functional.getCardSuitCharText(suit);
-        }, ''),
+        suits.reduce<string>((suitString, suit) => suitString + Functional.getCardSuitCharText(suit), ''),
       ).toString(),
     );
 

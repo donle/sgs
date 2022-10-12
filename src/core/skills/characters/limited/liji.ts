@@ -158,11 +158,10 @@ export class LiJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     } else {
       let droppedNum = room.getFlag<number>(fromId, LiJi.Name) || 0;
       droppedNum += (unknownEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>).infos.reduce<number>(
-        (sum, info) => {
-          return info.toArea === CardMoveArea.DropStack
+        (sum, info) =>
+          info.toArea === CardMoveArea.DropStack
             ? sum + info.movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).length
-            : sum;
-        },
+            : sum,
         0,
       );
 

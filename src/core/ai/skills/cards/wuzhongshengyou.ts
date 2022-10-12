@@ -11,10 +11,8 @@ export class WuZhongShengYouSkillTrigger extends ActiveSkillTriggerClass<WuZhong
     ai: Player,
     skill: WuZhongShengYouSkill,
     skillInCard?: CardId,
-  ): ClientEventFinder<GameEventIdentifiers.CardUseEvent> | undefined => {
-    return {
-      fromId: ai.Id,
-      cardId: skillInCard!,
-    };
-  };
+  ): ClientEventFinder<GameEventIdentifiers.CardUseEvent> | undefined => ({
+    fromId: ai.Id,
+    cardId: skillInCard!,
+  });
 }

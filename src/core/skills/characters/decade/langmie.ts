@@ -61,9 +61,8 @@ export class LangMie extends TriggerSkill {
   }
 
   public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    const phaseStageChangeEvent = event.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.PhaseStageChangeEvent
-    >;
+    const phaseStageChangeEvent =
+      event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     if (phaseStageChangeEvent.toStage === PlayerPhaseStages.FinishStageStart) {
       const response = await room.askForCardDrop(
         event.fromId,

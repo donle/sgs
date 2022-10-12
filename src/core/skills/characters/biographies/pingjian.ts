@@ -212,9 +212,8 @@ export class PingJianShadow extends TriggerSkill {
     >;
     const identifier = EventPacker.getIdentifier(unknownEvent);
 
-    let realEvent: ServerEventFinder<GameEventIdentifiers> = unknownEvent as ServerEventFinder<
-      GameEventIdentifiers.DamageEvent
-    >;
+    let realEvent: ServerEventFinder<GameEventIdentifiers> =
+      unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       realEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     }

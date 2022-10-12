@@ -1,3 +1,5 @@
+import { PveClassicGameProcessor } from './game_processor.pve_classic';
+import { Sanguosha } from '../engine';
 import { Character } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -6,8 +8,6 @@ import { PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { pveLongShenSkills } from 'core/skills/game_mode/pve/pve_longshen_skills';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { Sanguosha } from '../engine';
-import { PveClassicGameProcessor } from './game_processor.pve_classic';
 
 export class PveLongshenGameProcessor extends PveClassicGameProcessor {
   protected proposalCharacters: string[] = [];
@@ -42,14 +42,14 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     Algorithm.shuffle(candSkills);
 
     let weights = 0;
-    const except_weights = this.level * this.room.Players.filter(player => !player.isSmartAI()).length;
-    while (weights < except_weights) {
+    const exceptWeights = this.level * this.room.Players.filter(player => !player.isSmartAI()).length;
+    while (weights < exceptWeights) {
       const item = candSkills.shift();
       if (item === undefined) {
         break;
       }
 
-      if (item.weights + weights > except_weights) {
+      if (item.weights + weights > exceptWeights) {
         continue;
       }
       weights += item.weights;

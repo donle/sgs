@@ -19,13 +19,10 @@ export class QieTing extends TriggerSkill {
     return (
       owner.Id !== content.fromPlayer &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
-        event => {
-          return (
-            EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent &&
-            event.fromId === content.fromPlayer &&
-            event.toId !== content.fromPlayer
-          );
-        },
+        event =>
+          EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent &&
+          event.fromId === content.fromPlayer &&
+          event.toId !== content.fromPlayer,
         content.fromPlayer,
         'round',
         undefined,
@@ -104,14 +101,13 @@ export class QieTing extends TriggerSkill {
           movedByReason: this.Name,
         });
       } else if (response.selectedOption === 'qieting:move') {
-        const askForChooseCardEvent = EventPacker.createUncancellableEvent<
-          GameEventIdentifiers.AskForChoosingCardEvent
-        >({
-          toId: fromId,
-          cardIds: canMoveCards,
-          amount: 1,
-          customTitle: 'qieting: please move one of these cards to you',
-        });
+        const askForChooseCardEvent =
+          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardEvent>({
+            toId: fromId,
+            cardIds: canMoveCards,
+            amount: 1,
+            customTitle: 'qieting: please move one of these cards to you',
+          });
 
         const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardEvent>(
           GameEventIdentifiers.AskForChoosingCardEvent,

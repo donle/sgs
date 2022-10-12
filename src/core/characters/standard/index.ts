@@ -1,4 +1,3 @@
-import { Character } from '../character';
 import { CaoCao } from './caocao';
 import { CaoZhang } from './caozhang';
 import { DaQiao } from './daqiao';
@@ -31,6 +30,7 @@ import { ZhaoYun } from './zhaoyun';
 import { ZhenJi } from './zhenji';
 import { ZhouYu } from './zhouyu';
 import { ZhuGeLiang } from './zhugeliang';
+import { Character } from '../character';
 
 export const StandardCharacterPackage: (index: number) => Character[] = index => [
   new SunQuan(index++),

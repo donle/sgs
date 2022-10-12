@@ -1,9 +1,3 @@
-import classNames from 'classnames';
-import { MarkEnum } from 'core/shares/types/mark_list';
-import * as React from 'react';
-import styles from './mark.module.css';
-
-import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
 import baoliIcon from './images/baoli.png';
 import danlieIcon from './images/danlie.png';
@@ -25,6 +19,18 @@ import nightmareIcon from './images/nightmare.png';
 import wrathIcon from './images/nu.png';
 import orangeIcon from './images/orange.png';
 import pingdingIcon from './images/pingding.png';
+import pveClassicGuIcon from './images/pve_classic_gu.png';
+import pveClassicHeIcon from './images/pve_classic_he.png';
+import pveClassicJiIcon from './images/pve_classic_ji.png';
+import pveClassicJianIcon from './images/pve_classic_jian.png';
+import pveClassicXiIcon from './images/pve_classic_xi.png';
+import pveClassicYingIcon from './images/pve_classic_ying.png';
+import pveClassicYuIcon from './images/pve_classic_yu.png';
+import pveClassicZhiIcon from './images/pve_classic_zhi.png';
+import pveClassicPoJun from './images/pve_pojun.png';
+import pveClassicTanLang from './images/pve_tanlang.png';
+import pveClassicWenQu from './images/pve_wenqu.png';
+import pveClassicWuQu from './images/pve_wuqu.png';
 import qianIcon from './images/qian.png';
 import ranIcon from './images/ran.png';
 import renIcon from './images/ren.png';
@@ -41,19 +47,11 @@ import yuqingIcon from './images/yuqing.png';
 import zhongIcon from './images/zhong.png';
 import ziweiIcon from './images/ziwei.png';
 
-import pveClassicGuIcon from './images/pve_classic_gu.png';
-import pveClassicHeIcon from './images/pve_classic_he.png';
-import pveClassicJiIcon from './images/pve_classic_ji.png';
-import pveClassicJianIcon from './images/pve_classic_jian.png';
-import pveClassicXiIcon from './images/pve_classic_xi.png';
-import pveClassicYingIcon from './images/pve_classic_ying.png';
-import pveClassicYuIcon from './images/pve_classic_yu.png';
-import pveClassicZhiIcon from './images/pve_classic_zhi.png';
-
-import pveClassicPoJun from './images/pve_pojun.png';
-import pveClassicTanLang from './images/pve_tanlang.png';
-import pveClassicWenQu from './images/pve_wenqu.png';
-import pveClassicWuQu from './images/pve_wuqu.png';
+import styles from './mark.module.css';
+import classNames from 'classnames';
+import { MarkEnum } from 'core/shares/types/mark_list';
+import * as React from 'react';
+import { Tooltip } from 'ui/tooltip/tooltip';
 
 const markIconMaps: {
   [K in MarkEnum]: string;
@@ -126,8 +124,8 @@ export type SwitchSkillMarkProps = {
   tagPosition?: 'left' | 'right';
 };
 
-export const Mark = (props: MarkProps) => {
-  return props.amount > 0 ? (
+export const Mark = (props: MarkProps) =>
+  props.amount > 0 ? (
     <div className={classNames(styles.mark, props.className)}>
       <img src={markIconMaps[props.markType]} alt="" />
       {props.amount > 1 && <span className={styles.markAmount}>{props.amount}</span>}
@@ -135,7 +133,6 @@ export const Mark = (props: MarkProps) => {
   ) : (
     <></>
   );
-};
 
 export const LimitSkillMark = (props: OnceSkillMarkProps) => {
   const [hovered, setHover] = React.useState<boolean>(false);

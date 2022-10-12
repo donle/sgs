@@ -1,3 +1,5 @@
+import styles from './seats_layout.module.css';
+import { PlayerCard } from '../player/player';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -10,8 +12,6 @@ import { RoomStore } from 'pages/room/room.store';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { Button } from 'ui/button/button';
-import { PlayerCard } from '../player/player';
-import styles from './seats_layout.module.css';
 
 type SeatsLayoutProps = {
   store: RoomStore;
@@ -74,15 +74,12 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     this.props.onRequestView?.(player);
   };
 
-  private readonly renderRequestViewButton = (player: Player) => {
-    return (
-      this.props.observerMode && (
-        <Button variant="primary" onClick={this.onRequestView(player)} className={styles.observeButton}>
-          {this.props.translator.tr('Observe')}
-        </Button>
-      )
+  private readonly renderRequestViewButton = (player: Player) =>
+    this.props.observerMode && (
+      <Button variant="primary" onClick={this.onRequestView(player)} className={styles.observeButton}>
+        {this.props.translator.tr('Observe')}
+      </Button>
     );
-  };
 
   private getLeftPlayers() {
     let numberOfPlayers = this.sideNumberOfPlayers;

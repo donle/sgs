@@ -1,3 +1,4 @@
+import { FuNan, FuNanEX } from './funan';
 import { CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -8,7 +9,6 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { FuNan, FuNanEX } from './funan';
 
 @CommonSkill({ name: 'jiexun', description: 'jiexun_description' })
 export class JieXun extends TriggerSkill {
@@ -36,14 +36,14 @@ export class JieXun extends TriggerSkill {
     return TranslationPack.translationJsonPatcher(
       '{0}: do you want to choose a target to use this skill(draw {1} card(s), discard {2} card(s))?',
       this.Name,
-      room.AlivePlayers.reduce<number>((sum, player) => {
-        return (
+      room.AlivePlayers.reduce<number>(
+        (sum, player) =>
           sum +
           [...player.getCardIds(PlayerCardsArea.EquipArea), ...player.getCardIds(PlayerCardsArea.JudgeArea)].filter(
             cardId => Sanguosha.getCardById(cardId).Suit === CardSuit.Diamond,
-          ).length
-        );
-      }, 0),
+          ).length,
+        0,
+      ),
       owner.hasUsedSkillTimes(this.Name),
     ).extract();
   }
@@ -58,14 +58,14 @@ export class JieXun extends TriggerSkill {
     }
     const toId = event.toIds[0];
 
-    const drawNum = room.AlivePlayers.reduce<number>((sum, player) => {
-      return (
+    const drawNum = room.AlivePlayers.reduce<number>(
+      (sum, player) =>
         sum +
         [...player.getCardIds(PlayerCardsArea.EquipArea), ...player.getCardIds(PlayerCardsArea.JudgeArea)].filter(
           cardId => Sanguosha.getCardById(cardId).Suit === CardSuit.Diamond,
-        ).length
-      );
-    }, 0);
+        ).length,
+      0,
+    );
     drawNum > 0 && (await room.drawCards(drawNum, toId, 'top', event.fromId, this.Name));
 
     const discardableCardIds = room

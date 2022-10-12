@@ -1,5 +1,5 @@
-import { GameRunningInfo } from 'core/game/game_props';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from './event';
+import { GameRunningInfo } from 'core/game/game_props';
 
 const enum PrivateTagEnum {
   DamageSignatureInCardUse = 'DamageSignatureInCardUse',
@@ -7,6 +7,7 @@ const enum PrivateTagEnum {
 }
 
 export class EventPacker {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
   static wrapGameRunningInfo<T extends GameEventIdentifiers>(
@@ -36,16 +37,13 @@ export class EventPacker {
     (event as any).timestamp = Date.now();
   };
 
-  static getTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): number | undefined => {
-    return (event as any).timestamp;
-  };
+  static getTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): number | undefined =>
+    (event as any).timestamp;
 
   static isDisresponsiveEvent = <T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,
     includeUnoffsetable?: boolean,
-  ): boolean => {
-    return (event as any).disresponsive || (includeUnoffsetable && (event as any).unoffsetable);
-  };
+  ): boolean => (event as any).disresponsive || (includeUnoffsetable && (event as any).unoffsetable);
 
   static setDisresponsiveEvent = <T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,
@@ -73,9 +71,7 @@ export class EventPacker {
   static getMiddleware = <DataType>(
     tag: string,
     event: ServerEventFinder<GameEventIdentifiers>,
-  ): DataType | undefined => {
-    return (event as any).middlewares && (event as any).middlewares[tag];
-  };
+  ): DataType | undefined => (event as any).middlewares && (event as any).middlewares[tag];
 
   static removeMiddleware = <T extends GameEventIdentifiers>(
     tag: string,
@@ -96,7 +92,7 @@ export class EventPacker {
 
   static createIdentifierEvent = <
     T extends GameEventIdentifiers,
-    E extends ServerEventFinder<T> | ClientEventFinder<T>
+    E extends ServerEventFinder<T> | ClientEventFinder<T>,
   >(
     identifier: T,
     event: E,
@@ -105,17 +101,14 @@ export class EventPacker {
     return event;
   };
 
-  static hasIdentifier = <T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>): boolean => {
-    return (event as any).identifier === identifier;
-  };
+  static hasIdentifier = <T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>): boolean =>
+    (event as any).identifier === identifier;
 
-  static getIdentifier = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): T | undefined => {
-    return (event as any).identifier;
-  };
+  static getIdentifier = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): T | undefined =>
+    (event as any).identifier;
 
-  static isUncancellableEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>) => {
-    return !!(event as any).uncancellable;
-  };
+  static isUncancellableEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>) =>
+    !!(event as any).uncancellable;
 
   static terminate<T extends GameEventIdentifiers>(event: ServerEventFinder<T>): ServerEventFinder<T> {
     (event as any).terminate = true;

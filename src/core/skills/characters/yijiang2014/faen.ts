@@ -49,9 +49,11 @@ export class FaEn extends TriggerSkill {
       {
         from: event.fromId,
         tos: [
-          (event.triggeredOnEvent as ServerEventFinder<
-            GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
-          >).toId,
+          (
+            event.triggeredOnEvent as ServerEventFinder<
+              GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
+            >
+          ).toId,
         ],
       },
     ];
@@ -64,9 +66,11 @@ export class FaEn extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     await room.drawCards(
       1,
-      (event.triggeredOnEvent as ServerEventFinder<
-        GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
-      >).toId,
+      (
+        event.triggeredOnEvent as ServerEventFinder<
+          GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
+        >
+      ).toId,
       'top',
       event.fromId,
       this.Name,

@@ -14,7 +14,10 @@ class App {
       })
       .use((req, res, next) => {
         if (/\/cdn\/[^?]*$/.test(req.url)) {
-          res.sendfile(path.join(__dirname, `../build/cdn_assets/${req.url.replace('/cdn', '')}`), { maxAge: '180d', status: 301 });
+          res.sendfile(path.join(__dirname, `../build/cdn_assets/${req.url.replace('/cdn', '')}`), {
+            maxAge: '180d',
+            status: 301,
+          });
         } else {
           next();
         }

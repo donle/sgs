@@ -60,23 +60,21 @@ export class TaoLuan extends ViewAsSkill implements OnDefineReleaseTiming {
           types =>
             (types.includes(CardType.Trick) || types.includes(CardType.Basic)) &&
             !types.includes(CardType.DelayedTrick),
-        ).find(name => {
-          return (
+        ).find(
+          name =>
             !usedCards.includes(Sanguosha.getCardByName(name).GeneralName) &&
-            owner.canUseCard(room, new CardMatcher({ name: [name] }), new CardMatcher(event!.cardMatcher))
-          );
-        }) !== undefined
+            owner.canUseCard(room, new CardMatcher({ name: [name] }), new CardMatcher(event!.cardMatcher)),
+        ) !== undefined
       );
     }
 
     return (
       identifier !== GameEventIdentifiers.AskForCardResponseEvent &&
-      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
-        return (
+      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(
+        name =>
           !usedCards.includes(Sanguosha.getCardByName(name).GeneralName) &&
-          owner.canUseCard(room, new CardMatcher({ name: [name] }))
-        );
-      }) !== undefined
+          owner.canUseCard(room, new CardMatcher({ name: [name] })),
+      ) !== undefined
     );
   }
 

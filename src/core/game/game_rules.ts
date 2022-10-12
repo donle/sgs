@@ -1,10 +1,10 @@
+import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { GlobalRulesBreakerSkill, RulesBreakerSkill } from 'core/skills/skill';
-import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 
 export class GameCommonRules {
   // constructor() {}
@@ -94,9 +94,10 @@ export class GameCommonRules {
 
     const additionalRule = this.userRules[user.Id].cards.filter(rule => rule.cardMatcher.match(card));
     if (additionalRule) {
-      availableUseTimes = additionalRule.reduce((total, current) => {
-        return (total += current.additionalUsableTimes);
-      }, availableUseTimes);
+      availableUseTimes = additionalRule.reduce(
+        (total, current) => (total += current.additionalUsableTimes),
+        availableUseTimes,
+      );
     }
     for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
       availableUseTimes += skill.breakCardUsableTimes(card instanceof Card ? card.Id : card, room, user);
@@ -299,12 +300,10 @@ export class GameCommonRules {
     this.preCheck(user);
 
     const rule = this.userRules[user.Id];
-    const cardRules = rule.cards.map(cardRule => {
-      return {
-        ...cardRule,
-        cardMatcher: cardRule.cardMatcher.toSocketPassenger(),
-      };
-    });
+    const cardRules = rule.cards.map(cardRule => ({
+      ...cardRule,
+      cardMatcher: cardRule.cardMatcher.toSocketPassenger(),
+    }));
 
     return {
       ...rule,
@@ -323,11 +322,9 @@ export class GameCommonRules {
     rule.additionalHold = ruleObject.additionalHold;
     rule.additionalOffenseDistance = ruleObject.additionalOffenseDistance;
 
-    rule.cards = ruleObject.cards.map(cardRule => {
-      return {
-        ...cardRule,
-        cardMatcher: new CardMatcher(cardRule.cardMatcher),
-      };
-    });
+    rule.cards = ruleObject.cards.map(cardRule => ({
+      ...cardRule,
+      cardMatcher: new CardMatcher(cardRule.cardMatcher),
+    }));
   }
 }

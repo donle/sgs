@@ -26,7 +26,9 @@ export class LianZhou extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     room.getPlayerById(event.fromId).ChainLocked || (await room.chainedOn(event.fromId));
 
-    const targets = room.AlivePlayers.filter(player => player.Hp === room.getPlayerById(event.fromId).Hp && !player.ChainLocked).map(player => player.Id);
+    const targets = room.AlivePlayers.filter(
+      player => player.Hp === room.getPlayerById(event.fromId).Hp && !player.ChainLocked,
+    ).map(player => player.Id);
     if (targets.length > 0) {
       const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingPlayerEvent>(
         GameEventIdentifiers.AskForChoosingPlayerEvent,

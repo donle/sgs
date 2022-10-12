@@ -1,3 +1,4 @@
+import { ChunLao } from './chunlao';
 import { VirtualCard } from 'core/cards/card';
 import { FireSlash } from 'core/cards/legion_fight/fire_slash';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -11,7 +12,6 @@ import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { CommonSkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { ChunLao } from './chunlao';
 
 @CommonSkill({ name: 'lihuo', description: 'lihuo_description' })
 export class LiHuo extends TriggerSkill {
@@ -84,12 +84,13 @@ export class LiHuoShadow extends TriggerSkill {
     return (
       Sanguosha.getCardById(event.cardId).Name === 'fire_slash' &&
       owner.Id === event.fromId &&
-      room.getOtherPlayers(owner.Id).find(player => {
-        return (
-          room.canAttack(owner, player, event.cardId) &&
-          !TargetGroupUtil.includeRealTarget(event.targetGroup, player.Id)
-        );
-      }) !== undefined
+      room
+        .getOtherPlayers(owner.Id)
+        .find(
+          player =>
+            room.canAttack(owner, player, event.cardId) &&
+            !TargetGroupUtil.includeRealTarget(event.targetGroup, player.Id),
+        ) !== undefined
     );
   }
 

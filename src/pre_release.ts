@@ -1,6 +1,6 @@
+import { coreVersion } from './core/game/version';
 import * as fs from 'fs';
 import * as path from 'path';
-import { coreVersion } from './core/game/version';
 
 function preRelease() {
   const args = process.argv[2] || '--micro';

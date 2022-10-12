@@ -1,3 +1,5 @@
+import { BaseAction } from './base_action';
+import { ResponsiveUseCardAction } from './responsive_card_use_action';
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -8,32 +10,29 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { BaseAction } from './base_action';
-import { ResponsiveUseCardAction } from './responsive_card_use_action';
 
 export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifiers.AskForPeachEvent> {
-  public static readonly isSkillDisabled = (
-    room: Room,
-    useByMyself: boolean,
-    player: Player,
-    event: ServerEventFinder<GameEventIdentifiers>,
-  ) => (skill: Skill) => {
-    if (UniqueSkillRule.isProhibited(skill, player)) {
-      return true;
-    }
+  public static readonly isSkillDisabled =
+    (room: Room, useByMyself: boolean, player: Player, event: ServerEventFinder<GameEventIdentifiers>) =>
+    (skill: Skill) => {
+      if (UniqueSkillRule.isProhibited(skill, player)) {
+        return true;
+      }
 
-    if (skill instanceof TriggerSkill) {
-      return true;
-    } else if (skill instanceof ViewAsSkill) {
-      const matcher = new CardMatcher({ name: useByMyself ? ['alcohol', 'peach'] : ['peach'] });
-      return (
-        !CardMatcher.match({ name: skill.canViewAs(room, player, undefined, matcher), tag: 'card-matcher' }, matcher) ||
-        !skill.canUse(room, player, event)
-      );
-    }
+      if (skill instanceof TriggerSkill) {
+        return true;
+      } else if (skill instanceof ViewAsSkill) {
+        const matcher = new CardMatcher({ name: useByMyself ? ['alcohol', 'peach'] : ['peach'] });
+        return (
+          !CardMatcher.match(
+            { name: skill.canViewAs(room, player, undefined, matcher), tag: 'card-matcher' },
+            matcher,
+          ) || !skill.canUse(room, player, event)
+        );
+      }
 
-    return true;
-  };
+      return true;
+    };
 
   isOutsideCardShowOnSkillTriggered(card: Card) {
     if (this.isCardFromParticularArea(card)) {

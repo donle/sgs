@@ -1,3 +1,5 @@
+import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
+import { ViewAsSkillTriggerClass } from './skills/base/view_as_skill_trigger';
 import { CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher, CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
@@ -9,8 +11,6 @@ import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props'
 import { Room } from 'core/room/room';
 import { GameMode } from 'core/shares/types/room_props';
 import { ActiveSkill, FilterSkill, ResponsiveSkill, ViewAsSkill } from 'core/skills/skill';
-import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
-import { ViewAsSkillTriggerClass } from './skills/base/view_as_skill_trigger';
 
 type CardsValue = {
   cardId: CardId;

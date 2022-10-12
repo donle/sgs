@@ -1,3 +1,6 @@
+import { StandardGameProcessor } from './game_processor.standard';
+import { Sanguosha } from '../engine';
+import { GameEventStage, PlayerDiedStage, PlayerPhase } from '../stage_processor';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
@@ -14,9 +17,6 @@ import { Functional } from 'core/shares/libs/functional';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { Sanguosha } from '../engine';
-import { GameEventStage, PlayerDiedStage, PlayerPhase } from '../stage_processor';
-import { StandardGameProcessor } from './game_processor.standard';
 
 export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
   public assignRoles(players: Player[]) {

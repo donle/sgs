@@ -50,6 +50,7 @@ export class YuYun extends TriggerSkill {
     room.getPlayerById(fromId).Hp > 1 && options.unshift('yuyun:loseHp');
 
     let selectedOption = options[0];
+
     if (options.length === 2) {
       const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
@@ -65,7 +66,11 @@ export class YuYun extends TriggerSkill {
       selectedOption = response.selectedOption || selectedOption;
     }
 
-    selectedOption === 'yuyun:loseMaxHp' ? await room.changeMaxHp(fromId, -1) : await room.loseHp(fromId, 1);
+    if (selectedOption === 'yuyun:loseMaxHp') {
+      await room.changeMaxHp(fromId, -1);
+    } else {
+      await room.loseHp(fromId, 1);
+    }
 
     const chosenOptions: string[] = [];
     for (let i = 0; i < room.getPlayerById(fromId).LostHp + 1; i++) {

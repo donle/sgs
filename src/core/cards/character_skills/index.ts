@@ -1,6 +1,6 @@
+import { QiZhengXiangSheng } from './qizhengxiangsheng';
 import { Card } from '../card';
 import { CardSuit } from '../libs/card_props';
-import { QiZhengXiangSheng } from './qizhengxiangsheng';
 
 export const SkillsGeneratedCardPackage: (index: number) => Card[] = index => [
   new QiZhengXiangSheng(index++, 2, CardSuit.Spade),

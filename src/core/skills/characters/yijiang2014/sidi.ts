@@ -52,9 +52,8 @@ export class SiDi extends TriggerSkill {
 
   public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const { fromId } = event;
-    const phaseStageChangeEvent = event.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.PhaseStageChangeEvent
-    >;
+    const phaseStageChangeEvent =
+      event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     const availableCards =
       phaseStageChangeEvent.toStage === PlayerPhaseStages.FinishStageStart
         ? room
@@ -108,9 +107,8 @@ export class SiDi extends TriggerSkill {
       return false;
     }
 
-    const phaseStageChangeEvent = event.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.PhaseStageChangeEvent
-    >;
+    const phaseStageChangeEvent =
+      event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     if (phaseStageChangeEvent.toStage === PlayerPhaseStages.FinishStageStart) {
       await room.moveCards({
         movingCards: [

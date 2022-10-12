@@ -1,7 +1,7 @@
+import styles from './card.module.css';
 import classNames from 'classnames';
 import { CardSuit } from 'core/cards/libs/card_props';
 import * as React from 'react';
-import styles from './card.module.css';
 
 export const CardSuitItem = (props: { suit: CardSuit; className?: string }) => {
   switch (props.suit) {

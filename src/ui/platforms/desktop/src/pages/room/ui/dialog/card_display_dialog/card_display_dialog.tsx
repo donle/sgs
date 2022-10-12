@@ -1,3 +1,5 @@
+import styles from './card_display_dialog.module.css';
+import { BaseDialog } from '../base_dialog';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
@@ -7,8 +9,6 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
-import { BaseDialog } from '../base_dialog';
-import styles from './card_display_dialog.module.css';
 
 type CardDisplayDialogProps = {
   translator: ClientTranslationModule;
@@ -41,32 +41,28 @@ const onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
   e.stopPropagation();
 };
 
-export const CardDisplayDialog = (props: CardDisplayDialogProps) => {
-  return (
-    <BaseDialog
-      title={props.translator.trx(
-        props.from
-          ? TranslationPack.translationJsonPatcher(
-              '{0} display handcards to you',
-              TranslationPack.patchPlayerInTranslation(props.from),
-            ).toString()
-          : 'cards displayed to you',
-      )}
-    >
-      <div className={styles.cardContainer} onMouseDown={onAction}>
-        {getCardDisplayContainer(props).map((cardsLine, index) => {
-          return (
-            <div className={styles.cardLine} key={index}>
-              {cardsLine}
-            </div>
-          );
-        })}
-        <div className={styles.confirmButton}>
-          <Button variant="primary" onClick={props.onConfirm}>
-            {props.translator.tr('confirm')}
-          </Button>
+export const CardDisplayDialog = (props: CardDisplayDialogProps) => (
+  <BaseDialog
+    title={props.translator.trx(
+      props.from
+        ? TranslationPack.translationJsonPatcher(
+            '{0} display handcards to you',
+            TranslationPack.patchPlayerInTranslation(props.from),
+          ).toString()
+        : 'cards displayed to you',
+    )}
+  >
+    <div className={styles.cardContainer} onMouseDown={onAction}>
+      {getCardDisplayContainer(props).map((cardsLine, index) => (
+        <div className={styles.cardLine} key={index}>
+          {cardsLine}
         </div>
+      ))}
+      <div className={styles.confirmButton}>
+        <Button variant="primary" onClick={props.onConfirm}>
+          {props.translator.tr('confirm')}
+        </Button>
       </div>
-    </BaseDialog>
-  );
-};
+    </div>
+  </BaseDialog>
+);

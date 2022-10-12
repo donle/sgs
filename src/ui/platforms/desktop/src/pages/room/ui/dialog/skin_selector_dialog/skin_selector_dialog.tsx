@@ -1,3 +1,6 @@
+import styles from './skin_selector_dialog.module.css';
+import { getSkinName } from '../../switch_avatar/switch_skin';
+import { BaseDialog } from '../base_dialog';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -5,9 +8,6 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { SkinCard } from 'ui/skin/skin';
-import { getSkinName } from '../../switch_avatar/switch_skin';
-import { BaseDialog } from '../base_dialog';
-import styles from './skin_selector_dialog.module.css';
 
 type SkinSelectorDialogProps = {
   translator: ClientTranslationModule;
@@ -41,24 +41,22 @@ export class SkinSelectorDialog extends React.Component<SkinSelectorDialogProps>
       <BaseDialog title={this.props.translator.tr('please choose a skin')}>
         <div className={styles.innerDialog}>
           <div className={styles.characterSelector}>
-            {skinNameList.map((skinName, index) => {
-              return (
-                <div className={styles.characterSelectorItem} key={index}>
-                  <SkinCard
-                    imageLoader={this.props.imageLoader}
-                    skinData={this.props.skinData}
-                    translator={this.props.translator}
-                    character={this.props.character}
-                    skinName={skinName}
-                    playerId={this.props.playerId}
-                    key={skinName}
-                    onClick={this.onClick}
-                    size={'small'}
-                    selected={this.selectedSkins.includes(skinName)}
-                  />
-                </div>
-              );
-            })}
+            {skinNameList.map((skinName, index) => (
+              <div className={styles.characterSelectorItem} key={index}>
+                <SkinCard
+                  imageLoader={this.props.imageLoader}
+                  skinData={this.props.skinData}
+                  translator={this.props.translator}
+                  character={this.props.character}
+                  skinName={skinName}
+                  playerId={this.props.playerId}
+                  key={skinName}
+                  onClick={this.onClick}
+                  size={'small'}
+                  selected={this.selectedSkins.includes(skinName)}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </BaseDialog>

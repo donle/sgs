@@ -43,7 +43,7 @@ export abstract class Skill {
   private ai?: BaseSkillTrigger;
 
   public abstract isRefreshAt(room: Room, owner: Player, stage: PlayerPhase): boolean;
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public whenRefresh(room: Room, owner: Player) {}
 
   public async beforeUse(
@@ -72,20 +72,20 @@ export abstract class Skill {
   public async onEffectRejected(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
-    // tslint:disable-next-line: no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {}
 
   public async beforeEffect(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
-    // tslint:disable-next-line: no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {
     return true;
   }
   public async afterEffect(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
-    // tslint:disable-next-line: no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {
     return true;
   }

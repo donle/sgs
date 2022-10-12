@@ -1,3 +1,6 @@
+import { BaseAction } from './base_action';
+import { RoomPresenter } from '../room.presenter';
+import { RoomStore } from '../room.store';
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -9,32 +12,26 @@ import { Room } from 'core/room/room';
 import { FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { RoomPresenter } from '../room.presenter';
-import { RoomStore } from '../room.store';
-import { BaseAction } from './base_action';
 
 export class CardResponseAction extends BaseAction {
-  public static isSkillsOnCardResponseDisabled = (
-    room: Room,
-    matcher: CardMatcher,
-    player: Player,
-    event: ServerEventFinder<GameEventIdentifiers>,
-  ) => (skill: Skill) => {
-    if (UniqueSkillRule.isProhibited(skill, player)) {
-      return true;
-    }
+  public static isSkillsOnCardResponseDisabled =
+    (room: Room, matcher: CardMatcher, player: Player, event: ServerEventFinder<GameEventIdentifiers>) =>
+    (skill: Skill) => {
+      if (UniqueSkillRule.isProhibited(skill, player)) {
+        return true;
+      }
 
-    if (skill instanceof TriggerSkill) {
-      return true;
-    } else if (skill instanceof ViewAsSkill) {
-      return (
-        !new CardMatcher({ name: skill.canViewAs(room, player, undefined, matcher) }).match(matcher) ||
-        !skill.canUse(room, player, event)
-      );
-    }
+      if (skill instanceof TriggerSkill) {
+        return true;
+      } else if (skill instanceof ViewAsSkill) {
+        return (
+          !new CardMatcher({ name: skill.canViewAs(room, player, undefined, matcher) }).match(matcher) ||
+          !skill.canUse(room, player, event)
+        );
+      }
 
-    return true;
-  };
+      return true;
+    };
 
   private askForEvent: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
   private matcher: CardMatcher;

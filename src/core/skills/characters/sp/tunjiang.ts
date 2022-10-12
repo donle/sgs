@@ -25,13 +25,10 @@ export class TunJiang extends TriggerSkill {
       content.playerId === owner.Id &&
       content.toStage === PlayerPhaseStages.FinishStageStart &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.CardUseEvent>(
-        event => {
-          return (
-            event.fromId === owner.Id &&
-            event.targetGroup !== undefined &&
-            TargetGroupUtil.getRealTargets(event.targetGroup).find(player => player !== owner.Id) !== undefined
-          );
-        },
+        event =>
+          event.fromId === owner.Id &&
+          event.targetGroup !== undefined &&
+          TargetGroupUtil.getRealTargets(event.targetGroup).find(player => player !== owner.Id) !== undefined,
         owner.Id,
         'round',
         [PlayerPhase.PlayCardStage],

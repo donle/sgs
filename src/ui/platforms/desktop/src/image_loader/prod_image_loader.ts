@@ -1,14 +1,5 @@
-import { CharacterEquipSections } from 'core/characters/character';
-import { PlayerId, PlayerRole } from 'core/player/player_props';
-import { Functional } from 'core/shares/libs/functional';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { GameMode } from 'core/shares/types/room_props';
-import { SkillType } from 'core/skills/skill';
 import { ImageLoader } from './image_loader';
-import { getLobbyButtonImage, getSkillButtonImages } from './prod_button_image_loader';
 
-import { LobbyButton } from 'props/game_props';
-import { CharacterSkinInfo } from 'skins/skins';
 import cardBackImage from './images/cards/cardback.webp';
 import BingLiangCunDuanIcon from './images/delayed_tricks/bingliangcunduan.png';
 import LeBuSiShuIcon from './images/delayed_tricks/lebusishu.png';
@@ -19,6 +10,14 @@ import lobbyBackgroundImage from './images/lobby/background.png';
 import createRoomImage from './images/lobby/create.png';
 import generalModeIcon from './images/lobby/general_mode.png';
 import hegemonyModeIcon from './images/lobby/hegemony_mode.png';
+import illustraion1 from './images/lobby/illustration1.png';
+import illustraion2 from './images/lobby/illustration2.png';
+import illustraion3 from './images/lobby/illustration3.png';
+import illustraion4 from './images/lobby/illustration4.png';
+import illustraion5 from './images/lobby/illustration5.png';
+import illustraion6 from './images/lobby/illustration6.png';
+import illustraion7 from './images/lobby/illustration7.png';
+import illustraion8 from './images/lobby/illustration8.png';
 import pveModeIcon from './images/lobby/pve_mode.png';
 import roomListImage from './images/lobby/room_list.png';
 import acknowledgementImage from './images/system/acknowledge.png';
@@ -33,14 +32,15 @@ import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
 import waitingRoomBackgroundImage from './images/system/waiting_room_background.jpg';
 
-import illustraion1 from './images/lobby/illustration1.png';
-import illustraion2 from './images/lobby/illustration2.png';
-import illustraion3 from './images/lobby/illustration3.png';
-import illustraion4 from './images/lobby/illustration4.png';
-import illustraion5 from './images/lobby/illustration5.png';
-import illustraion6 from './images/lobby/illustration6.png';
-import illustraion7 from './images/lobby/illustration7.png';
-import illustraion8 from './images/lobby/illustration8.png';
+import { getLobbyButtonImage, getSkillButtonImages } from './prod_button_image_loader';
+import { CharacterEquipSections } from 'core/characters/character';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
+import { Functional } from 'core/shares/libs/functional';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GameMode } from 'core/shares/types/room_props';
+import { SkillType } from 'core/skills/skill';
+import { LobbyButton } from 'props/game_props';
+import { CharacterSkinInfo } from 'skins/skins';
 
 const gameModeIcons = {
   [GameMode.Standard]: generalModeIcon,

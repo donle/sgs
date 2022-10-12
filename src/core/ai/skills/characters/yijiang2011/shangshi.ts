@@ -4,10 +4,8 @@ import { Room } from 'core/room/room';
 import { ShangShi } from 'core/skills';
 
 export class ShangShiSkillTrigger extends TriggerSkillTriggerClass<ShangShi> {
-  public readonly skillTrigger = (room: Room, ai: Player, skill: ShangShi) => {
-    return {
-      fromId: ai.Id,
-      invoke: skill.Name,
-    };
-  };
+  public readonly skillTrigger = (room: Room, ai: Player, skill: ShangShi) => ({
+    fromId: ai.Id,
+    invoke: skill.Name,
+  });
 }

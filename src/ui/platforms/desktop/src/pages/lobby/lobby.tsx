@@ -1,3 +1,12 @@
+import lockerImage from './images/locked.png';
+import styles from './lobby.module.css';
+import { Messages } from './messages';
+import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
+import { Chat } from './ui/chat/chat';
+import { CreateRoomButton } from './ui/create_room_button/create_room_button';
+import { CreateRoomDialog } from './ui/create_room_dialog/create_room_dialog';
+import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
+import { FeedbackDialog } from './ui/feedback_dialog/feedback_dialog';
 import logoImage from 'assets/images/lobby/logo.png';
 import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
@@ -26,15 +35,6 @@ import { LinkButton } from 'ui/button/link_button';
 import { Picture } from 'ui/picture/picture';
 import { SignalBar } from 'ui/signal_bar/signal_bar';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import lockerImage from './images/locked.png';
-import styles from './lobby.module.css';
-import { Messages } from './messages';
-import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
-import { Chat } from './ui/chat/chat';
-import { CreateRoomButton } from './ui/create_room_button/create_room_button';
-import { CreateRoomDialog } from './ui/create_room_dialog/create_room_dialog';
-import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
-import { FeedbackDialog } from './ui/feedback_dialog/feedback_dialog';
 
 type LobbyProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;

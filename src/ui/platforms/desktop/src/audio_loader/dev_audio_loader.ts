@@ -1,7 +1,7 @@
+import { AudioLoader } from './audio_loader';
 import { CharacterGender } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { CharacterSkinInfo } from 'skins/skins';
-import { AudioLoader } from './audio_loader';
 
 const baseHost: string = '/cdn';
 const cosRepo: string = 'https://sgs-static-1256205614.cos.ap-nanjing.myqcloud.com/backup_remote';

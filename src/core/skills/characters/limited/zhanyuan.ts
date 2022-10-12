@@ -1,3 +1,5 @@
+import { ManSi } from './mansi';
+import { XiLi } from './xili';
 import { CharacterGender } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
@@ -9,8 +11,6 @@ import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { AwakeningSkill, CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { ManSi } from './mansi';
-import { XiLi } from './xili';
 
 @AwakeningSkill({ name: 'zhanyuan', description: 'zhanyuan_description' })
 export class ZhanYuan extends TriggerSkill implements OnDefineReleaseTiming {

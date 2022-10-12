@@ -1,4 +1,3 @@
-import { Character } from '../character';
 import { DengZhi } from './dengzhi';
 import { FuQian } from './fuqian';
 import { GongSunKang } from './gongsunkang';
@@ -21,6 +20,7 @@ import { YangBiao } from './yangbiao';
 import { YangHuiYu } from './yanghuiyu';
 import { YanPu } from './yanpu';
 import { ZhuLing } from './zhuling';
+import { Character } from '../character';
 
 export const MobilePackage: (index: number) => Character[] = index => [
   new ZhuLing(index++),

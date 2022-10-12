@@ -11,9 +11,7 @@ export abstract class Logger {
 
   translate(args: any[]) {
     if (this.translator) {
-      return args.map(arg => {
-        return typeof arg === 'string' ? this.translator!.tr(arg) : arg;
-      });
+      return args.map(arg => (typeof arg === 'string' ? this.translator!.tr(arg) : arg));
     }
 
     return args;

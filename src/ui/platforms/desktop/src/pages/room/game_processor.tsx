@@ -1,3 +1,18 @@
+import { AskForPeachAction } from './actions/ask_for_peach_action';
+import { CardResponseAction } from './actions/card_response_action';
+import { PlayPhaseAction } from './actions/play_phase_action';
+import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
+import { SelectAction } from './actions/select_action';
+import { SkillUseAction } from './actions/skill_use_action';
+import { RoomPresenter } from './room.presenter';
+import { DisplayCardProp, RoomStore } from './room.store';
+import { CardDisplayDialog } from './ui/dialog/card_display_dialog/card_display_dialog';
+import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
+import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/character_selector_dialog';
+import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
+import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
+import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
+import { getSkinName } from './ui/switch_avatar/switch_skin';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -29,21 +44,6 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { AudioService } from 'ui/audio/install';
-import { AskForPeachAction } from './actions/ask_for_peach_action';
-import { CardResponseAction } from './actions/card_response_action';
-import { PlayPhaseAction } from './actions/play_phase_action';
-import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
-import { SelectAction } from './actions/select_action';
-import { SkillUseAction } from './actions/skill_use_action';
-import { RoomPresenter } from './room.presenter';
-import { DisplayCardProp, RoomStore } from './room.store';
-import { CardDisplayDialog } from './ui/dialog/card_display_dialog/card_display_dialog';
-import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
-import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/character_selector_dialog';
-import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
-import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
-import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
-import { getSkinName } from './ui/switch_avatar/switch_skin';
 
 export class GameClientProcessor {
   private isObserver: boolean = false;
@@ -448,7 +448,7 @@ export class GameClientProcessor {
       // play skill audio
       const skill = matchArray[1];
       const characterName = matchArray.length > 3 ? matchArray[2] : undefined;
-      const index = parseInt(matchArray.length > 3 ? matchArray[3] : matchArray[2], undefined);
+      const index = parseInt(matchArray.length > 3 ? matchArray[3] : matchArray[2], 10);
       this.audioService.playSkillAudio(skill, CharacterGender.Male, index, undefined, undefined, characterName); // player's character may be undefined
 
       const player = this.store.room.getPlayerById(content.playerId);
@@ -806,22 +806,22 @@ export class GameClientProcessor {
     }
   }
 
-  // tslint:disable-next-line:no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected onHandleAimEvent<T extends GameEventIdentifiers.AimEvent>(type: T, content: ServerEventFinder<T>) {}
   protected onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {}
   protected onHandleCustomDialogEvent<T extends GameEventIdentifiers.CustomGameDialog>(
     type: T,
     content: ServerEventFinder<T>,
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {}
   protected onHandlePlayerDyingEvent<T extends GameEventIdentifiers.PlayerDyingEvent>(
     type: T,
     content: ServerEventFinder<T>,
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {
     this.store.room.getPlayerById(content.dying).Dying = true;
   }
@@ -854,9 +854,11 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    content.skillName !== undefined
-      ? this.store.room.installSideEffectSkill(content.sideEffectSkillApplier, content.skillName, content.sourceId!)
-      : this.store.room.uninstallSideEffectSkill(content.sideEffectSkillApplier);
+    if (content.skillName !== undefined) {
+      this.store.room.installSideEffectSkill(content.sideEffectSkillApplier, content.skillName, content.sourceId!);
+    } else {
+      this.store.room.uninstallSideEffectSkill(content.sideEffectSkillApplier);
+    }
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1335,7 +1337,7 @@ export class GameClientProcessor {
       ) {
         const actualCardIds = VirtualCard.getActualCards(cardIds);
         if (toArea === CardMoveArea.OutsideArea) {
-          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+          to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
         } else if (toArea === CardMoveArea.JudgeArea) {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -1496,7 +1498,7 @@ export class GameClientProcessor {
   }
 
   protected onHandleAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
     const selectedCardsIndex: number[] = [];
@@ -1795,9 +1797,11 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    content.drunk
-      ? this.store.room.getPlayerById(content.toId).getDrunk()
-      : this.store.room.getPlayerById(content.toId).clearHeaded();
+    if (content.drunk) {
+      this.store.room.getPlayerById(content.toId).getDrunk();
+    } else {
+      this.store.room.getPlayerById(content.toId).clearHeaded();
+    }
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1823,7 +1827,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const { user, cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({
@@ -1962,7 +1966,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAbortOrResumePlayerSectionsEvent<
-    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent
+    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const { toId, isResumption, toSections } = content;
     const to = this.store.room.getPlayerById(toId);
@@ -1976,7 +1980,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAbortOrResumePlayerJudgeAreaEvent<
-    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent
+    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const { toId, isResumption } = content;
     const to = this.store.room.getPlayerById(toId);

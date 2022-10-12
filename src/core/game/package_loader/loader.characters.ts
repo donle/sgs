@@ -11,7 +11,7 @@ import { MountainCharacterPackage } from 'core/characters/mountain';
 import { PvePackage } from 'core/characters/pve';
 import { ShadowCharacterPackage } from 'core/characters/shadow';
 import { SincerityCharacterPackage } from 'core/characters/sincerity';
-import { SPPackage } from 'core/characters/sp';
+import { SpPackage } from 'core/characters/sp';
 import { SparkPackage } from 'core/characters/spark';
 import { StandardCharacterPackage } from 'core/characters/standard';
 import { StrategemPackage } from 'core/characters/strategem';
@@ -61,7 +61,7 @@ export class CharacterLoader {
     [GameCharacterExtensions.YiJiang2015]: YiJiang2015Package,
     [GameCharacterExtensions.Yuan6]: Yuan6Package,
     [GameCharacterExtensions.Yuan7]: Yuan7Package,
-    [GameCharacterExtensions.SP]: SPPackage,
+    [GameCharacterExtensions.SP]: SpPackage,
     [GameCharacterExtensions.Spark]: SparkPackage,
     [GameCharacterExtensions.Decade]: DecadePackage,
     [GameCharacterExtensions.Limited]: LimitedPackage,

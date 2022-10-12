@@ -1,3 +1,5 @@
+import styles from './message_dialog.module.css';
+import { createRawQuickMessage, quickMessageMaxIndex } from './message_dialog.static';
 import classNames from 'classnames';
 import { GameEventIdentifiers } from 'core/event/event';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -9,8 +11,6 @@ import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { Button } from 'ui/button/button';
 import { Input } from 'ui/input/input';
-import styles from './message_dialog.module.css';
-import { createRawQuickMessage, quickMessageMaxIndex } from './message_dialog.static';
 
 export type MessageDialogProps = {
   store: RoomStore;

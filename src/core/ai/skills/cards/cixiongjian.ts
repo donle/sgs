@@ -1,18 +1,16 @@
+import { TriggerSkillTriggerClass } from '../base/trigger_skill_trigger';
 import { AiLibrary } from 'core/ai/ai_lib';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import type { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
-import type { Room } from 'core/room/room';
 import { CiXiongJianSkill } from 'core/skills';
-import { TriggerSkillTriggerClass } from '../base/trigger_skill_trigger';
+import type { Player } from 'core/player/player';
+import type { Room } from 'core/room/room';
 
 export class CiXiongJianSkillTrigger extends TriggerSkillTriggerClass<CiXiongJianSkill> {
-  public readonly skillTrigger = (room: Room, ai: Player, skill: CiXiongJianSkill) => {
-    return {
-      fromId: ai.Id,
-      invoke: skill.Name,
-    };
-  };
+  public readonly skillTrigger = (room: Room, ai: Player, skill: CiXiongJianSkill) => ({
+    fromId: ai.Id,
+    invoke: skill.Name,
+  });
 
   onAskForChoosingOptionsEvent(
     content: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>,

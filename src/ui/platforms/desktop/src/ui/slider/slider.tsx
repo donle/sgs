@@ -1,6 +1,6 @@
+import styles from './slider.module.css';
 import classNames from 'classnames';
 import * as React from 'react';
-import styles from './slider.module.css';
 
 export type SliderProps = {
   onChange(value: number): void;

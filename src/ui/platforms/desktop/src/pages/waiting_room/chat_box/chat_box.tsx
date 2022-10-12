@@ -1,13 +1,13 @@
+import styles from './chat_box.module.css';
+import { Messages } from './messages';
+import { WaitingRoomSender } from '../services/sender_service';
+import { WaitingRoomPresenter } from '../waiting_room.presenter';
+import { WaitingRoomStore } from '../waiting_room.store';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
-import { WaitingRoomSender } from '../services/sender_service';
-import { WaitingRoomPresenter } from '../waiting_room.presenter';
-import { WaitingRoomStore } from '../waiting_room.store';
-import styles from './chat_box.module.css';
-import { Messages } from './messages';
 
 export type ChatBoxProps = {
   translator: ClientTranslationModule;

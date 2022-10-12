@@ -58,9 +58,8 @@ export class ChongZhen extends TriggerSkill {
         return undefined;
       }
 
-      const cardEffectEvent = cardResponseEvent.responseToEvent as ServerEventFinder<
-        GameEventIdentifiers.CardEffectEvent
-      >;
+      const cardEffectEvent =
+        cardResponseEvent.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
       if (!cardEffectEvent.fromId) {
         return undefined;
       }

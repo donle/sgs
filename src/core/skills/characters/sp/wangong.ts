@@ -76,9 +76,11 @@ export class WanGongShadow extends TriggerSkill {
     const cardId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>).cardId;
     const card = Sanguosha.getCardById(cardId);
 
-    card.is(CardType.Basic)
-      ? room.setFlag<boolean>(event.fromId, this.GeneralName, true, this.GeneralName)
-      : room.removeFlag(event.fromId, this.GeneralName);
+    if (card.is(CardType.Basic)) {
+      room.setFlag<boolean>(event.fromId, this.GeneralName, true, this.GeneralName);
+    } else {
+      room.removeFlag(event.fromId, this.GeneralName);
+    }
 
     return true;
   }

@@ -1,4 +1,3 @@
-import { Character } from 'core/characters/character';
 import { LiuYan } from './liuyan';
 import { LiuYao } from './liuyao';
 import { LvDai } from './lvdai';
@@ -7,6 +6,7 @@ import { PanJun } from './panjun';
 import { SparkPangTong } from './spark_pangtong';
 import { YanJun } from './yanjun';
 import { ZhouFang } from './zhoufang';
+import { Character } from 'core/characters/character';
 
 export const SparkPackage: (index: number) => Character[] = index => [
   new LvQian(index++),

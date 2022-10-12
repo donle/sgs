@@ -1,3 +1,7 @@
+import { FileSplitter } from './file_splitter';
+import { getTranslations, Language } from './languages';
+import { Replay, ReplayOtherInfo } from './replay';
+import { Store } from './store';
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, shell } from 'electron';
 import Extract from 'extract-zip';
 import fetch from 'node-fetch';
@@ -5,10 +9,6 @@ import * as fs from 'original-fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
-import { FileSplitter } from './file_splitter';
-import { getTranslations, Language } from './languages';
-import { Replay, ReplayOtherInfo } from './replay';
-import { Store } from './store';
 
 export const FLASH_WINDOW = 'flashWindow';
 export const SET_DATA = 'setData';
@@ -247,7 +247,7 @@ async function requestUpdate(window: BrowserWindow) {
       await downloadFile(window, nextVersion, downloadInfo, i + 1, downloadInfos.length);
     }
 
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     AppWindow.onClosing(() => {});
   }
 }
@@ -276,7 +276,7 @@ async function downloadFile(
 
   const downloadUrl = `${downloadInfo.browser_download_url}/${downloadInfo.name}`;
   const dataStream = await fetch(downloadUrl).then(res => {
-    totalSize += (res.headers.get('content-length') as unknown) as number;
+    totalSize += res.headers.get('content-length') as unknown as number;
     return res.body;
   });
 
@@ -395,9 +395,9 @@ AppWindow.onReady(async () => {
     });
   }
 
-  const { winAppInstance, winApp: _winApp } = main();
+  const { winAppInstance, winApp: WinApp } = main();
   appInstance = winAppInstance;
-  winApp = _winApp;
+  winApp = WinApp;
   requestUpdate(appInstance).then();
 });
 AppWindow.onWindowAllClosed(() => {

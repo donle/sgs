@@ -26,17 +26,17 @@ export class XiaoJi extends TriggerSkill {
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return event.infos.reduce<number>((sum, info) => {
-      return (
+    return event.infos.reduce<number>(
+      (sum, info) =>
         sum +
         info.movingCards.filter(
           card =>
             !Sanguosha.isVirtualCardId(card.card) &&
             Sanguosha.getCardById(card.card).is(CardType.Equip) &&
             card.fromArea === CardMoveArea.EquipArea,
-        ).length
-      );
-    }, 0);
+        ).length,
+      0,
+    );
   }
 
   async onTrigger() {

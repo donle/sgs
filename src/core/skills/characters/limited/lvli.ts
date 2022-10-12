@@ -60,9 +60,7 @@ export class LvLiI extends LvLi {
     return (
       content.fromId === owner.Id &&
       (room.CurrentPlayer === owner
-        ? this.LvLiNames.reduce<number>((sum, name) => {
-            return sum + owner.hasUsedSkillTimes(name);
-          }, 0) < 2
+        ? this.LvLiNames.reduce<number>((sum, name) => sum + owner.hasUsedSkillTimes(name), 0) < 2
         : !this.LvLiNames.find(name => owner.hasUsedSkill(name))) &&
       (owner.getCardIds(PlayerCardsArea.HandArea).length < owner.Hp ||
         (owner.getCardIds(PlayerCardsArea.HandArea).length > owner.Hp && owner.LostHp > 0))
@@ -116,9 +114,7 @@ export class LvLiEX extends LvLi {
       ((stage === DamageEffectStage.AfterDamageEffect && content.fromId === owner.Id) ||
         (stage === DamageEffectStage.AfterDamagedEffect && content.toId === owner.Id)) &&
       (room.CurrentPlayer === owner
-        ? this.LvLiNames.reduce<number>((sum, name) => {
-            return sum + owner.hasUsedSkillTimes(name);
-          }, 0) < 2
+        ? this.LvLiNames.reduce<number>((sum, name) => sum + owner.hasUsedSkillTimes(name), 0) < 2
         : !this.LvLiNames.find(name => owner.hasUsedSkill(name))) &&
       (owner.getCardIds(PlayerCardsArea.HandArea).length < owner.Hp ||
         (owner.getCardIds(PlayerCardsArea.HandArea).length > owner.Hp && owner.LostHp > 0))

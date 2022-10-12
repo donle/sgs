@@ -57,22 +57,21 @@ export class LobbyEventChannel {
     socket.emit(LobbySocketEvent.CheckRoomExist.toString(), this.roomService.checkRoomExist(id));
   };
 
-  private readonly onCreatingWaitingRoom = (socket: SocketIO.Socket) => (content: {
-    roomInfo: TemporaryRoomCreationInfo & { roomId?: number };
-  }) => {
-    if (content.roomInfo.coreVersion !== Sanguosha.Version) {
-      socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
-        error: 'unmatched core version',
-      });
-      return;
-    }
+  private readonly onCreatingWaitingRoom =
+    (socket: SocketIO.Socket) => (content: { roomInfo: TemporaryRoomCreationInfo & { roomId?: number } }) => {
+      if (content.roomInfo.coreVersion !== Sanguosha.Version) {
+        socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
+          error: 'unmatched core version',
+        });
+        return;
+      }
 
-    const { roomId, roomInfo } = this.roomService.createWaitingRoom(content.roomInfo);
-    socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
-      roomId,
-      roomInfo,
-    });
-  };
+      const { roomId, roomInfo } = this.roomService.createWaitingRoom(content.roomInfo);
+      socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
+        roomId,
+        roomInfo,
+      });
+    };
 
   /**
    * @deprecated game will not be created from lobby anymore.
@@ -96,7 +95,5 @@ export class LobbyEventChannel {
     socket.emit(LobbySocketEvent.QueryRoomList.toString(), this.roomService.getRoomsInfo());
   };
 
-  readonly join = (channelId: string) => {
-    return this.socket.of(channelId);
-  };
+  readonly join = (channelId: string) => this.socket.of(channelId);
 }

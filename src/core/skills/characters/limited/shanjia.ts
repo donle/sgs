@@ -242,8 +242,9 @@ export class ShanJiaShadow extends TriggerSkill {
 
         let num: number = 0;
         if (moveCardEvent.infos.length === 0) {
-          num += moveCardEvent.infos[0].movingCards.filter(card => Sanguosha.getCardById(card.card).is(CardType.Equip))
-            .length;
+          num += moveCardEvent.infos[0].movingCards.filter(card =>
+            Sanguosha.getCardById(card.card).is(CardType.Equip),
+          ).length;
         } else {
           const infos = moveCardEvent.infos.filter(
             info =>

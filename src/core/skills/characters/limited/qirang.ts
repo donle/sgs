@@ -127,41 +127,33 @@ export class QiRangBuff extends TriggerSkill implements OnDefineReleaseTiming {
       const players = room
         .getAlivePlayersFrom()
         .map(player => player.Id)
-        .filter(playerId => {
-          return (
+        .filter(
+          playerId =>
             !AimGroupUtil.getAllTargets(aimEvent.allTargets).includes(playerId) &&
             room.isAvailableTarget(aimEvent.byCardId, event.fromId, playerId) &&
-            ((Sanguosha.getCardById(aimEvent.byCardId)
-              .Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
-              event.fromId,
-              room,
-              playerId,
-              [],
-              [],
-              aimEvent.byCardId,
-            )
-          );
-        });
+            (
+              Sanguosha.getCardById(aimEvent.byCardId).Skill as unknown as ExtralCardSkillProperty
+            ).isCardAvailableTarget(event.fromId, room, playerId, [], [], aimEvent.byCardId),
+        );
 
       if (players.length > 0) {
         const targets = AimGroupUtil.getAllTargets(aimEvent.allTargets);
-        const { selectedPlayers } = await room.doAskForCommonly<
-          GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
-        >(
-          GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
-          {
-            user: event.fromId,
-            cardId: aimEvent.byCardId,
-            exclude: targets,
-            conversation: TranslationPack.translationJsonPatcher(
-              '{0}: do you want to select a player to append to {1} targets?',
-              this.Name,
-              TranslationPack.patchCardInTranslation(aimEvent.byCardId),
-            ).extract(),
-            triggeredBySkills: [this.Name],
-          },
-          event.fromId,
-        );
+        const { selectedPlayers } =
+          await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
+            GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+            {
+              user: event.fromId,
+              cardId: aimEvent.byCardId,
+              exclude: targets,
+              conversation: TranslationPack.translationJsonPatcher(
+                '{0}: do you want to select a player to append to {1} targets?',
+                this.Name,
+                TranslationPack.patchCardInTranslation(aimEvent.byCardId),
+              ).extract(),
+              triggeredBySkills: [this.Name],
+            },
+            event.fromId,
+          );
 
         if (selectedPlayers && selectedPlayers.length > 0) {
           event.toIds = selectedPlayers;

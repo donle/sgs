@@ -163,8 +163,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'std_xuanfeng_description',
-    target:
-      '若你于弃牌阶段内弃置过至少两张手牌，或当你失去装备区里的牌后，你可以依次弃置其他角色的共计一至两张牌。',
+    target: '若你于弃牌阶段内弃置过至少两张手牌，或当你失去装备区里的牌后，你可以依次弃置其他角色的共计一至两张牌。',
   },
 ];
 

@@ -97,16 +97,15 @@ export class JieYue extends TriggerSkill {
           customCardFields[PlayerCardsArea.EquipArea] = equipCards;
         }
 
-        const askForDiscards = EventPacker.createUncancellableEvent<
-          GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
-        >({
-          toId,
-          customCardFields,
-          cardFilter: System.AskForChoosingCardEventFilter.JieYue,
-          involvedTargets: [toId],
-          customTitle: this.Name,
-          triggeredBySkills: [this.Name],
-        });
+        const askForDiscards =
+          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent>({
+            toId,
+            customCardFields,
+            cardFilter: System.AskForChoosingCardEventFilter.JieYue,
+            involvedTargets: [toId],
+            customTitle: this.Name,
+            triggeredBySkills: [this.Name],
+          });
 
         room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForDiscards, toId);
 

@@ -19,9 +19,10 @@ export class LianYing extends TriggerSkill {
     const canUse = infos.length > 0 && owner.getCardIds(PlayerCardsArea.HandArea).length === 0;
 
     if (canUse) {
-      const num = infos.reduce<number>((sum, info) => {
-        return sum + info.movingCards.filter(card => card.fromArea === CardMoveArea.HandArea).length;
-      }, 0);
+      const num = infos.reduce<number>(
+        (sum, info) => sum + info.movingCards.filter(card => card.fromArea === CardMoveArea.HandArea).length,
+        0,
+      );
       room.setFlag(owner.Id, this.Name, num);
     }
 

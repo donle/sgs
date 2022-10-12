@@ -1,3 +1,4 @@
+import { XianFu } from './xianfu';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -8,7 +9,6 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { XianFu } from './xianfu';
 
 @CommonSkill({ name: 'chouce', description: 'chouce_description' })
 export class ChouCe extends TriggerSkill {

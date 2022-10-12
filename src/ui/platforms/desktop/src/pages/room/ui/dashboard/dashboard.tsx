@@ -1,3 +1,14 @@
+import { AbortedCardItem } from './aborted_card_item/aborted_card_item';
+import styles from './dashboard.module.css';
+import { EquipCardItem } from './equip_card_item/equip_card_item';
+import armorSlot from './images/armor.png';
+import defenseHorseSlot from './images/defense_horse.png';
+import offenseHorseSlot from './images/offense_horse.png';
+import weaponSlot from './images/weapon.png';
+import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
+import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
+import { PlayerAvatar } from '../player_avatar/player_avatar';
+import { PlayingBar } from '../playing_bar/playing_bar';
 import classNames from 'classnames';
 import { Card, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
@@ -21,17 +32,6 @@ import { PlayerPhaseBadge } from 'ui/badge/badge';
 import { AutoButton } from 'ui/button/auto_button';
 import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
-import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
-import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
-import { PlayerAvatar } from '../player_avatar/player_avatar';
-import { PlayingBar } from '../playing_bar/playing_bar';
-import { AbortedCardItem } from './aborted_card_item/aborted_card_item';
-import styles from './dashboard.module.css';
-import { EquipCardItem } from './equip_card_item/equip_card_item';
-import armorSlot from './images/armor.png';
-import defenseHorseSlot from './images/defense_horse.png';
-import offenseHorseSlot from './images/offense_horse.png';
-import weaponSlot from './images/weapon.png';
 
 export type DashboardProps = {
   store: RoomStore;
@@ -331,9 +331,12 @@ export class Dashboard extends React.Component<DashboardProps> {
     const handcards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea) || [];
     for (const cardId of handcards) {
       const card = Sanguosha.getCardById(cardId);
-      this.props.store.selectedCards.includes(cardId)
-        ? this.props.presenter.unselectCard(card)
-        : this.props.presenter.selectCard(card);
+
+      if (this.props.store.selectedCards.includes(cardId)) {
+        this.props.presenter.unselectCard(card);
+      } else {
+        this.props.presenter.selectCard(card);
+      }
     }
     this.props.store.validSelectionAction?.();
   };

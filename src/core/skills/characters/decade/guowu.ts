@@ -127,8 +127,7 @@ export class GuoWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
         cardUseEvent.fromId === owner.Id &&
         (Sanguosha.getCardById(cardUseEvent.cardId).GeneralName === 'slash' ||
           Sanguosha.getCardById(cardUseEvent.cardId).isCommonTrick()) &&
-        !!((Sanguosha.getCardById(cardUseEvent.cardId).Skill as unknown) as ExtralCardSkillProperty)
-          .isCardAvailableTarget
+        !!(Sanguosha.getCardById(cardUseEvent.cardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget
       );
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
@@ -149,21 +148,14 @@ export class GuoWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
       const players = room
         .getAlivePlayersFrom()
         .map(player => player.Id)
-        .filter(playerId => {
-          return (
+        .filter(
+          playerId =>
             !TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).includes(playerId) &&
             room.isAvailableTarget(cardUseEvent.cardId, event.fromId, playerId) &&
-            ((Sanguosha.getCardById(cardUseEvent.cardId)
-              .Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
-              event.fromId,
-              room,
-              playerId,
-              [],
-              [],
-              cardUseEvent.cardId,
-            )
-          );
-        });
+            (
+              Sanguosha.getCardById(cardUseEvent.cardId).Skill as unknown as ExtralCardSkillProperty
+            ).isCardAvailableTarget(event.fromId, room, playerId, [], [], cardUseEvent.cardId),
+        );
 
       const allTargets = TargetGroupUtil.getAllTargets(cardUseEvent.targetGroup);
       if (players.length > 0 && allTargets !== undefined) {
@@ -194,23 +186,22 @@ export class GuoWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
           const chosen: PlayerId[][] = [];
           let count = 0;
           while (players.length > 0 || count < 2) {
-            const { selectedPlayers } = await room.doAskForCommonly<
-              GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
-            >(
-              GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
-              {
-                user: event.fromId,
-                cardId: cardUseEvent.cardId,
-                exclude: targets,
-                conversation: TranslationPack.translationJsonPatcher(
-                  '{0}: do you want to choose a target to append to {1} targets?',
-                  this.Name,
-                  TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
-                ).extract(),
-                triggeredBySkills: [this.Name],
-              },
-              event.fromId,
-            );
+            const { selectedPlayers } =
+              await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
+                GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+                {
+                  user: event.fromId,
+                  cardId: cardUseEvent.cardId,
+                  exclude: targets,
+                  conversation: TranslationPack.translationJsonPatcher(
+                    '{0}: do you want to choose a target to append to {1} targets?',
+                    this.Name,
+                    TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
+                  ).extract(),
+                  triggeredBySkills: [this.Name],
+                },
+                event.fromId,
+              );
 
             if (!selectedPlayers || selectedPlayers.length < 2) {
               break;

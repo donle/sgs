@@ -1,3 +1,5 @@
+import { WeiMu } from '../forest/weimu';
+import { MingZhe } from '../sp/mingzhe';
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardColor, CardId } from 'core/cards/libs/card_props';
@@ -21,8 +23,6 @@ import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { WeiMu } from '../forest/weimu';
-import { MingZhe } from '../sp/mingzhe';
 
 @CompulsorySkill({ name: 'qianchong', description: 'qianchong_description' })
 export class QianChong extends TriggerSkill implements OnDefineReleaseTiming {

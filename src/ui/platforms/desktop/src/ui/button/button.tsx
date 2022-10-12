@@ -1,5 +1,3 @@
-import classNames from 'classnames';
-import * as React from 'react';
 import styles from './button.module.css';
 
 import primaryStatic from './images/primary_static.png';
@@ -10,6 +8,8 @@ import secondaryStatic from './images/secondary_static.png';
 import secondaryStaticDisabled from './images/secondary_static_disabled.png';
 import secondaryStaticDown from './images/secondary_static_down.png';
 import secondaryStaticHover from './images/secondary_static_hover.png';
+import classNames from 'classnames';
+import * as React from 'react';
 
 export type OptionButtonProps = {
   onMouseEnter?(): void;

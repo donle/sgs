@@ -1,6 +1,6 @@
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { ClientSocket } from '../socket.client';
 import { EventEmitterProps } from './event_emitter_props';
+import { ClientSocket } from '../socket.client';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 
 export class LocalClientEmitter extends ClientSocket {
   constructor(private emitter: EventEmitterProps, roomId: string) {
@@ -11,7 +11,7 @@ export class LocalClientEmitter extends ClientSocket {
     this.emitter.send('client-' + type.toString(), content);
   }
 
-  // tslint:disable-next-line: no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init() {}
 
   public on<T extends GameEventIdentifiers>(type: T, receiver: (event: ServerEventFinder<T>) => void): ClientSocket {
@@ -34,6 +34,6 @@ export class LocalClientEmitter extends ClientSocket {
     throw new Error("Shouldn't call emitRoomStatus function in client socket");
   }
 
-  // tslint:disable-next-line: no-empty
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onReconnected(callback: () => void) {}
 }

@@ -202,9 +202,8 @@ export class KuiZhuDamage extends TriggerSkill {
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return (
-      targets.reduce<number>((sum, target) => {
-        return sum + room.getPlayerById(target).Hp;
-      }, 0) === owner.getFlag<number>(KuiZhu.KuiZhuDroppedNum)
+      targets.reduce<number>((sum, target) => sum + room.getPlayerById(target).Hp, 0) ===
+      owner.getFlag<number>(KuiZhu.KuiZhuDroppedNum)
     );
   }
 
@@ -216,9 +215,7 @@ export class KuiZhuDamage extends TriggerSkill {
     selectedTargets: PlayerId[],
   ): boolean {
     return (
-      selectedTargets.reduce<number>((sum, target) => {
-        return sum + room.getPlayerById(target).Hp;
-      }, 0) +
+      selectedTargets.reduce<number>((sum, target) => sum + room.getPlayerById(target).Hp, 0) +
         room.getPlayerById(target).Hp <=
       room.getPlayerById(owner).getFlag<number>(KuiZhu.KuiZhuDroppedNum)
     );

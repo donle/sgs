@@ -1,3 +1,4 @@
+import { ChanYuan } from './chanyuan';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
@@ -17,7 +18,6 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { ChanYuan } from './chanyuan';
 
 @CommonSkill({ name: 'guhuo', description: 'guhuo_description' })
 export class GuHuo extends ViewAsSkill {
@@ -124,19 +124,18 @@ export class GuHuoShadow extends TriggerSkill {
       });
     }
 
-    const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingOptionsEvent
-    >({
-      toId: event.fromId,
-      options: ['guhuo:doubt', 'guhuo:no-doubt'],
-      conversation: TranslationPack.translationJsonPatcher(
-        'do you doubt the pre-use of {0} from {1}',
-        TranslationPack.patchCardInTranslation(cardEvent.cardId),
-        TranslationPack.patchPlayerInTranslation(from),
-      ).extract(),
-      ignoreNotifiedStatus: true,
-      triggeredBySkills: [this.Name],
-    });
+    const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> =
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+        toId: event.fromId,
+        options: ['guhuo:doubt', 'guhuo:no-doubt'],
+        conversation: TranslationPack.translationJsonPatcher(
+          'do you doubt the pre-use of {0} from {1}',
+          TranslationPack.patchCardInTranslation(cardEvent.cardId),
+          TranslationPack.patchPlayerInTranslation(from),
+        ).extract(),
+        ignoreNotifiedStatus: true,
+        triggeredBySkills: [this.Name],
+      });
 
     const askingResponses: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
     const askForPlayers = room
@@ -173,14 +172,13 @@ export class GuHuoShadow extends TriggerSkill {
     });
 
     let success = true;
-    const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingOptionsEvent
-    >({
-      options: ['guhuo:lose-hp', 'guhuo:drop-card'],
-      toId: '',
-      conversation: 'please choose',
-      triggeredBySkills: [this.Name],
-    });
+    const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> =
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+        options: ['guhuo:lose-hp', 'guhuo:drop-card'],
+        toId: '',
+        conversation: 'please choose',
+        triggeredBySkills: [this.Name],
+      });
     for (const response of responses) {
       if (preuseCard.Name === realCard.Name) {
         if (response.selectedOption === 'guhuo:doubt') {

@@ -1,8 +1,8 @@
+import { GameMode } from './room_props';
 import { GameCharacterExtensions, GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
-import { GameMode } from './room_props';
 
 export const enum LobbySocketEvent {
   QueryRoomList,

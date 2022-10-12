@@ -52,7 +52,7 @@ export class RoomService {
     );
   }
 
-  getRoomsInfo(): ReadonlyArray<RoomInfo> {
+  getRoomsInfo(): readonly RoomInfo[] {
     return [
       ...this.rooms.map(room => room.getRoomInfo()),
       ...this.waitingRooms.filter(room => !room.isPlaying).map(room => this.getWaitingRoomInfo(room)),

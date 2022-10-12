@@ -31,21 +31,19 @@ export class SheYan extends TriggerSkill {
       (room
         .getAlivePlayersFrom()
         .map(player => player.Id)
-        .find(playerId => {
-          return (
+        .find(
+          playerId =>
             !AimGroupUtil.getAllTargets(content.allTargets).includes(playerId) &&
             room.isAvailableTarget(content.byCardId, content.fromId, playerId) &&
-            ((Sanguosha.getCardById(content.byCardId)
-              .Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
+            (Sanguosha.getCardById(content.byCardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
               content.fromId,
               room,
               playerId,
               [],
               [],
               content.byCardId,
-            )
-          );
-        }) !== undefined ||
+            ),
+        ) !== undefined ||
         AimGroupUtil.getAllTargets(content.allTargets).length > 1)
     );
   }
@@ -59,21 +57,19 @@ export class SheYan extends TriggerSkill {
     room
       .getAlivePlayersFrom()
       .map(player => player.Id)
-      .find(playerId => {
-        return (
+      .find(
+        playerId =>
           !AimGroupUtil.getAllTargets(aimEvent.allTargets).includes(playerId) &&
           room.isAvailableTarget(aimEvent.byCardId, aimEvent.fromId, playerId) &&
-          ((Sanguosha.getCardById(aimEvent.byCardId)
-            .Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
+          (Sanguosha.getCardById(aimEvent.byCardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
             aimEvent.fromId,
             room,
             playerId,
             [],
             [],
             aimEvent.byCardId,
-          )
-        );
-      }) !== undefined && options.push('sheyan:add');
+          ),
+      ) !== undefined && options.push('sheyan:add');
     AimGroupUtil.getAllTargets(aimEvent.allTargets).length > 1 && options.push('sheyan:reduce');
     if (options.length === 0) {
       return false;
@@ -99,19 +95,18 @@ export class SheYan extends TriggerSkill {
     );
 
     if (selectedOption === 'sheyan:add') {
-      const { selectedPlayers } = await room.doAskForCommonly<
-        GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
-      >(
-        GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
-        {
-          user: aimEvent.fromId,
-          cardId: aimEvent.byCardId,
-          exclude: allTargets,
-          conversation: 'sheyan: please select a player to append to card targets',
-          triggeredBySkills: [this.Name],
-        },
-        fromId,
-      );
+      const { selectedPlayers } =
+        await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
+          GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+          {
+            user: aimEvent.fromId,
+            cardId: aimEvent.byCardId,
+            exclude: allTargets,
+            conversation: 'sheyan: please select a player to append to card targets',
+            triggeredBySkills: [this.Name],
+          },
+          fromId,
+        );
 
       if (selectedPlayers) {
         EventPacker.addMiddleware({ tag: this.SheYanAdd, data: true }, event);

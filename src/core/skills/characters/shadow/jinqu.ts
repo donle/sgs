@@ -1,3 +1,4 @@
+import { QiZhi } from './qizhi';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -5,7 +6,6 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { QiZhi } from './qizhi';
 
 @CommonSkill({ name: 'jinqu', description: 'jinqu_description' })
 export class JinQu extends TriggerSkill {

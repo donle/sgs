@@ -19,9 +19,9 @@ export class JinZhi extends ViewAsSkill {
 
   public canUse(room: Room, owner: Player): boolean {
     return (
-      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
-        return owner.canUseCard(room, new CardMatcher({ name: [name] }));
-      }) !== undefined
+      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name =>
+        owner.canUseCard(room, new CardMatcher({ name: [name] })),
+      ) !== undefined
     );
   }
 

@@ -1,8 +1,3 @@
-import { Card } from '../card';
-import { CardSuit } from '../libs/card_props';
-import { Jink } from '../standard/jink';
-import { Peach } from '../standard/peach';
-import { WuXieKeJi } from '../standard/wuxiekeji';
 import { Alcohol } from './alcohol';
 import { BaiYinShiZi } from './baiyinshizi';
 import { BingLiangCunDuan } from './bingliangcunduan';
@@ -15,6 +10,11 @@ import { TengJia } from './tengjia';
 import { ThunderSlash } from './thunder_slash';
 import { TieSuoLianHuan } from './tiesuolianhuan';
 import { ZhuQueYuShan } from './zhuqueyushan';
+import { Card } from '../card';
+import { CardSuit } from '../libs/card_props';
+import { Jink } from '../standard/jink';
+import { Peach } from '../standard/peach';
+import { WuXieKeJi } from '../standard/wuxiekeji';
 
 export const LegionFightCardPackage: (index: number) => Card[] = index => [
   new FireAttack(index++, 2, CardSuit.Heart),

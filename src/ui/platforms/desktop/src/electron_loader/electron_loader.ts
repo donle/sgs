@@ -1,7 +1,7 @@
+import { ElectronData } from './electron_data';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import MarkDown from 'markdown-it';
 import { ReplayDataType } from 'types/replay_props';
-import { ElectronData } from './electron_data';
 
 export abstract class ElectronLoader {
   public abstract flashFrame(): void;

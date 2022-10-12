@@ -1,8 +1,3 @@
-import { Sanguosha } from 'core/game/engine';
-import { GameCardExtensions } from 'core/game/game_props';
-import { Algorithm } from 'core/shares/libs/algorithm';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { Skill, ViewAsSkill } from 'core/skills/skill';
 import {
   CardColor,
   CardId,
@@ -12,41 +7,46 @@ import {
   VirtualCardId,
   VirtualCardIdProps,
 } from './libs/card_props';
+import { Sanguosha } from 'core/game/engine';
+import { GameCardExtensions } from 'core/game/game_props';
+import { Algorithm } from 'core/shares/libs/algorithm';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { Skill, ViewAsSkill } from 'core/skills/skill';
 
 export function None<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.None;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.None;
-  } as any) as T;
+  } as any as T;
 }
 export function Single<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Single;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
-  } as any) as T;
+  } as any as T;
 }
 export function Multiple<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Multiple;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Multiple;
-  } as any) as T;
+  } as any as T;
 }
 export function Others<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Others;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Others;
-  } as any) as T;
+  } as any as T;
 }
 export function Globe<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Globe;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Globe;
-  } as any) as T;
+  } as any as T;
 }
 
 export function UniqueCard<T extends Card>(option: { bySkill: string }) {
   return (constructor: new (...args: any) => any): any =>
-    (class extends constructor {
+    class extends constructor {
       public generatedBySkill() {
         return option.bySkill;
       }
@@ -54,7 +54,7 @@ export function UniqueCard<T extends Card>(option: { bySkill: string }) {
       public isUniqueCard() {
         return true;
       }
-    } as any) as T;
+    } as any as T;
 }
 
 export const enum CardType {

@@ -1,3 +1,6 @@
+import { QiXi } from '../standard/qixi';
+import { YingZi } from '../standard/yingzi';
+import { StdXuanFeng } from '../yijiang2011/std_xuanfeng';
 import { CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -8,9 +11,6 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { QiXi } from '../standard/qixi';
-import { YingZi } from '../standard/yingzi';
-import { StdXuanFeng } from '../yijiang2011/std_xuanfeng';
 
 @CompulsorySkill({ name: 'qizhou', description: 'qizhou_description' })
 export class QiZhou extends TriggerSkill implements OnDefineReleaseTiming {

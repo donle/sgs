@@ -1,3 +1,6 @@
+import styles from './character.module.css';
+import { NationalityBadge } from '../badge/badge';
+import { CharacterHp } from '../hp/hp';
 import classNames from 'classnames';
 import { Character, getNationalityRawText } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
@@ -10,9 +13,6 @@ import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { Armor } from 'ui/armor/armor';
 import { AudioService } from 'ui/audio/install';
-import { NationalityBadge } from '../badge/badge';
-import { CharacterHp } from '../hp/hp';
-import styles from './character.module.css';
 
 export type CharacterSkinCardProps = {
   character: Character;
@@ -84,8 +84,7 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
     return this.skinNameLists;
   }
   nextSkin() {
-    let next: string | undefined;
-    next = this.skinNameLists.shift();
+    const next = this.skinNameLists.shift();
     if (next) {
       this.skinNameLists.push(next);
     }
@@ -93,8 +92,7 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
     this.getSkinImage();
   }
   preSkin() {
-    let p: string | undefined;
-    p = this.skinNameLists.pop();
+    const p = this.skinNameLists.pop();
     if (p) {
       this.skinNameLists.unshift(p);
     }

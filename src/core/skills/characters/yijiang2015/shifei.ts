@@ -68,11 +68,15 @@ export class ShiFei extends TriggerSkill {
             room.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length,
         )
     ) {
-      const most = room.getAlivePlayersFrom().reduce<number>((most, player) => {
-        return player.getCardIds(PlayerCardsArea.HandArea).length > most
-          ? player.getCardIds(PlayerCardsArea.HandArea).length
-          : most;
-      }, 0);
+      const most = room
+        .getAlivePlayersFrom()
+        .reduce<number>(
+          (most, player) =>
+            player.getCardIds(PlayerCardsArea.HandArea).length > most
+              ? player.getCardIds(PlayerCardsArea.HandArea).length
+              : most,
+          0,
+        );
 
       const targets = room
         .getAlivePlayersFrom()

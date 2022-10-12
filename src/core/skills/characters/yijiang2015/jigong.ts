@@ -80,9 +80,10 @@ export class JiGong extends TriggerSkill {
 
     await room.drawCards(num, event.fromId, 'top', event.fromId, this.Name);
 
-    const damage = room.Analytics.getDamageRecord(event.fromId, 'phase').reduce<number>((sum, event) => {
-      return sum + event.damage;
-    }, 0);
+    const damage = room.Analytics.getDamageRecord(event.fromId, 'phase').reduce<number>(
+      (sum, event) => sum + event.damage,
+      0,
+    );
     room.setFlag<number>(
       event.fromId,
       this.Name,

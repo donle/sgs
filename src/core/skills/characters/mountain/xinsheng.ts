@@ -1,3 +1,4 @@
+import { HuaShen } from './huashen';
 import { CharacterId } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -8,7 +9,6 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { HuaShen } from './huashen';
 
 @CommonSkill({ name: 'xinsheng', description: 'xinsheng_description' })
 export class XinSheng extends TriggerSkill {
