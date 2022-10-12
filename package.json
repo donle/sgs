@@ -27,7 +27,7 @@
   },
   "scripts": {
     "prettier": "prettier --write \"./**/*.{ts,tsx,css,json}\"",
-    "lint": "eslint -c .eslintrc.js \"./src/**/*.{ts,tsx}\"",
+    "lint": "eslint --max-warnings 0 -c .eslintrc.js \"./src/**/*.{ts,tsx}\"",
     "build": "rm -rf build && tsc",
     "transpile": "cd ./src/server && yarn install && yarn build",
     "transpile:client": "cd ./src/ui/platforms/desktop && yarn install && yarn build:mac",
