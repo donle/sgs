@@ -1687,7 +1687,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { options, conversation, toId } = content;
+    const { options, conversation, toId, optionPrompt } = content;
 
     const actionHandlers = {};
     options.forEach(option => {
@@ -1710,6 +1710,7 @@ export class GameClientProcessor {
     this.presenter.createIncomingConversation({
       optionsActionHanlder: actionHandlers,
       translator: this.translator,
+      optionPrompt,
       conversation,
     });
     if (!EventPacker.isUncancellableEvent(content)) {
