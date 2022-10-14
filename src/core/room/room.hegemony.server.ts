@@ -14,6 +14,9 @@ import { ServerRoom } from './room.server';
 
 export class HegemonyServerRoom extends ServerRoom {
   protected readonly players: HegemonyPlayer[];
+  public get Players() {
+    return this.players;
+  }
 
   public getPlayerById(playerId: PlayerId) {
     return Precondition.exists(
@@ -125,9 +128,11 @@ export class HegemonyServerRoom extends ServerRoom {
             } = {};
             for (const skill of canTriggerSkills) {
               const priority = skill.getPriority(this, player, content);
-              skillsInPriorities[priority]
-                ? skillsInPriorities[priority].push(skill)
-                : (skillsInPriorities[priority] = [skill]);
+              if (skillsInPriorities[priority]) {
+                skillsInPriorities[priority].push(skill);
+              } else {
+                skillsInPriorities[priority] = [skill];
+              }
               skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content, player);
             }
 
@@ -341,7 +346,7 @@ export class HegemonyServerRoom extends ServerRoom {
       }
 
       const toUnhook = p.HookedSkills.filter(skill => {
-        const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+        const hookedSkill = skill as unknown as OnDefineReleaseTiming;
         if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, p.Id, content, stage)) {
           return true;
         }

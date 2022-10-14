@@ -92,10 +92,6 @@ export class HegemonyClientPlayer extends HegemonyPlayer {
     super(playerCards, playerCharacterId);
   }
 
-  public syncUpPlayer(playerInfo: PlayerShortcutInfo) {
-    super.syncUpPlayer(playerInfo);
-  }
-
   setVisibleOutsideArea(areaName: string) {
     this.visibleOutsideAreas.push(areaName);
   }

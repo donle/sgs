@@ -6,7 +6,7 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
-import { ClientPlayer } from 'core/player/player.client';
+import { ClientPlayer, HegemonyClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
 import { RoomShortcutInfo } from 'core/shares/types/server_types';
@@ -14,15 +14,15 @@ import { OnDefineReleaseTiming, SkillLifeCycle } from 'core/skills/skill';
 import { Room, RoomId } from './room';
 import { RoomEventStacker } from './utils/room_event_stack';
 
-export class ClientRoom extends Room<WorkPlace.Client> {
+export class ClientRoom<P extends ClientPlayer | HegemonyClientPlayer = ClientPlayer> extends Room<WorkPlace.Client> {
   protected readonly socket: ClientSocket;
   protected readonly gameInfo: GameInfo;
   protected readonly players: Player[];
   protected readonly roomId: RoomId;
   protected gameMode: GameMode;
 
-  private currentPlayer: ClientPlayer;
-  private currentPhasePlayer: ClientPlayer;
+  private currentPlayer: P;
+  private currentPhasePlayer: P;
   private currentPlayerStage: PlayerPhaseStages;
   private currentPlayerPhase: PlayerPhase;
   private numberOfDrawStack: number = 0;
@@ -31,7 +31,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     roomId: RoomId,
     socket: ClientSocket,
     gameInfo: GameInfo,
-    players: ClientPlayer[],
+    players: P[],
     protected analytics: RecordAnalytics,
     protected gameCommonRules: GameCommonRules,
     protected eventStack: RoomEventStacker<WorkPlace.Client>,
@@ -53,7 +53,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   protected init(gameStartInfo: GameRunningInfo): void {
-    this.currentPlayer = this.getPlayerById(gameStartInfo.currentPlayerId) as ClientPlayer;
+    this.currentPlayer = this.getPlayerById(gameStartInfo.currentPlayerId) as P;
     this.numberOfDrawStack = gameStartInfo.numberOfDrawStack;
     this.circle = gameStartInfo.circle;
   }
@@ -253,21 +253,21 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public get CurrentPlayerPhase(): PlayerPhase {
     return this.currentPlayerPhase;
   }
-  public get CurrentPlayer(): ClientPlayer {
+  public get CurrentPlayer(): P {
     return this.currentPlayer;
   }
 
-  public get CurrentPhasePlayer(): ClientPlayer {
+  public get CurrentPhasePlayer(): P {
     return this.currentPhasePlayer;
   }
 
   public turnTo(playerId: PlayerId) {
-    this.currentPlayer = this.getPlayerById(playerId) as ClientPlayer;
+    this.currentPlayer = this.getPlayerById(playerId) as P;
   }
 
   public onPhaseTo(playerId: PlayerId, phase: PlayerPhase) {
     this.currentPlayerPhase = phase;
-    this.currentPhasePlayer = this.getPlayerById(playerId) as ClientPlayer;
+    this.currentPhasePlayer = this.getPlayerById(playerId) as P;
   }
 
   public async gameStart(gameStartInfo: GameRunningInfo) {
@@ -339,7 +339,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public getPlayerById(playerId: PlayerId) {
-    return super.getPlayerById(playerId) as ClientPlayer;
+    return super.getPlayerById(playerId) as P;
   }
 
   public async kill(deadPlayer: Player): Promise<void> {

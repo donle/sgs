@@ -18,7 +18,7 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
-import { HegemonyPlayer, Player } from 'core/player/player';
+import { Player } from 'core/player/player';
 import { HegemonyServerPlayer, ServerPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerRole, PlayerStatus } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
