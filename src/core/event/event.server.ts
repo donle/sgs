@@ -55,7 +55,7 @@ export type OptionPromptProps = {
   option: string;
   optionDetail?: string;
   sideTip?: string | PatchedTranslationObject;
-}
+};
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {

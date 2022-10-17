@@ -60,10 +60,12 @@ interface LobbyEventList extends LobbyEventUtilities {
   };
   [LobbySocketEvent.VersionMismatch]: boolean;
   [LobbySocketEvent.CheckRoomExist]: boolean;
-  [LobbySocketEvent.CreateWaitingRoom]: {
-    roomInfo: TemporaryRoomCreationInfo;
-    roomId: RoomId;
-  };
+  [LobbySocketEvent.CreateWaitingRoom]:
+    | {
+        roomInfo: TemporaryRoomCreationInfo;
+        roomId: RoomId;
+      }
+    | { error: string };
   [LobbySocketEvent.EnterWaitingRoom]: {
     roomInfo: TemporaryRoomCreationInfo;
   };

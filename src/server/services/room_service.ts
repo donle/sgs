@@ -19,6 +19,7 @@ import SocketIO from 'socket.io';
 export class RoomService {
   private rooms: ServerRoom[] = [];
   private waitingRooms: WaitingRoomInfo[] = [];
+  private hostPlayerIps: Map<string, number> = new Map();
   private waitingRoomMaps: Map<number | string, WaitingRoomSocket> = new Map();
 
   constructor(
@@ -127,20 +128,31 @@ export class RoomService {
     };
   }
 
-  createWaitingRoom(roomInfo: TemporaryRoomCreationInfo & { roomId?: number }) {
+  createWaitingRoom(roomInfo: TemporaryRoomCreationInfo & { roomId?: number }, hostIp: string) {
     const room = this.createGameWaitingRoom(roomInfo, roomInfo.roomId || Date.now());
     const roomSocket = this.createWaitingRoomSocket(this.lobbySocket.of(`/waiting-room-${room.roomId}`), room);
     this.waitingRoomMaps.set(room.roomId, roomSocket);
 
     roomSocket.onClosed(() => {
       this.waitingRooms = this.waitingRooms.filter(r => r !== room);
+      const createdRooms = this.hostPlayerIps.get(hostIp) || 0;
+      if (createdRooms > 0) {
+        this.hostPlayerIps.set(hostIp, createdRooms - 1);
+      }
     });
 
     this.waitingRooms.push(room);
+    const createdRooms = this.hostPlayerIps.get(hostIp) || 0;
+    console.log(hostIp, createdRooms);
+    this.hostPlayerIps.set(hostIp, createdRooms + 1);
 
     return {
       roomId: room.roomId,
       roomInfo,
     };
+  }
+
+  isValidToCreateWaitingRoom(playerIp: string): boolean {
+    return this.hostPlayerIps.get(playerIp) === undefined || this.hostPlayerIps.get(playerIp)! < 2;
   }
 }

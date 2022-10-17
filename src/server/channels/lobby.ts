@@ -66,7 +66,14 @@ export class LobbyEventChannel {
         return;
       }
 
-      const { roomId, roomInfo } = this.roomService.createWaitingRoom(content.roomInfo);
+      if (!this.roomService.isValidToCreateWaitingRoom(socket.handshake.address)) {
+        socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
+          error: 'host player is not allowed',
+        });
+        return;
+      }
+
+      const { roomId, roomInfo } = this.roomService.createWaitingRoom(content.roomInfo, socket.handshake.address);
       socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
         roomId,
         roomInfo,

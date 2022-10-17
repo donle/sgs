@@ -229,7 +229,7 @@ export class Lobby extends React.Component<LobbyProps> {
     } else {
       this.props.connectionService.Lobby.createWaitingRoom(roomInfo, event => {
         const { packet, ping, hostTag, error } = event;
-        if (packet) {
+        if (packet && 'roomId' in packet) {
           const { roomId, roomInfo } = packet;
           const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
           this.props.history.push(`/waiting-room/${roomId}`, {
