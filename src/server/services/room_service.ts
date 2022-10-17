@@ -143,7 +143,6 @@ export class RoomService {
 
     this.waitingRooms.push(room);
     const createdRooms = this.hostPlayerIps.get(hostIp) || 0;
-    console.log(hostIp, createdRooms);
     this.hostPlayerIps.set(hostIp, createdRooms + 1);
 
     return {
