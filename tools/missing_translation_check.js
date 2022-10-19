@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs');
-const readline = require('readline');
 const path = require('path');
+const readline = require('readline');
 const { SimplifiedChinese } = require('./languages/zh_CN/index');
 
 function doTranslationPickup(line, regexr) {

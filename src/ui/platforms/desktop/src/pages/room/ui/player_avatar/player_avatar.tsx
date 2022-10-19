@@ -377,22 +377,26 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             }),
           );
       } else {
-        this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name).then(
-          mobx.action(image => {
-            this.mainImage = image;
-          }),
-        );
+        this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name).then(image => {
+          if (this.mainImage?.src !== image.src) {
+            mobx.runInAction(() => {
+              this.mainImage = image;
+            });
+          }
+        });
       }
 
       const huashenCharacterId = this.props.presenter.ClientPlayer.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
       if (huashenCharacter) {
-        this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id).then(
-          mobx.action(image => {
-            this.sideImage = image;
-          }),
-        );
+        this.props.imageLoader
+          .getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id)
+          .then(image => {
+            if (this.sideImage?.src !== image.src) {
+              this.sideImage = image;
+            }
+          });
       }
     }
   }
@@ -432,6 +436,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       mobx.runInAction(() => {
         this.PlayerRoleCard = () => <Picture className={styles.playerRoleCard} image={image} />;
       });
+    }
+
+    if (this.props.presenter.ClientPlayer?.Character) {
+      this.renderCharacterImage();
     }
   }
 
@@ -541,9 +549,6 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
-    if (character && (!this.mainImage || this.mainImage.alt !== character.Name)) {
-      this.renderCharacterImage();
-    }
 
     return (
       <>

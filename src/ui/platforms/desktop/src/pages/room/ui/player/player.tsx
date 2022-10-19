@@ -336,22 +336,24 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             }),
           );
       } else {
-        this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name).then(
-          mobx.action(image => {
-            this.mainImage = image;
-          }),
-        );
+        this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name).then(image => {
+          if (this.mainImage?.src !== image.src) {
+            mobx.runInAction(() => {
+              this.mainImage = image;
+            });
+          }
+        });
       }
       const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
 
       if (huashenCharacter) {
-        this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id).then(
-          mobx.action(image => {
+        this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id).then(image => {
+          if (this.sideImage?.src !== image.src) {
             this.sideImage = image;
-          }),
-        );
+          }
+        });
       }
     }
   }
@@ -399,6 +401,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       });
     }
     this.ifDead = this.props.player ? this.props.player.Dead : this.ifDead;
+
+    if (this.PlayerCharacter) {
+      this.renderCharacterImage();
+    }
   }
 
   private readonly onCloseIncomingMessageCallback = () => {
@@ -469,9 +475,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   render() {
     const { disabled, translator, inAction, player, playerPhase, imageLoader, incomingMessage, actionTimeLimit } =
       this.props;
-    if (this.PlayerCharacter && (!this.mainImage || this.mainImage.alt !== this.PlayerCharacter.Name)) {
-      this.renderCharacterImage();
-    }
 
     return (
       <div className={styles.player} onMouseOver={this.showPlayerName} onMouseOut={this.hidePlayerName}>

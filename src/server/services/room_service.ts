@@ -141,6 +141,13 @@ export class RoomService {
       }
     });
 
+    roomSocket.onGameStarting(() => {
+      const createdRooms = this.hostPlayerIps.get(hostIp) || 0;
+      if (createdRooms > 0) {
+        this.hostPlayerIps.set(hostIp, createdRooms - 1);
+      }
+    });
+
     this.waitingRooms.push(room);
     const createdRooms = this.hostPlayerIps.get(hostIp) || 0;
     this.hostPlayerIps.set(hostIp, createdRooms + 1);

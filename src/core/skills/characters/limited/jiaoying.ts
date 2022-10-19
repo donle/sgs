@@ -79,8 +79,6 @@ export class JiaoYing extends TriggerSkill {
       originalMappers[event.fromId]++;
       room.getPlayerById(toId).setFlag<JiaoYingMapper>(JiaoYing.UsedTimesMappers, originalMappers);
 
-      console.log(toId);
-
       for (const skillName of [JiaoYingBlocker.Name, JiaoYingRemover.Name]) {
         room.getPlayerById(toId).hasShadowSkill(skillName) || (await room.obtainSkill(toId, skillName));
       }

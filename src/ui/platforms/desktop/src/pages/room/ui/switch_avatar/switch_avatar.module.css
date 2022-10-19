@@ -1,7 +1,3 @@
-.switchAvatar {
-    position: relative;
-}
-
 .dynamicMainImage {
     animation-name: mainFade;
     animation-duration: 8s;

@@ -9,7 +9,7 @@ export type SwitchAvatarProps = {
 };
 
 export const SwitchAvatar = (props: SwitchAvatarProps) => (
-  <div className={classNames(styles.switchAvatar, props.className)}>
+  <div className={props.className}>
     {props.sideImage && <img alt="" src={props.sideImage} className={styles.sideImage} />}
     <img
       alt=""
