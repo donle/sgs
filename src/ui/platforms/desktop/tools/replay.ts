@@ -1,5 +1,5 @@
-import * as stringCompressor from 'shrink-string';
 import * as crypto from 'crypto';
+import * as stringCompressor from './shrink_string';
 
 export type ReplayOtherInfo = {
   gameInfo: object;

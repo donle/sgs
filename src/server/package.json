@@ -7,7 +7,6 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "express": "^4.17.1",
-    "shrink-string": "3.0.9",
     "socket.io": "2.4.1"
   },
   "devDependencies": {
@@ -18,15 +17,15 @@
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.2",
     "tsconfig": "^7.0.0",
-    "tsconfig-paths": "^3.9.0",
+    "tsconfig-paths": "^4.1.0",
     "typescript": "^4.3.5"
   },
   "scripts": {
     "patch": "ts-node ../pre_release.ts",
     "dev:watch": "NODE_PATH=../ nodemon",
-    "dev": "NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
+    "dev": "NODE_PATH=../ ts-node -r tsconfig-paths/register ./main.ts --files",
     "build": "NODE_PATH=../ tsc -p ./tsconfig.server.json",
-    "dev:win": "cross-env NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
+    "dev:win": "cross-env NODE_PATH=../ ts-node -r tsconfig-paths/register ./main.ts --files",
     "dev:win:watch": "cross-env NODE_PATH=../ nodemon",
     "build:win": "cross-env NODE_PATH=../ tsc -p ./tsconfig.server.json",
     "start": "yarn build && NODE_PATH=./build REACT_APP_DEV_MODE=prod node ./build/server/main.js",
