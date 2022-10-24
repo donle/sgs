@@ -6,11 +6,11 @@ const gz = promisify(gzip);
 const ugz = promisify(gunzip);
 
 export const compress = async (s: string = '') => {
-  const compressed = await gz(s);
+  const compressed: Buffer = await gz(s);
   return Buffer.from(compressed).toString('base64');
 };
 
 export const decompress = async (s: string = '') => {
-  const decompressed = await ugz(Buffer.from(Buffer.from(s, 'base64')));
+  const decompressed: Buffer = await ugz(Buffer.from(Buffer.from(s, 'base64')));
   return decompressed.toString();
 };
