@@ -9,6 +9,7 @@ export function getAudioLoader(flavor: ClientFlavor) {
       return new DevAudioLoader();
     case ClientFlavor.Dev:
     case ClientFlavor.Desktop:
+    case ClientFlavor.Mobile:
       return new ProdAudioLoader();
     default:
       throw Precondition.UnreachableError(flavor);
