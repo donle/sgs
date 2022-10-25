@@ -36,3 +36,4 @@ build
 /www
 src/ui/platforms/desktop/src/core
 /src/ui/platforms/desktop/public/skins_v0.5/
+/src/ui/platforms/desktop/platforms/

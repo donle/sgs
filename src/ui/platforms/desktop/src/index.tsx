@@ -28,27 +28,31 @@ if (config.flavor !== ClientFlavor.Web) {
 let translator: ClientTranslationModule;
 let electronLoader: ElectronLoader;
 
-getElectronLoader(config.flavor)
-  .then(loader => {
-    electronLoader = loader;
-    translator = ClientTranslationModule.setup(
-      electronLoader.getData(ElectronData.Language),
-      [Languages.ZH_CN, SimplifiedChinese],
-      [Languages.ZH_HK, TraditionalChinese],
-      [Languages.ZH_TW, TraditionalChinese],
-    );
-    emojiLoader(translator);
-    Sanguosha.initialize();
-  })
-  .then(() => {
-    ReactDOM.render(
-      <MemoryRouter>
-        <App config={config} electronLoader={electronLoader} translator={translator} logger={logger} />
-      </MemoryRouter>,
-      document.getElementById('root'),
-    );
-  });
+async function onDeviceReady() {
+  const loader = await getElectronLoader(config.flavor);
+  electronLoader = loader;
+  translator = ClientTranslationModule.setup(
+    electronLoader.getData(ElectronData.Language),
+    [Languages.ZH_CN, SimplifiedChinese],
+    [Languages.ZH_HK, TraditionalChinese],
+    [Languages.ZH_TW, TraditionalChinese],
+  );
+  emojiLoader(translator);
+  Sanguosha.initialize();
 
+  ReactDOM.render(
+    <MemoryRouter>
+      <App config={config} electronLoader={electronLoader} translator={translator} logger={logger} />
+    </MemoryRouter>,
+    document.getElementById('root'),
+  );
+}
+
+if (mode === ClientFlavor.Mobile) {
+  document.addEventListener('deviceready', onDeviceReady, false);
+} else {
+  onDeviceReady();
+}
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

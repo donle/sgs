@@ -8,6 +8,7 @@ export const enum ClientFlavor {
   Dev = 'dev',
   Web = 'web',
   Desktop = 'desktop',
+  Mobile = 'mobile',
 }
 
 export const enum ServerHostTag {

@@ -1,5 +1,6 @@
 {
-  "name": "DSanguosha",
+  "name": "dsanguosha",
+  "displayName": "新神杀",
   "version": "0.2.4",
   "author": {
     "name": "donle",
@@ -140,6 +141,11 @@
       "last 1 safari version"
     ]
   },
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
+  },
   "devDependencies": {
     "@types/classnames": "^2.2.9",
     "@types/jest": "^29.1.2",
@@ -148,6 +154,7 @@
     "@types/react-router-dom": "^5.1.3",
     "@types/react-test-renderer": "^16.9.2",
     "@types/socket.io-client": "^1.4.32",
+    "cordova-android": "^10.1.2",
     "create-react-app": "^4.0.3",
     "cross-env": "^7.0.2",
     "css-loader": "^3.4.2",
@@ -161,6 +168,9 @@
     "ts-loader": "^6.2.1",
     "typescript": "^4.3.5"
   },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
   "resolutions": {
     "react-dev-utils": "10.1.0"
   },
