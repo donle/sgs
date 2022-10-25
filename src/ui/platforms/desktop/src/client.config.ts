@@ -21,46 +21,20 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
       ];
       break;
     case ClientFlavor.Web:
-      host = [
-        {
-          port: 2020,
-          host: '146.56.218.109',
-          protocol: 'http',
-          hostTag: ServerHostTag.NanJing,
-        },
-        {
-          port: 2020,
-          host: '1.12.67.228',
-          protocol: 'http',
-          hostTag: ServerHostTag.GuangZhou,
-        },
-        {
-          port: 2020,
-          host: '121.41.167.150',
-          protocol: 'http',
-          hostTag: ServerHostTag.HangZhou,
-        },
-        {
-          port: 2020,
-          host: '124.220.210.221',
-          protocol: 'http',
-          hostTag: ServerHostTag.ShangHai,
-        },
-      ];
-      break;
     case ClientFlavor.Desktop:
+    case ClientFlavor.Mobile:
       host = [
-        {
-          port: 2020,
-          host: '1.12.67.228',
-          protocol: 'http',
-          hostTag: ServerHostTag.GuangZhou,
-        },
         {
           port: 2020,
           host: '146.56.218.109',
           protocol: 'http',
           hostTag: ServerHostTag.NanJing,
+        },
+        {
+          port: 2020,
+          host: '1.12.67.228',
+          protocol: 'http',
+          hostTag: ServerHostTag.GuangZhou,
         },
         {
           port: 2020,

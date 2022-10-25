@@ -10,6 +10,7 @@ export function getImageLoader(flavor: ClientFlavor): ImageLoader {
       return new DevImageLoader();
     case ClientFlavor.Dev:
     case ClientFlavor.Desktop:
+    case ClientFlavor.Mobile:
       return new ProdImageLoader();
     default:
       throw Precondition.UnreachableError(flavor);

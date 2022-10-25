@@ -9,6 +9,7 @@ export async function getElectronLoader(flavor: ClientFlavor): Promise<ElectronL
     case ClientFlavor.Dev:
       return new FakeElectronLoader();
     case ClientFlavor.Web:
+    case ClientFlavor.Mobile:
       return new DevElectronLoader();
     case ClientFlavor.Desktop:
       const { ProdElectronLoader } = await import('./prod_electron_loader');
