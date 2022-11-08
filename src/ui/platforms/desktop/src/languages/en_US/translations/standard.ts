@@ -137,230 +137,275 @@ export const characterDictionary: Word[] = [
 ];
 
 export const skillDescriptions: Word[] = [
-  { source: 'jianxiong_description', target: '当你受到伤害后，你可以获得对你造成伤害的牌并摸一张牌。' },
+  {
+    source: 'jianxiong_description',
+    target: 'After you take damage, you can take card(s) that cause the damage, then draw 1 card.',
+  },
   {
     source: 'hujia_description',
     target:
-      '<b>主公技</b>，当你需要使用或打出【闪】时，你可以令其他魏势力角色选择是否打出一张【闪】视为由你使用或打出）。',
+      '<b>Lord skill</b>, when you need to use/play Jink, you can ask other Wei characters to use/play Jink for you.',
   },
-  { source: 'fankui_description', target: '当你受到1点伤害后，你可以获得伤害来源的一张牌。' },
-  { source: 'guicai_description', target: '当一名角色的判定牌生效前，你可以打出一张牌代替之。' },
+  { source: 'fankui_description', target: 'After you take 1 damage, you can take 1 card from the damage source.' },
+  {
+    source: 'guicai_description',
+    target:
+      'When a player performs a judgement, before it takes effect, you can play a card to substitute the judge card.',
+  },
   {
     source: 'ganglie_description',
-    target: '当你受到1点伤害后，你可以进行判定，若结果为：红色，你对伤害来源造成1点伤害；黑色，你弃置其一张牌。',
+    target:
+      "After you take 1 damage, you can perform a judgement, if the result is: red, you deal 1 damage to the damage source; black, you discard 1 card in the damage source's area.",
   },
   {
     source: 'qingjian_description',
     target:
-      '每回合限一次，当你于摸牌阶段外获得牌后，你可以展示至少一张牌并将其交给一名其他角色，当前回合角色本回合手牌上限+X（X为你给出牌的类别数）。',
+      "Once per turn, when you get card out side of your draw phase, you can show at least 1 card and give them to another player, then increase current player's max card by +X in this turn (X is count of types in the cards you give out).",
   },
-  { source: 'tuxi_description', target: '摸牌阶段，你可以少摸至少一张牌并获得等量的其他角色各一张手牌。' },
+  {
+    source: 'tuxi_description',
+    target:
+      'During your draw phase, you can draw -X fewer cards and select X another players, then you take 1 hand card from each of them.',
+  },
   {
     source: 'luoyi_description',
     target:
-      '摸牌阶段开始时，你亮出牌堆顶三张牌，然后你可以获得其中的基本牌、武器牌和【决斗】。若如此做，你放弃摸牌，且你为伤害来源的【杀】或【决斗】造成的伤害+1直到你的下回合开始。',
+      "At the start of your draw phase, you can reveal 3 cards at the top of draw pile, then you can take basic card, weapon and Duel in them. If you do so, you can't draw cards, until the start of your next turn, when your Slash and Duel (of which you are the damage source) are about to cause damage, the damage is increased by +1.",
   },
-  { source: 'tiandu_description', target: '当你的判定牌生效后，你可以获得此牌。' },
+  { source: 'tiandu_description', target: 'After your judgement takes effect, you can take the judge card.' },
   {
     source: 'yiji_description',
-    target: '当你受到1点伤害后，你可以摸两张牌，然后你可以将一至两张手牌交给一至两名其他角色。',
+    target: 'After you take 1 damage, you can draw 2 cards, then you distribute 1 ~ 2 hand cards to any player(s).',
   },
   {
     source: 'luoshen_description',
     target:
-      '准备阶段开始时，你可以进行判定，当黑色判定牌生效后，你获得之。若结果为黑色，你可以重复此流程。以此法获得的牌本回合不计入手牌上限。',
+      "At the start of your prepare phase, you can perform a judgement, if the result is black, you get judge card and you can judge again. The cards obtained by this way won't be counted to max cards in this turn.",
   },
-  { source: 'qingguo_description', target: '你可以将一张黑色手牌当【闪】使用或打出。' },
+  { source: 'qingguo_description', target: 'You can use/play black hand card as Jink.' },
   {
     source: 'jiangchi_description',
     target:
-      '出牌阶段开始时，你可以选择一项：1.摸两张牌，然后你于此阶段不能使用或打出【杀】；2.摸一张牌；3.弃置一张牌，然后你于此阶段使用【杀】无距离限制且可多使用一张【杀】。',
+      "At the start of your play phase, you can choose: 1. draw 2 cards, and you can't use/play Slash in this phase; 2. draw 1 card; 3. discard 1 card, and in this phase: you can use 1 extra Slash, your Slash have no distance limitation.",
   },
   {
     source: 'rende_description',
     target:
-      '出牌阶段，你可以将至少一张手牌交给一名本阶段未获得过“仁德”牌的其他角色。当你于本阶段给出第二张“仁德”牌时，你可以视为使用一张基本牌。',
+      "During your play phase, you can give at least 1 hand card to another player who didn't get Benevolence card in this phase. When you give out 2nd Benevolence card, you can regard as use a basic card.",
   },
   {
     source: 'xunxun_description',
-    target: '摸牌阶段开始时，你可以观看牌堆顶四张牌，将其中两张牌置于牌堆顶，其余两张牌置于牌堆底。',
+    target:
+      'At the start of your draw phase, you can examine 4 cards from the top of draw pile, then place 2 of them at the top of draw pile and the rest at the bottom.',
   },
   {
     source: 'wangxi_description',
-    target: '当你对其他角色造成1点伤害或受到其他角色造成的1点伤害后，若其存活，你可以与其各摸一张牌。',
+    target: 'When you deal/take 1 damage to/from another player, if he is still alive, you can both draw 1 card.',
   },
   {
     source: 'jijiang_description',
     target:
-      '<b>主公技</b>，当你需要使用或打出【杀】时，你可以令其他蜀势力角色选择是否打出一张【杀】（视为由你使用或打出）。',
+      '<b>Lord skill</b>, when you need to use/play Slash, you can ask other Shu characters to play a Slash (which is regarded as you use/play it).',
   },
-  { source: 'wusheng_description', target: '你可以将一张红色牌当【杀】使用或打出；你使用方块【杀】无距离限制。' },
+  {
+    source: 'wusheng_description',
+    target: 'You can use/play red cards as Slash; your diamond Slash have no distance limitation.',
+  },
   {
     source: 'yijue_description',
     target:
-      '出牌阶段限一次，你可以弃置一张牌，然后令一名其他角色展示一张手牌。若此牌为：黑色，则其本回合内非锁定技失效且不能使用或打出手牌，你对其使用的红桃【杀】伤害+1；红色，则你获得此牌，然后你可令该角色回复1点体力。',
+      "Once per play phase, you can discard 1 hand card, and ask another player to show a hand card, if the showed card is: black, his non-compulsory skills are invaild for the rest of this turn, and he can't use/play his hand cards, when you deal damage to him with a heart Slash, the damage is increased by +1; red, you obtained this card, then you can heal 1 HP for him.",
   },
   {
     source: 'paoxiao_description',
     target:
-      '<b>锁定技</b>，你使用【杀】无次数限制；若你使用的【杀】被抵消，则当你于此回合内使用【杀】造成下一次伤害时，此伤害+1。',
+      '<b>Compulsory skill</b>, you can use any amount of Slash; if your Slash is nullified by a Jink, then when you deal damage with a Slash next time in this turn, the damage is increased by +1.',
   },
   {
     source: 'tishen_description',
-    target: '<b>限定技</b>，准备阶段开始时，你可以将体力回复至体力上限，然后摸X张牌（X为你以此法回复的体力值）。',
+    target:
+      '<b>Limited skill</b>, at the start of your prepare phase, you can heal HP to your max HP, then draw X cards(X is the amount of HP you healed by this way).',
   },
   {
     source: 'guanxing_description',
     target:
-      '准备阶段，你可以观看牌堆顶的五张牌（存活人数小于四时改为三张），然后以任意顺序放回牌堆顶或牌堆底。若你将这些牌均放至牌堆底，则结束阶段开始时你可以再发动一次“观星”。',
+      'At the start of you prepare phase, you can examine 5 cards at the top of draw pile (if there are less than 4 alive players, reduce to 3 cards), then you place any of them to the top of draw pile and the rest at the bottom. If you place all cards to the bottom, you can use Stargaze again at the start of your finish stage in this turn.',
   },
-  { source: 'kongcheng_description', target: '<b>锁定技</b>，若你没有手牌，你不能成为【杀】或【决斗】的目标。' },
+  {
+    source: 'kongcheng_description',
+    target: "<b>Compulsory skill</b>, if you have no hand cards, you can't be the target of Slash and Duel.",
+  },
   {
     source: 'longdan_description',
-    target: '你可以将一张【杀】当【闪】、【闪】当【杀】、【桃】当【酒】、【酒】当【桃】使用或打出。',
+    target: 'You can use/play a Slash as Jink, a Jink as Slash, a Peach as Alcohol, an Alcohol as Peach.',
   },
   {
     source: 'yajiao_description',
     target:
-      '当你于回合外使用或打出手牌时，你可以展示牌堆顶一张牌，若此牌与你使用或打出的牌类别：相同，你可以将之交给一名角色；不同，你可以弃置攻击范围内含有你的一名角色区域内的一张牌。',
+      'When you use/play hand card outside of your turn, you can show 1 card at the top of draw pile, if it is the same type than the card you used/played, you can give it to a player; otherwise you can discard 1 card from player whose attack range is enough to attack you.',
   },
-  { source: 'mashu_description', target: '<b>锁定技</b>，你计算与其他角色的距离-1。' },
+  {
+    source: 'mashu_description',
+    target: '<b>Compulsory skill</b>, the distance from you to other players is reduced by -1.',
+  },
   {
     source: 'tieji_description',
     target:
-      '当你使用【杀】指定目标后，你可令其本回合内非锁定技失效，然后你进行判定，除非其弃置与结果花色相同的一张牌，否则不能使用【闪】响应此【杀】。',
+      "After you use Slash to target a player, you can make his non-compulsory skills invaild for this turn, then you perform a judgement, unless he discard a card with the same suit than the judge card, he can't use Jink to response this Slash.",
   },
   {
     source: 'jizhi_description',
-    target: '当你使用锦囊牌时，你可以摸一张牌。若以此法摸的牌为基本牌，你可以弃置此牌令你于本回合内手牌上限+1。',
+    target:
+      'After you use a trick card, you can draw 1 card. If you drew a basic card by this way, you can discard it to make you max card increased by +1 in this turn.',
   },
   {
     source: 'qicai_description',
     target:
-      '<b>锁定技</b>，你使用锦囊牌无距离限制；当你装备区里的防具或宝物牌因其他角色弃置而移动前，你防止此牌的本次移动。',
+      '<b>Compulsory skill</b>, your trick cards have no distance limitation; before you lose armor or treasure in your equip area by the reason of discard by other player, you prevent this card movement.',
   },
   {
     source: 'zhiheng_description',
-    target: '出牌阶段限一次，你可以弃置至少一张牌，然后摸等量的牌。若你以此法弃置了所有的手牌，则额外摸一张牌。',
+    target:
+      'Once per play phase, you can discard at least 1 card and then draw the same amount of cards; if you discarded all of your hand cards by this way, you draw 1 extra card.',
   },
   {
     source: 'jiuyuan_description',
     target:
-      '<b>主公技</b>，当其他吴势力角色使用【桃】指定其为目标时，若其体力值大于你，则该角色可以将此【桃】转移给你，然后其摸一张牌。',
+      '<b>Lord skill</b>, after other Wu character use Peach to target himself, if his HP is higher than yours, then he can transfer the target of Peach to you, then he draw 1 card.',
   },
-  { source: 'qixi_description', target: '你可以将一张黑色牌当【过河拆桥】使用。' },
+  { source: 'qixi_description', target: 'You can use black cards as Dismantlement.' },
   {
     source: 'fenwei_description',
-    target: '<b>限定技</b>，当一张锦囊牌指定多个目标后，你可令此牌对其中至少一个目标无效。',
+    target:
+      '<b>Limited skill</b>, when a trick card targets to multiple players, you can make the card invaild to any of them.',
   },
   {
     source: 'qinxue_description',
     target:
-      '<b>觉醒技</b>，准备阶段或结束阶段开始时，若你的手牌数比体力值多2或更多，你减1点体力上限，摸两张牌或回复1点体力，然后获得技能"攻心"。',
+      '<b>Awaken skill</b>, at the start of your prepare phase or finish phase, if your hand cards is 2 or 2+ more than your HP, you lose 1 max HP, choose to draw 2 cards or heal 1 HP, then you acquire the skill Strike to Heart.',
   },
-  { source: 'keji_description', target: '若你未于本回合的出牌阶段内使用或打出过【杀】，则你可以跳过弃牌阶段。' },
+  {
+    source: 'keji_description',
+    target: "If you haven't used/played any Slash at your play phase this turn, you can skip your discard stage.",
+  },
   {
     source: 'botu_description',
     target:
-      '每轮限X次（X为存活角色数且至多为3），结束阶段开始时，若于本回合内进入过弃牌堆的所有牌包含四种花色，则你可以获得一个额外的回合。',
+      'X times per round (X is the amount of alive players and max. 5), at the start of your finish phase, if all the cards that entered discard pile in this turn contain 4 suits, you can play an extra turn.',
   },
-  { source: 'kurou_description', target: '出牌阶段限一次，你可以弃置一张牌，然后失去1点体力。' },
+  { source: 'kurou_description', target: 'Once per play phase, you can discard 1 card and lose 1 HP.' },
   {
     source: 'zhaxiang_description',
     target:
-      '<b>锁定技</b>，当你失去1点体力后，你摸三张牌。若此时是你的出牌阶段，则此阶段内你使用红色【杀】无距离限制且不能被【闪】响应，且你使用【杀】的次数上限+1。',
+      "<b>Compulsory skill</b>, after you lose 1 HP, you draw 3 cards. And if you are in your play phase, until the end of this turn, you can use 1 extra Slash, your red Slash has no distance limitation and can't be responsed with a Jink.",
   },
   {
     source: 'yingzi_description',
-    target: '<b>锁定技</b>，摸牌阶段，你多摸一张牌；你的手牌上限等于X（X为你的体力上限）。',
+    target: '<b>Compulsory skill</b>, you draw +1 more card at draw phase; your max card is equal to your max HP.',
   },
   {
     source: 'fanjian_description',
     target:
-      '出牌阶段限一次，你可以展示一张手牌并交给一名其他角色，其选择一项：1.展示所有手牌，弃置与此牌同花色的牌；2.失去1点体力。',
+      'Once per play phase, you can show a hand card and give it to another player, he choose: 1. show all hand cards, then discard all cards with the same suit of this card; 2. lose 1 HP.',
   },
   {
     source: 'guose_description',
     target:
-      '出牌阶段限一次，你选择一项，然后摸一张牌：1.将一张方块牌当【乐不思蜀】使用；2.弃置一张方块牌并弃置场上的一张【乐不思蜀】。',
+      'Once per play phase, you choose one options, then draw 1 card: 1. use a diamond card as Indulgence; 2. discard a diamond card and discard an Indulgence on the field.',
   },
   {
     source: 'liuli_description',
     target:
-      '当你成为【杀】的目标时，你可以弃置一张牌并选择你攻击范围内的一名其他角色（不能是此【杀】的使用者），然后将此【杀】转移给该角色。',
+      'When you become the target of Slash, you can discard 1 card and transfer the target of Slash to another player (except the attacker) within your attack range.',
   },
   {
     source: 'qianxun_description',
-    target: '当其他角色使用的锦囊牌对你生效时，若你是唯一目标，则你可以将所有手牌移出游戏直到回合结束。',
+    target:
+      'When a normal trick card used by another player or delayed trick card becomes effective, if you are the only target, you can move all of your hand cards outside of the game until this turn finishes.',
   },
   {
     source: 'lianying_description',
-    target: '当你失去最后的手牌后，你可以令一至X名角色各摸一张牌（X为你失去的手牌数）。',
+    target:
+      'After you lose all hand cards, you can let up to X players draw 1 card (X is the amount of hand cards you have just lost).',
   },
   {
     source: 'jieyin_description',
     target:
-      '出牌阶段限一次，你可以选择一名男性角色，并弃置一张手牌或将一张装备牌置入其装备区，然后你与其体力值较高的角色摸一张牌，体力值较低的角色回复1点体力。',
+      'Once per play phase, you can choose a male character, and discard 1 hand card or move a equip card to his equip area, then the player with higher HP draw 1 card, the other heal 1 HP. (If both of you have the same HP, nothing will happen)',
   },
-  { source: 'xiaoji_description', target: '当你失去装备区里的一张牌后，你可以摸两张牌。' },
-  { source: 'jijiu_description', target: '你的回合外，你可以将一张红色牌当【桃】使用。' },
+  { source: 'xiaoji_description', target: 'After you lose 1 card in your equipment area, you can draw 2 cards.' },
+  { source: 'jijiu_description', target: 'You can use red card as Peach outside your turn.' },
   {
     source: 'qingnang_description',
     target:
-      '出牌阶段限一次，你可以弃置一张手牌，并令一名本回合未以此法选择过的角色回复1点体力。若你弃置的牌为红色，则可以再次发动此技能。',
+      "Once per turn, you can discard 1 hand card, and choose a player who haven't chosen by this way in this phase, heal 1 HP to him. If your discarded red card, you can use this skill again.",
   },
   {
     source: 'wushuang_description',
     target:
-      '<b>锁定技</b>，当你使用【杀】指定一个目标后，该角色需依次使用两张【闪】才能抵消此【杀】；当你使用【决斗】指定一个目标后，或成为一名角色使用【决斗】的目标后，该角色每次响应此【决斗】需依次打出两张【杀】。',
+      '<b>Compulsory skill</b>, if you use Slash to target a player, the target needs to use 2 Jink to evade it; during Duel, the opponent must play 2 Slash per round.',
   },
   {
     source: 'liyu_description',
     target:
-      '当你使用【杀】对一名其他角色造成伤害后，你可获得其区域里的一张牌。然后若获得的牌：不为装备牌，其摸一张牌；为装备牌，则视为你对由其指定的另一名角色使用一张【决斗】。',
+      "After you deal damage with a Slash, you can take a card from the victim's area, then if the type of card you just got is: not equip card, the victim draw 1 card; equip card, you are regarded as use a Duel to another player chose by the victim.",
   },
   {
     source: 'lijian_description',
     target:
-      '出牌阶段限一次，你可以弃置一张牌并依次选择两名男性角色，然后视为第二名男性角色对另一名男性角色使用一张【决斗】。',
+      'Once per play phase, you can discard 1 card and choose 2 male characters, this is regarded as the second character you chosen use a Duel to the other.',
   },
-  { source: 'biyue_description', target: '结束阶段开始时，你可以摸一张牌。若你没有手牌，则改为摸两张牌。' },
+  {
+    source: 'biyue_description',
+    target: 'At the start of finish phase, you can draw 1 card. If you have no hand cards, draw 2 cards instead.',
+  },
   {
     source: 'yaowu_description',
-    target: '<b>锁定技</b>，当你受到伤害时，若造成伤害的牌：为红色，伤害来源摸一张牌；不为红色，你摸一张牌。',
+    target:
+      '<b>Compulsory skill</b>, when you take damage, if the color of the card that caused the damage is: red, the damage source draw 1 card; not red, you draw 1 card.',
   },
   {
     source: 'wangzun_description',
     target:
-      '<b>锁定技</b>，体力值大于你的角色的准备阶段开始时，你摸一张牌，若其为主公，改为你摸两张牌且其本回合手牌上限-1。',
+      '<b>Compulsory skill</b>, at the start of prepare phase of player whose HP is higher than yours, you draw 1 cards, if that player is the lord, you draw 2 cards instead and reduce his max card by 1 in this turn.',
   },
   {
     source: 'tongji_description',
     target:
-      '当其他角色成为【杀】的目标时，若你处于其攻击范围内且你不为此牌的使用者及目标，其可以弃置一张牌，将此【杀】转移给你。',
+      'When other player become the target of Slash, if you are in his attack range and you are neither user of this Slash nor the target, he can discard 1 card and transfer the target of this Slash to you.',
   },
   {
     source: 'yicong_description',
-    target: '<b>锁定技</b>，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
+    target:
+      '<b>Compulsory skill</b>, the distance from you to other players is reduced by -1; if you HP is not higher than 2, the distance from other players to you is increased by +1.',
   },
   {
     source: 'qiaomeng_description',
-    target: '当你使用【杀】对一名角色造成伤害后，你可弃置其区域内的一张牌。若此牌为坐骑牌，你获得之。',
+    target:
+      "After you deal damage with Slash, you can discard 1 card in the victim's area. If this card is horse, you get it.",
   },
-  { source: 'jijie_description', target: '出牌阶段限一次，你可以观看牌堆底一张牌，然后交给一名角色。' },
-  { source: 'jiyuan_description', target: '当一名角色进入濒死状态或你交给一名其他角色牌时，你可以令其摸一张牌。' },
+  {
+    source: 'jijie_description',
+    target: 'Once per play phase, you can examine 1 card at the bottom of draw pile, and give it to a player.',
+  },
+  {
+    source: 'jiyuan_description',
+    target: 'When a player enter dying or you give card to another player, you can let him draw 1 card.',
+  },
   {
     source: 'zhuhai_description',
-    target: '其他角色的结束阶段开始时，若其于此回合造成过伤害，你可以对其使用一张无距离限制的【杀】。',
+    target:
+      'At the start of finish phase of another player, if he has caused damage this turn, you can use Slash on him with no distance limitation.',
   },
   {
     source: 'qianxin_description',
-    target: '<b>觉醒技</b>，当你造成伤害后，若你已受伤，你减1点体力上限并获得技能“荐言”。',
+    target:
+      '<b>Awaken skill</b>, after you deal damage, if you are wounded, you lose 1 max HP and acquire the skill Introduction.',
   },
   {
     source: 'jianyan_description',
     target:
-      '出牌阶段限一次，你可以声明一种牌的类别或颜色，然后亮出牌堆中第一张符合你声明的牌，并将之交给一名男性角色。',
+      'Once per play phase, you can declare a card type or color and reveal cards from the top of the draw pile until a card matches your declaration. You make a male character take the card.',
   },
 ];
 
@@ -881,20 +926,20 @@ export const skillAudios: Word[] = [
 export const promptDescriptions: Word[] = [
   {
     source: 'jiangchi:draw2',
-    target: '摸两张牌',
+    target: 'Draw 2 cards',
   },
   {
     source: 'jiangchi:draw1',
-    target: '摸一张牌',
+    target: 'Draw 1 card',
   },
 
-  {
-    source: '{0}: do you want to discard 1 card to transfer the target of {1} to {2}',
-    target: '{0}：你可以弃置一张牌将此{1}转移给 {2}',
-  },
+  // {
+  //   source: '{0}: do you want to discard 1 card to transfer the target of {1} to {2}',
+  //   target: '{0}: do you want to discard 1 card to transfer the target of {1} to {2}?',
+  // },
 
-  {
-    source: '{0} used skill {1}, transfer the target of {1} to {2}',
-    target: '{0} 使用了技能【{1}】，将{1}的目标转移给 {2}',
-  },
+  // {
+  //   source: '{0} used skill {1}, transfer the target of {1} to {2}',
+  //   target: '{0} 使用了技能【{1}】，将{1}的目标转移给 {2}',
+  // },
 ];
