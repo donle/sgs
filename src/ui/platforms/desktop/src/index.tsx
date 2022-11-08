@@ -7,7 +7,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { getElectronLoader } from 'electron_loader/electron_loader_util';
-import { SimplifiedChinese, TraditionalChinese } from 'languages';
+import { English, SimplifiedChinese, TraditionalChinese } from 'languages';
 import { ClientFlavor } from 'props/config_props';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -33,6 +33,7 @@ async function onDeviceReady() {
   electronLoader = loader;
   translator = ClientTranslationModule.setup(
     electronLoader.getData(ElectronData.Language),
+    [Languages.EN_US, English],
     [Languages.ZH_CN, SimplifiedChinese],
     [Languages.ZH_HK, TraditionalChinese],
     [Languages.ZH_TW, TraditionalChinese],
