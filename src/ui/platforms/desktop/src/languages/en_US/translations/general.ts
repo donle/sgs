@@ -292,11 +292,11 @@ export const eventDictionary: Word[] = [
   // { source: 'reset', target: '重置' },
   {
     source: '{0} proposed a pindian event, please choose a hand card to pindian',
-    target: '{0} 对你发起了拼点，请选择一张手牌用于拼点',
+    target: '{0} proposed a point fight to you, please choose a hand card to respond',
   },
-  { source: '{0} used {1} to respond pindian', target: '{0} 展示了拼点牌 {1}' },
-  { source: 'pindian result:{0} win', target: '拼点结果为 {0} 赢' },
-  { source: 'pindian result:draw', target: '拼点结果为 平局' },
+  { source: '{0} used {1} to respond pindian', target: '{0} showed point fight card {1}' },
+  { source: 'pindian result:{0} win', target: 'Point fight result: {0} win' },
+  { source: 'pindian result:draw', target: 'Point fight result: draw' },
   {
     source: "please drop a {0} card, otherwise you can't do response of slash",
     target: "Please drop a {0} card, otherwise you can't do response of slash",
@@ -315,7 +315,7 @@ export const eventDictionary: Word[] = [
   },
   {
     source: 'guanxing finished, {0} cards placed on the top and {1} cards placed at the bottom',
-    target: '观星结束，结果为 {0} 上 {1} 下',
+    target: 'Stargaze finished, {0} cards placed on the top and {1} cards placed at the bottom',
   },
   {
     source: '{0} used skill {1}, transformed {2} as {3} card to response',
@@ -338,12 +338,12 @@ export const eventDictionary: Word[] = [
   //   target: '{0} 对 {1} 使用',
   // },
   // { source: '{0} equipped {1}', target: '{0} 装备了 {1}' },
-  { source: '{0} is placed into drop stack', target: '{0} 置入了弃牌堆' },
-  { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
-  { source: '{0} responded card', target: '{0} 打出' },
-  { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
-  { source: '{0} skipped draw stage', target: '{0} 跳过了摸牌阶段' },
-  { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
+  { source: '{0} is placed into drop stack', target: '{0} is placed into discard pile' },
+  { source: '{0} responses card {1}', target: '{0} played {1}' },
+  { source: '{0} responded card', target: '{0} played' },
+  { source: 'please drop {0} cards', target: 'Please discard {0} cards' },
+  // { source: '{0} skipped draw stage', target: '{0} 跳过了摸牌阶段' },
+  // { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
   // { source: '{0} is dying', target: '{0} 进入了濒死阶段' },
   {
     source: '{0} asks for {1} peach',
@@ -395,80 +395,89 @@ export const eventDictionary: Word[] = [
   { source: 'please choose', target: 'Please choose' },
   // { source: '{0}: please choose', target: '{0}：请选择一项' },
   { source: 'please choose a player', target: 'Please choose a player' },
-  { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
-  { source: '{0} place card {1} from {2} into equip area of {3}', target: '{0} 将 {2} 的 {1} 置于了 {3} 的装备区' },
-  { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
-  { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
-  { source: '{0} triggered skill {1}, damage reduces to {2}', target: '{0} 触发了技能 【{1}】，伤害减少至 {2} 点' },
-  { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 【{1}】，请展示一张手牌' },
-  { source: '{0} used {1} to you, please present a hand card', target: '{0} 对你使用了 {1}，请展示一张手牌' },
-  { source: '{0} move cards {1} onto the top of {2} character card', target: '{0} 将 {1} 置于了 {2} 的武将牌上' },
-  { source: '{0} move {1} cards onto the top of {2} character card', target: '{0} 将 {1} 张牌置于了 {2} 的武将牌上' },
-  { source: '{0}: please present a hand card', target: '你成为了 {0} 的目标，请展示一张手牌' },
-  { source: '{0} used skill {1}, transfrom {2} into {3}', target: '{0} 使用了技能 【{1}】，将 {2} 改为了 {3} 使用' },
-  { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
-  { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
+  // { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
+  // { source: '{0} place card {1} from {2} into equip area of {3}', target: '{0} 将 {2} 的 {1} 置于了 {3} 的装备区' },
+  // { source: 'recover {0} hp for {1}', target: 'Heal {0} HP for {1}?' },
+  // { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
+  // { source: '{0} triggered skill {1}, damage reduces to {2}', target: '{0} 触发了技能 【{1}】，伤害减少至 {2} 点' },
+  {
+    source: '{0} used skill {1} to you, please present a hand card',
+    target: '{0} used skill {1} to you, please show a hand card',
+  },
+  { source: '{0} used {1} to you, please present a hand card', target: '{0} used {1} to you, please show a hand card' },
+  // { source: '{0} move cards {1} onto the top of {2} character card', target: '{0} 将 {1} 置于了 {2} 的武将牌上' },
+  // { source: '{0} move {1} cards onto the top of {2} character card', target: '{0} 将 {1} 张牌置于了 {2} 的武将牌上' },
+  { source: '{0}: please present a hand card', target: '{0}: please show a hand card' },
+  { source: '{0} used skill {1}, transfrom {2} into {3}', target: '{0} used skill {1}, use {2} as {3}' },
+  { source: '{0}: please choose a player to obtain {1}', target: '{0}: you can give {1} to a player' },
+  {
+    source: '{0}: please choose a player to drop',
+    target: '{0}: please choose a player whose attack range is enough to attack you to discard his card',
+  },
   {
     source: '{0}: do you want to transfrom {1} into fire slash?',
-    target: '{0}：你可以将{1}变为火【杀】',
+    target: '{0}: do you want to use {1} as Fire Slash?',
   },
-  {
-    source: '{0}: do you want to draw {1} card(s)?',
-    target: '{0}：你可以摸 {1} 张牌',
-  },
+  // {
+  //   source: '{0}: do you want to draw {1} card(s)?',
+  //   target: '{0}：你可以摸 {1} 张牌',
+  // },
   {
     source: '{0}: do you want to draw {1} card(s) additionally?',
-    target: '{0}：你可以多摸 {1} 张牌',
+    target: '{0}: do you want to draw {1} extra card(s)?',
   },
-  {
-    source: '{0} triggered skill {1}',
-    target: '{0} 触发了技能 【{1}】',
-  },
-  {
-    source: '{0} triggered skill {1}, nullify {2}',
-    target: '{0} 触发了技能 【{1}】，使 {2} 对其无效',
-  },
-  { source: '{0} triggered skill {1}, obtained card {2}', target: '{0} 触发了技能 【{1}】，获得了 {2}' },
-  {
-    source: '{0} triggered skill {1}, become the source of damage dealed by {2}',
-    target: '{0} 触发了技能 【{1}】，成为了 {2} 造成的伤害的伤害来源',
-  },
-  {
-    source: '{0} triggered skill {1}, prevent the damage',
-    target: '{0} 触发了【{1}】的效果，防止了此伤害',
-  },
-  {
-    source: '{0}: please choose a card type or color',
-    target: '{0}：请选择以下一种选项，系统将会亮出牌堆中符合条件的第一张牌，然后你将之交给一名男性角色',
-  },
+  // {
+  //   source: '{0} triggered skill {1}',
+  //   target: '{0} 触发了技能 【{1}】',
+  // },
+  // {
+  //   source: '{0} triggered skill {1}, nullify {2}',
+  //   target: '{0} 触发了技能 【{1}】，使 {2} 对其无效',
+  // },
+  // { source: '{0} triggered skill {1}, obtained card {2}', target: '{0} 触发了技能 【{1}】，获得了 {2}' },
+  // {
+  //   source: '{0} triggered skill {1}, become the source of damage dealed by {2}',
+  //   target: '{0} 触发了技能 【{1}】，成为了 {2} 造成的伤害的伤害来源',
+  // },
+  // {
+  //   source: '{0} triggered skill {1}, prevent the damage',
+  //   target: '{0} 触发了【{1}】的效果，防止了此伤害',
+  // },
+  // {
+  //   source: '{0}: please choose a card type or color',
+  //   target: '{0}：请选择以下一种选项，系统将会亮出牌堆中符合条件的第一张牌，然后你将之交给一名男性角色',
+  // },
   {
     source: 'jianyan:Please choose a target to obtain the card you show',
-    target: '荐言：请选择一名男性角色获得此牌',
+    target: 'Introduction: Please choose a target to obtain the card you revealed',
   },
   {
     source: '{0}: do you want to use a slash to {1}?',
-    target: '{0}：你可以对 {1} 使用一张【杀】（无距离限制）',
+    target: '{0}: do you want to use a slash to {1}? (no distance limit)',
   },
   {
     source: '{0}: do you agree to pindian with {1}',
-    target: '{0}：你是否同意和 {1} 进行拼点？',
+    target: '{0}: do you agree to point fight with {1}?',
   },
   {
     source: '{0}: do you want to obtain pindian cards: {1}',
-    target: '{0}：你可以获得拼点牌 {1}',
+    target: '{0}: do you want to obtain point fight cards: {1}?',
   },
   {
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
-    target: '请弃置一张 {0} 手牌，对 {1} 造成1点火焰伤害',
+    target: 'Please discard a {0} hand card to deal 1 fire damage to {1}',
   },
-  { source: 'please choose a player to get a damage from {0}', target: '请选择一名角色受到来自 {0} 的 1 点伤害' },
+  {
+    source: 'please choose a player to get a damage from {0}',
+    target: 'Please choose a player to take 1 damage from {0}',
+  },
   {
     source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
-    target: '裸衣：是否放弃摸牌，然后获取展示牌中的基本牌、装备牌和【决斗】',
+    target: 'Obtain basic card, weapon and Duel in revealed cards?',
   },
   {
     source: '{0} used skill {1}, display cards: {2}',
-    target: '{0} 使用技能 {1}，展示了：{2}',
+    target: '{0} used skill {1}, reveal cards: {2}',
   },
   {
     source: 'jijie:Please choose a target to obtain the card you show',
@@ -489,7 +498,7 @@ export const eventDictionary: Word[] = [
   {
     source: 'please choose jiangchi options',
     target:
-      '请选择：1.摸两张牌，此阶段不可使用或打出【杀】；2.摸一张牌；3.弃置一张牌，本回合【杀】无距离限制且使用次数+1',
+      "Please choose: 1. draw 2 cards, and you can't use/play Slash in this phase; 2. draw 1 card; 3. discard 1 card, and in this phase: you can use 1 extra Slash, your Slash have no distance limitation.",
   },
   {
     source: 'zhijian: do you wanna use draw 1 card',

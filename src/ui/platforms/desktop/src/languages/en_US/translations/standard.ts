@@ -297,7 +297,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zhaxiang_description',
     target:
-      "<b>Compulsory skill</b>, after you lose 1 HP, you draw 3 cards. And if you are in your play phase, until the end of this turn, you can use 1 extra Slash, your red Slash has no distance limitation and can't be responsed with a Jink.",
+      "<b>Compulsory skill</b>, after you lose 1 HP, you draw 3 cards. And if you are in your play phase, until the end of this turn, you can use 1 extra Slash, your red Slash has no distance limitation and can't be responded with a Jink.",
   },
   {
     source: 'yingzi_description',
