@@ -643,7 +643,7 @@ export const eventDictionary: Word[] = [
   { source: 'jieyin:move', target: 'Move to his equip area' },
   { source: 'gongxin:putcard', target: 'Put to the top of draw pile' },
   { source: 'gongxin:dropcard', target: 'Discard' },
-  { source: 'yijue:recover', target: 'Heal 1 HP to target' },
+  { source: 'yijue:recover', target: 'Heal 1 HP for target' },
   { source: 'yijue:cancel', target: 'Cancel' },
   { source: 'yaowu:recover', target: 'Heal 1 HP' },
   { source: 'yaowu:draw', target: 'Draw 1 card' },

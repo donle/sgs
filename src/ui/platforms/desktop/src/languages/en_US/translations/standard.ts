@@ -338,7 +338,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'qingnang_description',
     target:
-      "Once per turn, you can discard 1 hand card, and choose a player who haven't chosen by this way in this phase, heal 1 HP to him. If your discarded red card, you can use this skill again.",
+      "Once per turn, you can discard 1 hand card, and choose a player who haven't chosen by this way in this phase, heal 1 HP for him. If your discarded red card, you can use this skill again.",
   },
   {
     source: 'wushuang_description',
