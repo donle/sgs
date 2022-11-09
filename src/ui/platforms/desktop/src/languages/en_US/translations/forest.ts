@@ -2,13 +2,13 @@ import { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
   { source: 'caopi', target: 'Cao Pi' },
-  { source: 'xingshang', target: '行殇' },
-  { source: 'fangzhu', target: '放逐' },
-  { source: 'songwei', target: '颂威' },
+  { source: 'xingshang', target: 'Funeral Affair' },
+  { source: 'fangzhu', target: 'Banish into Exile' },
+  { source: 'songwei', target: 'Exalt the Powerful' },
 
   { source: 'xuhuang', target: 'Xu Huang' },
-  { source: 'duanliang', target: '断粮' },
-  { source: 'jiezi', target: '截辎' },
+  { source: 'duanliang', target: 'Blockade' },
+  { source: 'jiezi', target: 'Cut Supplies' },
 
   { source: 'menghuo', target: 'Meng Huo' },
   { source: 'huoshou', target: 'The Smoking Gun' },
@@ -42,30 +42,37 @@ export const characterDictionary: Word[] = [
 ];
 
 export const skillDescriptions: Word[] = [
-  { source: 'xingshang_description', target: '当其他角色死亡时，你可以选择一项：1.获得其所有牌；2.回复1点体力。' },
+  {
+    source: 'xingshang_description',
+    target: 'When other player died, you can choose: 1. Get all his cards; 2. Heal 1 HP.',
+  },
   {
     source: 'fangzhu_description',
     target:
-      '当你受到伤害后，你可以令一名其他角色选择一项：1.摸X张牌并翻面；2.弃置X张牌并失去1点体力（X为你已损失的体力值）。',
+      'After you take damage, you can make another player choose: 1. Draw X card(s), then turn over; 2. Discard X card(s), then lose 1 HP. (X = your lost HP)',
   },
   {
     source: 'songwei_description',
-    target: '<b>主公技</b>，当其他魏势力的黑色判定牌生效后，其可以令你摸一张牌。',
+    target: "<b>Lord skill</b>, after another Wei character's judge card takes effect, he can let you draw 1 card.",
   },
   {
     source: 'duanliang_description',
-    target: '你可以将一张黑色基本或装备牌当【兵粮寸断】使用；你对手牌数不小于你的角色使用【兵粮寸断】无距离限制。',
+    target:
+      'You can use a black basic card or black equip card as Supply Shortage; your Supply Shortage have no distance limit to the players whose hand cards are not less than yours.',
   },
-  { source: 'jiezi_description', target: '<b>锁定技</b>，当其他角色跳过摸牌阶段后，你摸一张牌。' },
+  {
+    source: 'jiezi_description',
+    target: '<b>Compulsory skill</b>, when other players skip his draw phase, you draw 1 card.',
+  },
   {
     source: 'huoshou_description',
     target:
-      '<b>锁定技</b>，【南蛮入侵】对你无效；当其他角色使用【南蛮入侵】指定第一个目标后，你代替其成为此牌造成伤害的伤害来源。',
+      '<b>Compulsory skill</b>, Savage Assault has no effect on you; when Savage Assault deal damage, you become the damage source.',
   },
   {
     source: 'zaiqi_description',
     target:
-      '弃牌阶段结束时，你可以令一至X名角色选择一项：1.令你回复1点体力；2.摸一张牌（X为本回合内进入弃牌堆的红色牌数）。',
+      'After you discard phase, you can let 1-X players choose: 1. Heal 1 HP for you; 2. Draw 1 card. (X = the amount of red cards entered discard pile in this turn)',
   },
   {
     source: 'juxiang_description',
@@ -308,7 +315,7 @@ export const eventDictionary: Word[] = [
   { source: 'benghuai:hp', target: 'Lose 1 HP' },
   { source: 'benghuai:maxhp', target: 'Lose 1 max HP' },
   { source: 'xingshang:recover', target: 'Heal 1 HP' },
-  { source: 'xingshang:pickup', target: '获得阵亡角色的所有牌' },
+  { source: 'xingshang:pickup', target: 'Get all his cards' },
   { source: 'zaiqi:draw', target: 'Draw 1 card' },
   { source: 'zaiqi:recover', target: 'Heal 1 HP for Meng Huo' },
 ];
