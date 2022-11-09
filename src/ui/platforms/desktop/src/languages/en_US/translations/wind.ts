@@ -99,7 +99,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'leiji_description',
     target:
-      'When you use/play Jink or Lightning, you can perform a judgement. After your judge card takes effect (except judge card by 暴虐), if the result is: spade, you can deal 2 Thunder damage to another player; club, you heal 1 HP, then you can deal 1 Thunder damage to another player.',
+      'When you use/play Jink or Lightning, you can perform a judgement. After your judge card takes effect, if the result is: spade, you can deal 2 Thunder damage to another player; club, you heal 1 HP, then you can deal 1 Thunder damage to another player.',
   },
   {
     source: 'guidao_description',
