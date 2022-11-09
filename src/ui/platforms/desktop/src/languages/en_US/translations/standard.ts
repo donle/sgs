@@ -214,7 +214,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yijue_description',
     target:
-      "Once per play phase, you can discard 1 hand card, and ask another player to show a hand card, if the showed card is: black, his non-compulsory skills are invaild for the rest of this turn, and he can't use/play his hand cards, when you deal damage to him with a heart Slash, the damage is increased by +1; red, you obtained this card, then you can heal 1 HP for him.",
+      "Once per play phase, you can discard 1 card, and ask another player to show a hand card, if the showed card is: black, his non-compulsory skills are invaild for the rest of this turn, and he can't use/play his hand cards, when you deal damage to him with a heart Slash, the damage is increased by +1; red, you obtained this card, then you can heal 1 HP for him.",
   },
   {
     source: 'paoxiao_description',
