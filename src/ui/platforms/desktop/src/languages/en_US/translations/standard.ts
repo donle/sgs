@@ -242,7 +242,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yajiao_description',
     target:
-      'When you use/play hand card outside of your turn, you can show 1 card at the top of draw pile, if it is the same type than the card you used/played, you can give it to a player; otherwise you can discard 1 card from player whose attack range is enough to attack you.',
+      'When you use/play hand card outside of your turn, you can show 1 card at the top of draw pile, if it is the same type than the card you used/played, you can give it to a player; otherwise you can discard 1 card from player has you within his attack range.',
   },
   {
     source: 'mashu_description',

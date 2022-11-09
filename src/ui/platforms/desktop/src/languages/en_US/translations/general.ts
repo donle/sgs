@@ -412,7 +412,7 @@ export const eventDictionary: Word[] = [
   { source: '{0}: please choose a player to obtain {1}', target: '{0}: you can give {1} to a player' },
   {
     source: '{0}: please choose a player to drop',
-    target: '{0}: please choose a player whose attack range is enough to attack you to discard his card',
+    target: '{0}: please choose a player who has you within his attack range to discard his card',
   },
   {
     source: '{0}: do you want to transfrom {1} into fire slash?',
