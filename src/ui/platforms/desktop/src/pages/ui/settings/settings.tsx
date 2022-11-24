@@ -71,7 +71,7 @@ export const SettingsDialog = (props: SettingsProps) => {
           <span className={styles.inputLabelText}>{props.translator.tr('game language')}</span>
           <select className={styles.input} value={getLanguageText()} onChange={onChangeLanguge}>
             {getAllLanguages().map((option, index) => (
-              <option key={index} value={option} disabled={option === Languages.EN_US}>
+              <option key={index} value={option}>
                 {props.translator.tr(option)}
               </option>
             ))}
