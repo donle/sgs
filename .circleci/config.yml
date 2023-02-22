@@ -20,7 +20,7 @@ jobs:
           command: "cd /root/project && npm install"
       - run:
           name: "Install UI Dependencies"
-          command: "cd /root/project/src/ui/platforms/desktop && npm install"
+          command: "cd /root/project/src/ui/platforms/desktop && npm install && yarn"
       - run:
           name: "Build UI"
           command: "cd /root/project/src/ui/platforms/desktop && npm run build:mac"
