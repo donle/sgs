@@ -17,13 +17,13 @@ jobs:
       - checkout
       - run:
           name: "Install Project Dependencies"
-          command: "cd $CIRCLE_WORKING_DIRECTORY && npm install"
+          command: "cd /root/project && npm install"
       - run:
           name: "Install UI Dependencies"
-          command: "cd $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop && npm install"
+          command: "cd /root/project/src/ui/platforms/desktop && npm install"
       - run:
           name: "Build UI"
-          command: "cd $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop && npm run build:macos"
+          command: "cd /root/project/src/ui/platforms/desktop && npm run build:macos"
       - run:
           name: "Compress Artifacts"
           command: tar -cvzf /tmp/ui.tar.gz $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop/build
