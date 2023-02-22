@@ -6,12 +6,8 @@ version: 2.1
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   build-ui:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
       - image: node:14
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     resource_class: medium+
     steps:
       - checkout
@@ -26,11 +22,34 @@ jobs:
           command: "cd /root/project/src/ui/platforms/desktop && npm run build:mac"
       - run:
           name: "Compress Artifacts"
-          command: tar -cvzf /tmp/ui.tar.gz $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop/build
+          command: tar -cvzf /tmp/ui.tar.gz /root/project/src/ui/platforms/desktop/build
 
       - store_artifacts: 
           path: "/tmp/ui.tar.gz"
           destination: "ui.tar.gz"
+  
+  build-server:
+    docker:
+      - image: node:14
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: "Install Project Dependencies"
+          command: "cd /root/project && npm install"
+      - run:
+          name: "Install Server Denpencies"
+          command: "cd /root/project/src/server && npm install && yarn"
+      - run:
+          name: "Build Server"
+          command: "cd /root/project/src/server && npm run build"
+      - run:
+          name: "Compress Artifacts"
+          command: tar -cvzf /tmp/server.tar.gz /root/project/src/server/build
+      
+      - store_artifacts: 
+          path: "/tmp/server.tar.gz"
+          destination: "server.tar.gz"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -38,3 +57,4 @@ workflows:
   build-ui:
     jobs:
       - build-ui
+      - build-server
