@@ -23,7 +23,7 @@ jobs:
           command: "cd /root/project/src/ui/platforms/desktop && npm install"
       - run:
           name: "Build UI"
-          command: "cd /root/project/src/ui/platforms/desktop && npm run build:macos"
+          command: "cd /root/project/src/ui/platforms/desktop && npm run build:mac"
       - run:
           name: "Compress Artifacts"
           command: tar -cvzf /tmp/ui.tar.gz $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop/build
