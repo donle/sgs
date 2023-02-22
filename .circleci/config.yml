@@ -16,9 +16,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Install Common Dependencies"
-          command: "npm install -g yarn"
-      - run:
           name: "Install Project Dependencies"
           command: "cd $CIRCLE_WORKING_DIRECTORY && npm install"
       - run:
