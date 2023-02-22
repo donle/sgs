@@ -5,22 +5,39 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
+  build-ui:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/base:stable
+      - image: node:14
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    resource_class: medium
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Install Common Dependencies"
+          command: "npm install -g yarn"
+      - run:
+          name: "Install Project Dependencies"
+          command: "cd $CIRCLE_WORKING_DIRECTORY && npm install"
+      - run:
+          name: "Install UI Dependencies"
+          command: "cd $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop && npm install"
+      - run:
+          name: "Build UI"
+          command: "cd $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop && npm run build:macos"
+      - run:
+          name: "Compress Artifacts"
+          command: tar -cvzf /tmp/ui.tar.gz $CIRCLE_WORKING_DIRECTORY/src/ui/platforms/desktop/build
+
+      - store_artifacts: 
+          path: "/tmp/ui.tar.gz"
+          destination: "ui.tar.gz"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build-ui:
     jobs:
-      - say-hello
+      - build-ui
