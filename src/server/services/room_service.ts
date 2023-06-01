@@ -4,10 +4,10 @@ import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { ServerSocket } from 'core/network/socket.server';
-import { Player } from 'core/player/player';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
+import { Logger } from 'core/shares/libs/logger/logger';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
@@ -15,6 +15,8 @@ import { RoomInfo } from 'core/shares/types/server_types';
 import { WaitingRoomInfo } from 'core/shares/types/waiting_room_info';
 import { WaitingRoomSocket } from 'server/channels/waiting_room';
 import SocketIO from 'socket.io';
+import { RoomThread } from './room_thread';
+import { ThreadManager } from './thread_manager';
 
 export class RoomService {
   private rooms: ServerRoom[] = [];
@@ -23,27 +25,9 @@ export class RoomService {
   private waitingRoomMaps: Map<number | string, WaitingRoomSocket> = new Map();
 
   constructor(
+    private readonly mode: Flavor,
     private readonly lobbySocket: SocketIO.Server,
-    private createGameServerSocket: (roomChannel: SocketIO.Namespace, roomId: RoomId) => ServerSocket,
-    private createServerRoom: (
-      roomId: RoomId,
-      gameInfo: GameInfo,
-      socket: ServerSocket,
-      gameProcessor: GameProcessor,
-      analytics: RecordAnalytics,
-      players: Player[],
-      flavor: Flavor,
-      gameMode: GameMode,
-      gameCommonRules: GameCommonRules,
-      eventStack: RoomEventStacker<WorkPlace.Server>,
-      waitingRoomInfo: { roomInfo: TemporaryRoomCreationInfo; roomId: number },
-    ) => ServerRoom,
-    private createRecordAnalytics: () => RecordAnalytics,
-    private createGameCommonRules: () => GameCommonRules,
-    private createRoomEventStacker: () => RoomEventStacker<WorkPlace.Server>,
-    private createGameWaitingRoom: (info: TemporaryRoomCreationInfo, roomId: RoomId) => WaitingRoomInfo,
-    private createWaitingRoomSocket: (socket: SocketIO.Namespace, roomInfo: WaitingRoomInfo) => WaitingRoomSocket,
-    private createDifferentModeGameProcessor: (gameMode: GameMode) => GameProcessor,
+    private readonly logger: Logger,
   ) {}
 
   checkRoomExist(roomId: RoomId) {
@@ -81,18 +65,22 @@ export class RoomService {
     waitingRoomId: number,
   ): { roomId: RoomId; gameInfo: GameInfo } {
     const roomId = roomInfo.roomId || Date.now();
-    const roomSocket = this.createGameServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId);
-    const room = this.createServerRoom(
-      roomId,
+    const roomSocket = new ServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId, this.logger);
+    const roomThread = new RoomThread(this.mode, gameInfo, roomId, roomInfo, waitingRoomId);
+
+    const roomWorker = ThreadManager.createRoomThread({ gameInfo, roomId, roomInfo, waitingRoomId, mode: this.mode });
+    const room = new ServerRoom(
+      Date.now(),
       gameInfo,
       roomSocket,
       this.createDifferentModeGameProcessor(gameInfo.gameMode),
-      this.createRecordAnalytics(),
+      new RecordAnalytics(),
       [],
       gameInfo.flavor,
+      this.logger,
       gameInfo.gameMode,
-      this.createGameCommonRules(),
-      this.createRoomEventStacker(),
+      new GameCommonRules(),
+      new RoomEventStacker<WorkPlace.Server>(),
       { roomInfo, roomId: waitingRoomId },
     );
 
@@ -128,9 +116,22 @@ export class RoomService {
     };
   }
 
-  createWaitingRoom(roomInfo: TemporaryRoomCreationInfo & { roomId?: number }, hostIp: string) {
-    const room = this.createGameWaitingRoom(roomInfo, roomInfo.roomId || Date.now());
-    const roomSocket = this.createWaitingRoomSocket(this.lobbySocket.of(`/waiting-room-${room.roomId}`), room);
+  createWaitingRoom(roomInfo: TemporaryRoomCreationInfo & { roomId: number }, hostIp: string) {
+    const room = {
+      roomId: roomInfo.roomId,
+      roomInfo,
+      closedSeats: [],
+      players: [],
+      hostPlayerId: roomInfo.hostPlayerId,
+      isPlaying: false,
+    };
+    const roomSocket = new WaitingRoomSocket(
+      this,
+      this.lobbySocket.of(`/waiting-room-${room.roomId}`),
+      this.mode,
+      this.logger,
+      room,
+    );
     this.waitingRoomMaps.set(room.roomId, roomSocket);
 
     roomSocket.onClosed(() => {

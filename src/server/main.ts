@@ -1,31 +1,12 @@
-import { WorkPlace } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameProcessor } from 'core/game/game_processor/game_processor';
-import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
-import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
-import { PveClassicGameProcessor } from 'core/game/game_processor/game_processor.pve_classic';
-import { PveLongshenGameProcessor } from 'core/game/game_processor/game_processor.pve_longshen';
-import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
-import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
-import { GameCommonRules } from 'core/game/game_rules';
-import { RecordAnalytics } from 'core/game/record_analytics';
-import { StageProcessor } from 'core/game/stage_processor';
-import { ServerSocket } from 'core/network/socket.server';
-import { Player } from 'core/player/player';
-import { RoomId } from 'core/room/room';
-import { ServerRoom } from 'core/room/room.server';
-import { RoomEventStacker } from 'core/room/utils/room_event_stack';
 import { createLogger } from 'core/shares/libs/logger/create';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
-import { GameMode } from 'core/shares/types/room_props';
-import { WaitingRoomInfo } from 'core/shares/types/waiting_room_info';
 import { Languages } from 'core/translations/translation_json_tool';
 import { TranslationModule } from 'core/translations/translation_module';
 import * as SocketIO from 'socket.io';
 import * as http from 'http';
 import { LobbyEventChannel } from './channels/lobby';
-import { WaitingRoomSocket } from './channels/waiting_room';
 import { SimplifiedChinese } from './languages';
 import { getServerConfig, ServerConfig } from './server_config';
 import { RoomService } from './services/room_service';
@@ -38,23 +19,6 @@ const lobbySocket = SocketIO.listen(server, {
 });
 server.listen(config.port);
 const logger = createLogger(mode);
-
-function createDifferentModeGameProcessor(gameMode: GameMode): GameProcessor {
-  logger.debug('game mode is ' + gameMode);
-  switch (gameMode) {
-    case GameMode.Pve:
-      return new PveLongshenGameProcessor(new StageProcessor(logger), logger);
-    case GameMode.PveClassic:
-      return new PveClassicGameProcessor(new StageProcessor(logger), logger);
-    case GameMode.OneVersusTwo:
-      return new OneVersusTwoGameProcessor(new StageProcessor(logger), logger);
-    case GameMode.TwoVersusTwo:
-      return new TwoVersusTwoGameProcessor(new StageProcessor(logger), logger);
-    case GameMode.Standard:
-    default:
-      return new StandardGameProcessor(new StageProcessor(logger), logger);
-  }
-}
 
 class App {
   private translator: TranslationModule;
@@ -76,55 +40,10 @@ class App {
     this.loadLanguages(this.config.language);
     Sanguosha.initialize();
     this.lobbyEventChannel.start();
-
     this.log();
   }
 }
 
-const roomService = new RoomService(
-  lobbySocket,
-  (roomChannel: SocketIO.Namespace, roomId: RoomId) => new ServerSocket(roomChannel, roomId, logger),
-  (
-    roomId: RoomId,
-    gameInfo: GameInfo,
-    socket: ServerSocket,
-    gameProcessor: GameProcessor,
-    analytics: RecordAnalytics,
-    players: Player[],
-    flavor: Flavor,
-    gameMode: GameMode,
-    gameCommonRules: GameCommonRules,
-    eventStack: RoomEventStacker<WorkPlace.Server>,
-    waitingRoomSettings: { roomInfo: TemporaryRoomCreationInfo; roomId: number },
-  ) =>
-    new ServerRoom(
-      roomId,
-      gameInfo,
-      socket,
-      gameProcessor,
-      analytics,
-      players,
-      flavor,
-      logger,
-      gameMode,
-      gameCommonRules,
-      eventStack,
-      waitingRoomSettings,
-    ),
-  () => new RecordAnalytics(),
-  () => new GameCommonRules(),
-  () => new RoomEventStacker<WorkPlace.Server>(),
-  (info: TemporaryRoomCreationInfo, roomId: RoomId) => ({
-    roomId,
-    roomInfo: info,
-    closedSeats: [],
-    players: [],
-    hostPlayerId: info.hostPlayerId,
-    isPlaying: false,
-  }),
-  (socket: SocketIO.Namespace, roomInfo: WaitingRoomInfo) =>
-    new WaitingRoomSocket(roomService, socket, mode, logger, roomInfo),
-  createDifferentModeGameProcessor,
-);
+const roomService = new RoomService(mode, lobbySocket, logger);
 
 new App(config, logger, new LobbyEventChannel(roomService, lobbySocket, config)).start();
