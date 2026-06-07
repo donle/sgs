@@ -23,10 +23,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -g yarn
-      - run: yarn
-      - run: yarn lint
-      - run: yarn transpile
-      - run: yarn transpile:client
+      - run: npm install -g pnpm
+      - run: pnpm install
+      - run: pnpm run lint
+      - run: pnpm run transpile
+      - run: pnpm run transpile:client
         env:
           CI: true
