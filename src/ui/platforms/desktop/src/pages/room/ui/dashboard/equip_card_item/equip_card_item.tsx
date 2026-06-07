@@ -29,7 +29,7 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
   equipCardImage: string | undefined;
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
-  private onTooltipOpeningTimer: NodeJS.Timer;
+  private onTooltipOpeningTimer: ReturnType<typeof setTimeout>;
   private cardName: string = this.props.card.Name;
 
   @mobx.action

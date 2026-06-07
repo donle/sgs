@@ -281,6 +281,8 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.PlayerBulkPacketEvent]: {
     stackedLostMessages: ServerEventFinder<GameEventIdentifiers>[];
     timestamp: number;
+    fromSyncId?: number;
+    toSyncId?: number;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;

@@ -18,7 +18,7 @@ export type TooltipProps = {
       };
 };
 
-let timer: NodeJS.Timer | undefined;
+let timer: ReturnType<typeof setTimeout> | undefined;
 
 export const Tooltip = (props: TooltipProps) => {
   const { closeCallback, children, position, className, closeAfter, autoAnimation } = props;
@@ -35,7 +35,7 @@ export const Tooltip = (props: TooltipProps) => {
   });
 
   const divClassName: any = {};
-  const tooltipStyles: React.CSSProperties = {};
+  const tooltipStyles: any = {};
   if (position instanceof Array) {
     for (const pos of position) {
       divClassName[styles[pos]] = true;

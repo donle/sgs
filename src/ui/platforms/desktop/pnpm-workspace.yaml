@@ -1,0 +1,5 @@
+allowBuilds:
+  core-js: set this to true or false
+  ejs: set this to true or false
+  electron: set this to true or false
+  es5-ext: set this to true or false

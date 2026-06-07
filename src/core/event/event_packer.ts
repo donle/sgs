@@ -40,6 +40,23 @@ export class EventPacker {
   static getTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): number | undefined =>
     (event as any).timestamp;
 
+  static setSyncId = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>, syncId: number): void => {
+    (event as any).syncId = syncId;
+  };
+
+  static getSyncId = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): number | undefined =>
+    (event as any).syncId;
+
+  static setRequestSyncId = <T extends GameEventIdentifiers>(
+    event: ClientEventFinder<T>,
+    requestSyncId: number,
+  ): void => {
+    (event as any).requestSyncId = requestSyncId;
+  };
+
+  static getRequestSyncId = <T extends GameEventIdentifiers>(event: ClientEventFinder<T>): number | undefined =>
+    (event as any).requestSyncId;
+
   static isDisresponsiveEvent = <T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,
     includeUnoffsetable?: boolean,

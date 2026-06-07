@@ -1,4 +1,5 @@
-import { ClientEventFinder, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -243,6 +244,16 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public broadcast<T extends GameEventIdentifiers>(type: T, content: ClientEventFinder<T>): void {
+    const awaitingEvent = this.players
+      .map(player => this.AwaitingResponseEvent[player.Id])
+      .find(event => event && event.identifier === type);
+    if (awaitingEvent && awaitingEvent.identifier === type) {
+      const requestSyncId = EventPacker.getSyncId(awaitingEvent.content as ServerEventFinder<GameEventIdentifiers>);
+      if (requestSyncId !== undefined && EventPacker.getRequestSyncId(content) === undefined) {
+        EventPacker.setRequestSyncId(content, requestSyncId);
+      }
+    }
+
     this.socket.notify(type, content);
   }
 

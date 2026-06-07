@@ -28,7 +28,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
   } = {} as any;
 
-  private playerReconnectTimer: { [K in string]: NodeJS.Timer } = {};
+  private playerReconnectTimer: { [K in string]: ReturnType<typeof setTimeout> } = {};
   private mapSocketIdToPlayerId: { [K in string]: string } = {};
   private mapPlayerIdToObservers: { [K in string]: string[] } = {};
   private lastResponsiveEvent:
@@ -38,6 +38,50 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         event: ServerEventFinder<GameEventIdentifiers>;
       }
     | undefined;
+  private syncId: number = 0;
+
+  private isCurrentAwaitingResponse(
+    identifier: GameEventIdentifiers,
+    playerId: PlayerId,
+    content: ClientEventFinder<GameEventIdentifiers>,
+  ): boolean {
+    const awaitingResponseEvent = this.room?.AwaitingResponseEvent[playerId];
+    if (!awaitingResponseEvent || awaitingResponseEvent.identifier !== identifier) {
+      return false;
+    }
+
+    const expectedRequestSyncId = EventPacker.getSyncId(
+      awaitingResponseEvent.content as ServerEventFinder<GameEventIdentifiers>,
+    );
+    const actualRequestSyncId = EventPacker.getRequestSyncId(content);
+
+    return expectedRequestSyncId === undefined || actualRequestSyncId === expectedRequestSyncId;
+  }
+
+  private resolveCurrentResponse(
+    identifier: GameEventIdentifiers,
+    playerId: PlayerId,
+    content: ClientEventFinder<GameEventIdentifiers>,
+  ) {
+    content.status && this.room!.updatePlayerStatus(content.status, playerId);
+
+    const asyncResolver = this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][playerId];
+    if (!asyncResolver) {
+      return;
+    }
+
+    if (!this.isCurrentAwaitingResponse(identifier, playerId, content)) {
+      this.logger.info(
+        `Ignore stale response ${identifier} from ${playerId}, requestSyncId=${EventPacker.getRequestSyncId(content)}`,
+      );
+      return;
+    }
+
+    asyncResolver(content);
+    delete this.asyncResponseResolver[identifier][playerId];
+    this.lastResponsiveEvent = undefined;
+  }
+
   constructor(socket: IOSocketServer.Namespace, roomId: RoomId, protected logger: Logger) {
     super();
     this.roomId = roomId.toString();
@@ -117,15 +161,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           }
           const playerId = mappedPlayerId[0];
 
-          content.status && this.room!.updatePlayerStatus(content.status, playerId);
-
-          const asyncResolver =
-            this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][playerId];
-          if (asyncResolver) {
-            asyncResolver(content);
-            delete this.asyncResponseResolver[identifier][playerId];
-            this.lastResponsiveEvent = undefined;
-          }
+          this.resolveCurrentResponse(identifier, playerId, content);
         });
       });
 
@@ -188,11 +224,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           }
           const toPlayer = room.getPlayerById(playerId);
           const result = toPlayer.AI.onAction(this.room!, awaitIdentifier, content);
-          if (this.asyncResponseResolver[awaitIdentifier][playerId]) {
-            this.asyncResponseResolver[awaitIdentifier][playerId]!(result);
-            delete this.asyncResponseResolver[awaitIdentifier][playerId];
+          const requestSyncId = EventPacker.getSyncId(content as ServerEventFinder<GameEventIdentifiers>);
+          if (requestSyncId !== undefined) {
+            EventPacker.setRequestSyncId(result, requestSyncId);
           }
-          this.room.unsetAwaitingResponseEvent(playerId);
+          this.resolveCurrentResponse(awaitIdentifier, playerId, result);
         }
       });
     });
@@ -289,17 +325,38 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
 
     const missingEvents = this.room!.Analytics.getRecordEvents(e => {
+      const syncId = EventPacker.getSyncId(e);
+      if (event.lastSyncId !== undefined && syncId !== undefined) {
+        return syncId > event.lastSyncId;
+      }
+
       const timeStamp = EventPacker.getTimestamp(e);
       if (!timeStamp) {
         return false;
       }
       return timeStamp > event.timestamp;
     });
-    if (this.lastResponsiveEvent && this.lastResponsiveEvent.to === event.playerId) {
+
+    const awaitingResponseEvent = room.AwaitingResponseEvent[event.playerId];
+    const lastResponsiveEventSyncId = this.lastResponsiveEvent && EventPacker.getSyncId(this.lastResponsiveEvent.event);
+    if (
+      this.lastResponsiveEvent &&
+      this.lastResponsiveEvent.to === event.playerId &&
+      awaitingResponseEvent &&
+      awaitingResponseEvent.identifier === this.lastResponsiveEvent.identifier &&
+      awaitingResponseEvent.content === this.lastResponsiveEvent.event &&
+      (event.lastSyncId === undefined ||
+        lastResponsiveEventSyncId === undefined ||
+        lastResponsiveEventSyncId > event.lastSyncId) &&
+      !missingEvents.some(e => EventPacker.getSyncId(e) === lastResponsiveEventSyncId)
+    ) {
       missingEvents.push(this.lastResponsiveEvent.event);
     }
+
     socket.emit(GameEventIdentifiers.PlayerBulkPacketEvent.toString(), {
       timestamp: event.timestamp,
+      fromSyncId: event.lastSyncId,
+      toSyncId: this.syncId,
       stackedLostMessages: missingEvents,
     });
 
@@ -433,24 +490,36 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
     const toPlayer = this.room!.getPlayerById(to);
-    this.lastResponsiveEvent = {
-      to,
-      identifier: type,
-      event: content,
-    };
+    EventPacker.setSyncId(content, ++this.syncId);
+    if (!EventPacker.getTimestamp(content)) {
+      EventPacker.setTimestamp(content);
+    }
+
+    const awaitsResponse = serverResponsiveListenerEvents.includes(type);
+    if (awaitsResponse) {
+      this.lastResponsiveEvent = {
+        to,
+        identifier: type,
+        event: content,
+      };
+      this.room?.setAwaitingResponseEvent(type, content, to);
+    }
 
     if (!toPlayer.isOnline()) {
-      const result = toPlayer.AI.onAction(this.room!, type, content);
-      setTimeout(() => {
-        const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
-        if (asyncResolver) {
-          asyncResolver(result);
-          delete this.asyncResponseResolver[type][to];
-          this.room?.unsetAwaitingResponseEvent(to);
-        }
-      }, 1500);
+      if (awaitsResponse) {
+        const result = toPlayer.AI.onAction(this.room!, type, content);
+        setTimeout(() => {
+          const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
+          if (asyncResolver) {
+            const requestSyncId = EventPacker.getSyncId(content as ServerEventFinder<GameEventIdentifiers>);
+            if (requestSyncId !== undefined) {
+              EventPacker.setRequestSyncId(result, requestSyncId);
+            }
+            this.resolveCurrentResponse(type, to, result);
+          }
+        }, 1500);
+      }
     } else {
-      this.room?.setAwaitingResponseEvent(type, content, to);
       this.socket.to(this.mapSocketIdToPlayerId[to]).emit(type.toString(), content);
 
       const observers = this.mapPlayerIdToObservers[to];
@@ -463,6 +532,10 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   }
 
   broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
+    if (!EventPacker.getSyncId(content)) {
+      EventPacker.setSyncId(content, ++this.syncId);
+    }
+
     this.socket.emit(type.toString(), EventPacker.minifyPayload(content));
   }
 

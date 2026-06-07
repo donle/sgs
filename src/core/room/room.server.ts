@@ -342,8 +342,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return canTriggerSkills;
   }
 
-  public async trigger<T = unknown>(
-    content: T extends unknown ? ServerEventFinder<GameEventIdentifiers> : T,
+  public async trigger<T extends ServerEventFinder<GameEventIdentifiers> = ServerEventFinder<GameEventIdentifiers>>(
+    content: T,
     stage?: AllStage,
   ) {
     if (!this.CurrentPlayer || !this.isPlaying()) {

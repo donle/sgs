@@ -1,11 +1,10 @@
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { Socket } from 'core/network/socket';
-import IOSocketClient, { Manager } from 'socket.io-client';
+import IOSocketClient from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
   private socketIO: SocketIOClient.Socket;
   private reconnecting: boolean = false;
-  private manager: SocketIOClient.Manager;
 
   constructor(endpoint: string, protected roomId: string) {
     super();
@@ -13,15 +12,20 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
   }
 
   protected init(endpoint: string) {
-    this.socketIO = IOSocketClient(endpoint);
-    this.manager = new Manager(endpoint, {
+    this.socketIO = IOSocketClient(endpoint, {
+      transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 3,
-      timeout: 60000,
-      autoConnect: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 30000,
+      randomizationFactor: 0.5,
+      timeout: 20000,
     });
-    this.socketIO.on('reconnect', () => {
-      this.reconnecting = true;
+
+    this.socketIO.on('disconnect', reason => {
+      if (reason !== 'io client disconnect') {
+        this.reconnecting = true;
+      }
     });
   }
 
@@ -46,12 +50,15 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
   }
 
   public onReconnected(callback: () => void) {
-    this.socketIO.on('connect', () => {
+    const handleReconnected = () => {
       if (this.reconnecting) {
         this.reconnecting = false;
         callback();
       }
-    });
+    };
+
+    this.socketIO.on('reconnect', handleReconnected);
+    this.socketIO.on('connect', handleReconnected);
   }
 
   public disconnect() {

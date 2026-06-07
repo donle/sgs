@@ -85,7 +85,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     );
   }
 
-  private onTooltipOpeningTimer: NodeJS.Timer;
+  private onTooltipOpeningTimer: ReturnType<typeof setTimeout>;
   private openedDialog: string | undefined;
   private ifDead: boolean;
 

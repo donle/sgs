@@ -35,6 +35,10 @@ const config = getServerConfig(mode);
 const server = http.createServer();
 const lobbySocket = SocketIO.listen(server, {
   origins: '*:*',
+  transports: ['websocket', 'polling'],
+  allowUpgrades: true,
+  pingTimeout: 60000,
+  pingInterval: 25000,
 });
 server.listen(config.port);
 const logger = createLogger(mode);
@@ -57,7 +61,7 @@ function createDifferentModeGameProcessor(gameMode: GameMode): GameProcessor {
 }
 
 class App {
-  private translator: TranslationModule;
+  private translator!: TranslationModule;
   constructor(private config: ServerConfig, private logger: Logger, private lobbyEventChannel: LobbyEventChannel) {}
 
   private async log() {
@@ -81,7 +85,7 @@ class App {
   }
 }
 
-const roomService = new RoomService(
+const roomService: RoomService = new RoomService(
   lobbySocket,
   (roomChannel: SocketIO.Namespace, roomId: RoomId) => new ServerSocket(roomChannel, roomId, logger),
   (

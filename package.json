@@ -24,19 +24,21 @@
     "prettier": "^2.7.1",
     "prettier-eslint": "^15.0.1",
     "ts-node": "^8.6.2",
+    "tslib": "^2.8.1",
     "tslint": "6.0.0",
     "typescript": "^4.3.5"
   },
   "scripts": {
     "prettier": "prettier --config ./.prettierrc --write \"./**/*.{ts,tsx,css,json}\"",
     "lint": "eslint --max-warnings 0 -c .eslintrc.js \"./src/**/*.{ts,tsx}\"",
-    "build": "rm -rf build && tsc",
-    "transpile": "cd ./src/server && yarn install && yarn build",
-    "transpile:client": "cd ./src/ui/platforms/desktop && yarn install && yarn build:mac",
+    "build": "node -e \"require('fs').rmSync('build',{recursive:true,force:true})\" && tsc",
+    "transpile": "pnpm --dir ./src/server install && pnpm --dir ./src/server run build",
+    "transpile:client": "pnpm --dir ./src/ui/platforms/desktop install && pnpm --dir ./src/ui/platforms/desktop run build:mac",
     "patch": "ts-node ./src/pre_release.ts",
     "check-translations": "tsc -p ./tools/tsconfig.json && node --max-old-space-size=8192 ./tools/missing_translation_check.js"
   },
   "dependencies": {
+    "chalk": "^3.0.0",
     "eslint-config-prettier": "^8.5.0"
   }
 }

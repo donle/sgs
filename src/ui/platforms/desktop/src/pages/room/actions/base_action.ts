@@ -1,12 +1,25 @@
-import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { ActiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import {
+  SelectionState,
+  isCardEnabled,
+  isCardInParticularArea,
+  isOutsideCardVisible,
+  isPlayerEnabled,
+  findSingleTarget,
+  processViewAsSkill,
+  showViewAsDialog,
+  CardFilterContext,
+  TargetFilterContext,
+} from './selectors';
+import { canConfirmAction } from './validators';
 import { RoomPresenter } from '../room.presenter';
 import { RoomStore } from '../room.store';
 
@@ -19,6 +32,7 @@ export abstract class BaseAction {
     return true;
   };
 
+  // --- Selection state ---
   protected selectedCards: CardId[] = [];
   protected selectedCardToPlay?: CardId;
   protected selectedSkillToPlay?: Skill;
@@ -29,6 +43,35 @@ export abstract class BaseAction {
   private inProcessDialog = false;
   protected player: Player;
 
+  // --- Composed helpers ---
+  protected get selectionState(): SelectionState {
+    return {
+      selectedCards: this.selectedCards,
+      selectedCardToPlay: this.selectedCardToPlay,
+      selectedSkillToPlay: this.selectedSkillToPlay,
+      selectedTargets: this.selectedTargets,
+      equipSkillCardId: this.equipSkillCardId,
+      pendingCards: this.pendingCards,
+    };
+  }
+
+  protected get cardFilterCtx(): CardFilterContext {
+    return {
+      store: this.store,
+      player: this.player,
+      state: this.selectionState,
+    };
+  }
+
+  protected get targetFilterCtx(): TargetFilterContext {
+    return {
+      store: this.store,
+      player: this.player,
+      playerId: this.playerId,
+      scopedTargets: this.scopedTargets,
+    };
+  }
+
   constructor(
     protected playerId: PlayerId,
     protected store: RoomStore,
@@ -37,6 +80,7 @@ export abstract class BaseAction {
     protected scopedTargets?: PlayerId[],
   ) {
     this.player = this.store.room.getPlayerById(this.playerId);
+
     this.presenter.onClickPlayer((player: Player, selected: boolean) => {
       if (this.inProcessDialog) {
         this.presenter.closeDialog();
@@ -49,6 +93,7 @@ export abstract class BaseAction {
       }
       this.onClickPlayer(player, selected);
     });
+
     this.presenter.onClickPlayerCard((card: Card, selected: boolean) => {
       if (this.inProcessDialog) {
         this.presenter.closeDialog();
@@ -61,6 +106,7 @@ export abstract class BaseAction {
       }
       this.onClickCard(card, selected);
     });
+
     this.presenter.onClickEquipment((card: Card, selected: boolean) => {
       if (this.inProcessDialog) {
         this.presenter.closeDialog();
@@ -84,6 +130,7 @@ export abstract class BaseAction {
       }
       this.onClickCard(card, selected);
     });
+
     this.presenter.onClickSkill((skill: Skill, selected: boolean) => {
       if (this.inProcessDialog) {
         this.presenter.closeDialog();
@@ -97,6 +144,10 @@ export abstract class BaseAction {
       this.onClickSkill(skill, selected);
     });
   }
+
+  // ================================================================
+  //  RESET
+  // ================================================================
 
   public readonly resetAction = () => {
     this.store.selectedCards = [];
@@ -127,100 +178,16 @@ export abstract class BaseAction {
     this.presenter.clearSelectionReflectAction();
   };
 
-  isPlayerEnabled(player: Player): boolean {
-    if (
-      (this.scopedTargets && !this.scopedTargets.includes(player.Id)) ||
-      player.Dead ||
-      !this.store.room.isPlaying() ||
-      this.store.room.isGameOver()
-    ) {
-      return false;
-    }
-    if (this.selectedTargets.includes(player.Id)) {
-      return true;
-    }
+  // ================================================================
+  //  CARD FILTERING (delegates to card_selector.ts)
+  // ================================================================
 
-    if (this.selectedCardToPlay !== undefined) {
-      for (const skillOwner of this.store.room.getAlivePlayersFrom()) {
-        for (const skill of skillOwner.getSkills<GlobalFilterSkill>('globalFilter')) {
-          if (!skill.canUseCardTo(this.selectedCardToPlay, this.store.room, skillOwner, this.player, player)) {
-            return false;
-          }
-        }
-      }
-    }
-
-    let skill: Skill | undefined;
-
-    if (this.selectedCardToPlay !== undefined) {
-      skill = Sanguosha.getCardById(this.selectedCardToPlay).Skill;
-    } else if (this.selectedSkillToPlay !== undefined) {
-      skill = this.selectedSkillToPlay;
-    }
-
-    if (skill === undefined) {
-      return false;
-    }
-    if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
-      let isAvailableInRoom =
-        this.selectedCardToPlay === undefined
-          ? true
-          : this.store.room.isAvailableTarget(this.selectedCardToPlay, this.playerId, player.Id);
-      if (this.selectedCardToPlay !== undefined) {
-        isAvailableInRoom =
-          isAvailableInRoom && this.player.canUseCardTo(this.store.room, this.selectedCardToPlay, player.Id);
-      }
-
-      return (
-        skill.isAvailableTarget(
-          this.playerId,
-          this.store.room,
-          player.Id,
-          this.selectedCards,
-          this.selectedTargets,
-          this.selectedCardToPlay,
-        ) &&
-        isAvailableInRoom &&
-        (!skill.targetFilter(
-          this.store.room,
-          this.player,
-          this.selectedTargets,
-          this.selectedCards,
-          this.selectedCardToPlay,
-        ) ||
-          skill.targetFilter(
-            this.store.room,
-            this.player,
-            [...this.selectedTargets, player.Id],
-            this.selectedCards,
-            this.selectedCardToPlay,
-          ))
-      );
-    } else {
-      return false;
-    }
-  }
-
-  protected isCardFromParticularArea(card: Card) {
-    return (
-      this.store.room.GameParticularAreas.find(cardName =>
-        this.player.getCardIds(PlayerCardsArea.OutsideArea, cardName).includes(card.Id),
-      ) !== undefined
-    );
+  protected isCardFromParticularArea(card: Card): boolean {
+    return isCardInParticularArea(card, this.store, this.player);
   }
 
   isOutsideCardShow(card: Card): boolean {
-    if (this.isCardFromParticularArea(card)) {
-      return true;
-    }
-
-    if (this.selectedSkillToPlay) {
-      const skill = this.selectedSkillToPlay;
-      if (skill instanceof ActiveSkill) {
-        return skill.availableCardAreas().includes(PlayerCardsArea.OutsideArea);
-      }
-    }
-    return false;
+    return isOutsideCardVisible(card, this.cardFilterCtx);
   }
 
   isCardEnabled(
@@ -229,239 +196,25 @@ export abstract class BaseAction {
     fromArea: PlayerCardsArea = PlayerCardsArea.HandArea,
     ignoreCanUseCondition: boolean = false,
   ): boolean {
-    if (!this.store.room.isPlaying() || this.store.room.isGameOver()) {
-      return false;
-    }
-    if (
-      card.Id === this.selectedCardToPlay ||
-      card.Id === this.equipSkillCardId ||
-      this.pendingCards.includes(card.Id) ||
-      this.selectedCards.includes(card.Id)
-    ) {
-      return true;
-    }
-
-    if (this.selectedSkillToPlay) {
-      const skill = this.selectedSkillToPlay;
-      if (skill instanceof ActiveSkill) {
-        const selectedCardsRange = skill.numberOfCards();
-        const usableCardNumbers = selectedCardsRange.findIndex(
-          cardNumbers => cardNumbers === this.selectedCards.length,
-        );
-
-        if (usableCardNumbers >= 0 && usableCardNumbers !== selectedCardsRange.length - 1) {
-          return true;
-        }
-
-        return (
-          skill.isAvailableCard(
-            player.Id,
-            this.store.room,
-            card.Id,
-            this.selectedCards,
-            this.selectedTargets,
-            this.equipSkillCardId,
-          ) &&
-          skill.availableCardAreas().includes(fromArea) &&
-          (!skill.cardFilter(
-            this.store.room,
-            player,
-            this.selectedCards,
-            this.selectedTargets,
-            this.selectedCardToPlay,
-          ) ||
-            skill.cardFilter(
-              this.store.room,
-              player,
-              [...this.selectedCards, card.Id],
-              this.selectedTargets,
-              this.selectedCardToPlay,
-            ))
-        );
-      } else if (skill instanceof ViewAsSkill) {
-        return (
-          skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
-          skill.availableCardAreas().includes(fromArea) &&
-          (!skill.cardFilter(
-            this.store.room,
-            player,
-            this.pendingCards,
-            this.selectedTargets,
-            this.selectedCardToPlay,
-          ) ||
-            skill.cardFilter(
-              this.store.room,
-              player,
-              [...this.pendingCards, card.Id],
-              this.selectedTargets,
-              this.selectedCardToPlay,
-            ))
-        );
-      } else if (skill instanceof ResponsiveSkill) {
-        return this.selectedCardToPlay === undefined;
-      } else {
-        return false;
-      }
-    }
-
-    const canUseOnPlayers =
-      this.store.room.AlivePlayers.find(target => player.canUseCardTo(this.store.room, card.Id, target.Id)) !==
-      undefined;
-    if (this.selectedCardToPlay === undefined) {
-      if (fromArea === PlayerCardsArea.HandArea) {
-        if (card.is(CardType.Equip)) {
-          return player.canUseCardTo(this.store.room, card.Id, player.Id);
-        }
-
-        if (
-          card.Skill instanceof ResponsiveSkill ||
-          (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id) && !canUseOnPlayers)
-        ) {
-          return false;
-        }
-        if (ignoreCanUseCondition) {
-          return true;
-        }
-
-        if (card.Skill instanceof ViewAsSkill) {
-          return (
-            player.canUseCard(
-              this.store.room,
-              new CardMatcher({ name: card.Skill.canViewAs(this.store.room, player, this.pendingCards) }),
-            ) && card.Skill.canUse(this.store.room, player)
-          );
-        } else if (card.Skill instanceof ActiveSkill) {
-          let canSelfUse = true;
-
-          if (card.Skill.isSelfTargetSkill()) {
-            canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
-          }
-
-          return canSelfUse && player.canUseCard(this.store.room, card.Id);
-        }
-      } else if (fromArea === PlayerCardsArea.EquipArea) {
-        if (this.store.room.GameParticularAreas.includes(card.Skill.Name)) {
-          const hasParticularOutsideCards =
-            this.store.room.GameParticularAreas.find(
-              cardName =>
-                this.selectedCards.find(cardId =>
-                  player.getCardIds(PlayerCardsArea.OutsideArea, cardName).includes(cardId),
-                ) !== undefined,
-            ) !== undefined;
-          if (hasParticularOutsideCards) {
-            return false;
-          }
-        }
-
-        if (card.Skill instanceof ViewAsSkill) {
-          return (
-            player.canUseCard(
-              this.store.room,
-              new CardMatcher({ name: card.Skill.canViewAs(this.store.room, player, this.pendingCards) }),
-            ) && card.Skill.canUse(this.store.room, player)
-          );
-        } else if (card.Skill instanceof ActiveSkill) {
-          let canSelfUse = true;
-          if (card.Skill.isSelfTargetSkill()) {
-            canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
-          }
-          return canSelfUse && card.Skill.canUse(this.store.room, player, card.Id);
-        }
-
-        return false;
-      } else if (fromArea === PlayerCardsArea.OutsideArea) {
-        if (this.isCardFromParticularArea(card)) {
-          const hasParticularOutsideCards = this.selectedCards.find(cardId =>
-            this.store.room.GameParticularAreas.includes(Sanguosha.getCardById(cardId).Name),
-          );
-          if (hasParticularOutsideCards) {
-            return false;
-          }
-
-          if (
-            card.Skill instanceof ResponsiveSkill ||
-            (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id) && !canUseOnPlayers)
-          ) {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      }
-    } else {
-      const playingCard = Sanguosha.getCardById(this.selectedCardToPlay);
-      if (playingCard.is(CardType.Equip)) {
-        return false;
-      }
-      const skill = playingCard.Skill;
-
-      if (skill instanceof ActiveSkill) {
-        const selectedCardsRange = skill.numberOfCards();
-        const usableCardNumbers = selectedCardsRange.findIndex(
-          cardNumbers => cardNumbers === this.selectedCards.length,
-        );
-
-        if (usableCardNumbers >= 0 && usableCardNumbers !== selectedCardsRange.length - 1) {
-          return true;
-        }
-
-        return (
-          skill.isAvailableCard(
-            player.Id,
-            this.store.room,
-            card.Id,
-            this.selectedCards,
-            this.selectedTargets,
-            card.Id,
-          ) &&
-          skill.availableCardAreas().includes(fromArea) &&
-          (!skill.cardFilter(
-            this.store.room,
-            this.presenter.ClientPlayer!,
-            this.selectedCards,
-            this.selectedTargets,
-            this.selectedCardToPlay,
-          ) ||
-            skill.cardFilter(
-              this.store.room,
-              this.presenter.ClientPlayer!,
-              [...this.selectedCards, card.Id],
-              this.selectedTargets,
-              this.selectedCardToPlay,
-            ))
-        );
-      } else if (skill instanceof ViewAsSkill) {
-        return (
-          skill.isAvailableCard(
-            this.store.room,
-            this.presenter.ClientPlayer!,
-            card.Id,
-            this.pendingCards,
-            this.equipSkillCardId,
-          ) &&
-          skill.availableCardAreas().includes(fromArea) &&
-          (!skill.cardFilter(
-            this.store.room,
-            this.presenter.ClientPlayer!,
-            this.pendingCards,
-            this.selectedTargets,
-            this.selectedCardToPlay,
-          ) ||
-            skill.cardFilter(
-              this.store.room,
-              this.presenter.ClientPlayer!,
-              [...this.pendingCards, card.Id],
-              this.selectedTargets,
-              this.selectedCardToPlay,
-            ))
-        );
-      } else {
-        return false;
-      }
-    }
-
-    return player.canUseCard(this.store.room, card.Id) || canUseOnPlayers;
+    // Override the player in the context with the passed-in player
+    const ctx: CardFilterContext = {
+      ...this.cardFilterCtx,
+      player,
+    };
+    return isCardEnabled(card, fromArea, ctx, ignoreCanUseCondition);
   }
+
+  // ================================================================
+  //  PLAYER FILTERING (delegates to target_selector.ts)
+  // ================================================================
+
+  isPlayerEnabled(player: Player): boolean {
+    return isPlayerEnabled(player, this.targetFilterCtx, this.selectionState);
+  }
+
+  // ================================================================
+  //  SELECTION MUTATIONS
+  // ================================================================
 
   protected unselectePlayer(player: Player) {
     if (this.selectedTargets.includes(player.Id)) {
@@ -531,14 +284,19 @@ export abstract class BaseAction {
       .getCardIds(PlayerCardsArea.EquipArea)
       .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
 
-    this.getTarget();
+    this.autoSelectSingleTarget();
   }
+
   protected unselectSkill(skill: Skill) {
     if (this.selectedSkillToPlay === skill) {
       this.selectedSkillToPlay = undefined;
       this.store.selectedSkill = undefined;
     }
   }
+
+  // ================================================================
+  //  UI HELPERS
+  // ================================================================
 
   protected delightItems() {
     if (this.selectedCardToPlay || this.selectedSkillToPlay) {
@@ -557,88 +315,80 @@ export abstract class BaseAction {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected enableToCallAction() {
-    if (this.selectedCardToPlay !== undefined) {
-      const card = Sanguosha.getCardById(this.selectedCardToPlay);
-      if (card.is(CardType.Equip)) {
-        return true;
-      }
-
-      if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
-        const canUse =
-          card.Skill.numberOfCards().length === 0 || card.Skill.numberOfCards().includes(this.selectedCards.length);
-
-        return (
-          canUse &&
-          card.Skill.cardFilter(
-            this.store.room,
-            this.player,
-            this.selectedCards,
-            this.selectedTargets,
-            this.selectedCardToPlay,
-          ) &&
-          card.Skill.targetFilter(
-            this.store.room,
-            this.player,
-            this.selectedTargets,
-            this.selectedCards,
-            this.selectedCardToPlay,
-          )
-        );
-      } else if (card.Skill instanceof ResponsiveSkill) {
-        return true;
-      } else {
-        return false;
-      }
-    } else if (this.selectedSkillToPlay !== undefined) {
-      const skill = this.selectedSkillToPlay;
-
-      if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
-        const canUse = skill.numberOfCards().length === 0 || skill.numberOfCards().includes(this.selectedCards.length);
-        return (
-          canUse &&
-          skill.cardFilter(
-            this.store.room,
-            this.player,
-            this.selectedCards,
-            this.selectedTargets,
-            this.selectedCardToPlay,
-          ) &&
-          skill.targetFilter(
-            this.store.room,
-            this.player,
-            this.selectedTargets,
-            this.selectedCards,
-            this.selectedCardToPlay,
-          )
-        );
-      } else if (skill instanceof ResponsiveSkill) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    return false;
+  /**
+   * Determine if the confirm button should be enabled.
+   * Delegates to action_validator.ts.
+   */
+  protected enableToCallAction(): boolean {
+    return canConfirmAction(this.selectionState, {
+      player: this.player,
+      store: this.store,
+    });
   }
 
   public abstract onPlay(...args: any): Promise<void>;
 
-  private getTarget() {
-    const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
-    if (target.length === 1) {
-      if (!this.selectedTargets.includes(target[0].Id)) {
-        this.selectedTargets.push(target[0].Id);
-        this.presenter.selectPlayer(this.store.room.getPlayerById(target[0].Id));
+  // ================================================================
+  //  AUTO-TARGET
+  // ================================================================
+
+  private autoSelectSingleTarget() {
+    const targetId = findSingleTarget(this.targetFilterCtx, this.selectionState);
+    if (targetId !== undefined && !this.selectedTargets.includes(targetId)) {
+      this.selectedTargets.push(targetId);
+      this.presenter.selectPlayer(this.store.room.getPlayerById(targetId));
+    }
+  }
+
+  // ================================================================
+  //  CLICK HANDLERS (overridable by subclasses)
+  // ================================================================
+
+  /**
+   * Process the ViewAsSkill flow after card selection changes.
+   * This centralizes the duplicated logic previously spread across
+   * onClickCard and onClickSkill.
+   */
+  private processViewAs(matcher?: CardMatcher): void {
+    const result = processViewAsSkill(this.selectionState, this.store, this.player, matcher);
+
+    switch (result.kind) {
+      case 'not-applicable':
+      case 'cancelled':
+        if (result.kind === 'cancelled') {
+          this.selectedCardToPlay = undefined;
+        }
+        break;
+      case 'created':
+      case 'dialog':
+        break;
+      default:
+        break;
+        break;
+
+      case 'created':
+        this.selectedCardToPlay = result.cardId;
+        this.autoSelectSingleTarget();
+        break;
+
+      case 'dialog': {
+        this.inProcessDialog = true;
+        showViewAsDialog(this.presenter, this.translator, result.skill, result.canViewAs, (cardName: string) => {
+          this.inProcessDialog = false;
+          this.selectedCardToPlay = result.skill.viewAs(this.pendingCards, this.player, cardName).Id;
+          this.callToActionCheck();
+        });
+        break;
       }
     }
   }
 
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
-    const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
+    const target = this.store.room.getAlivePlayersFrom().filter(p => this.isPlayerEnabled(p));
+
     if (selected) {
       this.presenter.selectCard(card);
-      this.getTarget();
+      this.autoSelectSingleTarget();
       this.callToActionCheck();
     } else {
       this.presenter.unselectCard(card);
@@ -656,108 +406,14 @@ export abstract class BaseAction {
       }
     }
 
-    if (this.selectedSkillToPlay !== undefined) {
-      if (
-        this.selectedSkillToPlay instanceof ViewAsSkill &&
-        this.selectedSkillToPlay.cardFilter(
-          this.store.room,
-          this.player,
-          this.pendingCards,
-          this.selectedTargets,
-          this.selectedCardToPlay,
-        )
-      ) {
-        const canViewAs = this.selectedSkillToPlay
-          .canViewAs(this.store.room, this.player, this.pendingCards)
-          .filter(cardName => {
-            if (!matcher) {
-              return (
-                !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
-                this.player.canUseCard(
-                  this.store.room,
-                  VirtualCard.create({ cardName, bySkill: this.selectedSkillToPlay!.Name }).Id,
-                )
-              );
-            } else {
-              return matcher.match(new CardMatcher({ name: [cardName] }));
-            }
-          });
-
-        if (canViewAs.length > 1) {
-          const skill = this.selectedSkillToPlay as ViewAsSkill;
-          this.inProcessDialog = true;
-          const onClickDemoCard = (selectedCardName: string) => {
-            this.inProcessDialog = false;
-            this.presenter.closeDialog();
-            this.selectedCardToPlay = skill.viewAs(this.pendingCards, this.player, selectedCardName).Id;
-            this.callToActionCheck();
-          };
-
-          this.presenter.createCardCategoryDialog({
-            translator: this.translator,
-            cardNames: canViewAs,
-            onClick: onClickDemoCard,
-          });
-        } else {
-          this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, this.player, canViewAs[0]).Id;
-          this.getTarget();
-          this.callToActionCheck();
-        }
-      } else {
-        this.selectedCardToPlay = undefined;
-      }
-    }
+    this.processViewAs(matcher);
     this.delightItems();
     this.callToActionCheck();
   }
 
   protected onClickSkill(skill: Skill, selected: boolean, matcher?: CardMatcher): void {
-    if (
-      this.selectedSkillToPlay &&
-      this.selectedSkillToPlay instanceof ViewAsSkill &&
-      this.selectedSkillToPlay.cardFilter(
-        this.store.room,
-        this.player,
-        this.pendingCards,
-        this.selectedTargets,
-        this.selectedCardToPlay,
-      )
-    ) {
-      const canViewAs = this.selectedSkillToPlay
-        .canViewAs(this.store.room, this.player, this.pendingCards)
-        .filter(cardName => {
-          if (!matcher) {
-            return (
-              !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
-              this.player.canUseCard(
-                this.store.room,
-                VirtualCard.create({ cardName, bySkill: this.selectedSkillToPlay!.Name }).Id,
-              )
-            );
-          } else {
-            return new CardMatcher({ name: [cardName] }).match(matcher);
-          }
-        });
+    this.processViewAs(matcher);
 
-      if (canViewAs.length > 1) {
-        const skill = this.selectedSkillToPlay as ViewAsSkill;
-        this.inProcessDialog = true;
-        const onClickDemoCard = (selectedCardName: string) => {
-          this.inProcessDialog = false;
-          this.presenter.closeDialog();
-          this.selectedCardToPlay = skill.viewAs(this.pendingCards, this.player, selectedCardName).Id;
-          this.callToActionCheck();
-        };
-
-        this.presenter.createCardCategoryDialog({
-          translator: this.translator,
-          cardNames: canViewAs,
-          onClick: onClickDemoCard,
-        });
-      } else {
-        this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, this.player, canViewAs[0]).Id;
-      }
-    }
     if (!selected) {
       this.resetAction();
       if (this.selectedSkillToPlay || this.selectedCardToPlay) {
@@ -778,6 +434,7 @@ export abstract class BaseAction {
     }
     this.callToActionCheck();
   }
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected onResetAction() {}
 }

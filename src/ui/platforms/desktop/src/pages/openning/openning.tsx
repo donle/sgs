@@ -5,7 +5,7 @@ import { PagePropsWithConfig } from 'types/page_props';
 import styles from './openning.module.css';
 
 export class OpenningPage extends React.PureComponent<PagePropsWithConfig> {
-  private timeoutId: NodeJS.Timeout;
+  private timeoutId: ReturnType<typeof setTimeout>;
 
   private readonly jumpToLobby = () => {
     this.props.history.push('/lobby');

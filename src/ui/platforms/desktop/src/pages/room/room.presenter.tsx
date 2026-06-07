@@ -150,9 +150,7 @@ export class RoomPresenter {
       const deletedCards: DisplayCardProp[] = [];
       for (let i = 0; i < 7; i++) {
         const cardInfo = this.store.displayedCards[i];
-        this.store.displayedCardsAnimationStyles[cardInfo.card.Id] =
-          this.store.displayedCardsAnimationStyles[cardInfo.card.Id] || {};
-        this.store.displayedCardsAnimationStyles[cardInfo.card.Id].opacity = 0;
+        this.store.displayedCardsAnimationStyles[cardInfo.card.Id] = { opacity: 0 };
         deletedCards.push(cardInfo);
       }
       setTimeout(
@@ -200,16 +198,14 @@ export class RoomPresenter {
       return;
     }
 
-    this.store.displayedCardsAnimationStyles[cardInfo.card.Id] =
-      this.store.displayedCardsAnimationStyles[cardInfo.card.Id] || {};
-
-    const cardStyle = this.store.displayedCardsAnimationStyles[cardInfo.card.Id];
     const originalPosition = this.getCardElementPosition(cardInfo.card.Id);
 
     if (from) {
-      cardStyle.transition = 'unset';
-      cardStyle.opacity = 0;
-      cardStyle.transform = `translate(${from.x - originalPosition.x}px, ${from.y - originalPosition.y}px)`;
+      this.store.displayedCardsAnimationStyles[cardInfo.card.Id] = {
+        transition: 'unset',
+        opacity: 0,
+        transform: `translate(${from.x - originalPosition.x}px, ${from.y - originalPosition.y}px)`,
+      };
     } else {
       delete this.store.displayedCardsAnimationStyles[cardInfo.card.Id];
       cardInfo.animationPlayed = true;

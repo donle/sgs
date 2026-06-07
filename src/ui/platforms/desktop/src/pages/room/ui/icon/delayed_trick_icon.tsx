@@ -14,7 +14,7 @@ export const DelayedTrickIcon = (props: {
   imageLoader: ImageLoader;
   className?: string;
 }) => {
-  const [onTooltipOpeningTimer, setTooltipOpeningTimer] = React.useState<NodeJS.Timer>();
+  const [onTooltipOpeningTimer, setTooltipOpeningTimer] = React.useState<ReturnType<typeof setTimeout>>();
   const [onTooltipOpened, setTooltipOpened] = React.useState<boolean>(false);
   const openTooltip = () => {
     setTooltipOpeningTimer(

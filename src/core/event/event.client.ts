@@ -104,6 +104,7 @@ export interface ClientEvent extends EventUtilities {
     playerName: string;
     timestamp: number;
     playerId: string;
+    lastSyncId?: number;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
