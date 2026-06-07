@@ -149,10 +149,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract isBuried(cardId: CardId): boolean;
 
   //Server only
-  public abstract trigger<T = never>(
-    content: T extends never ? EventPicker<GameEventIdentifiers, WorkPlace.Server> : T,
+  public abstract trigger<T extends ServerEventFinder<GameEventIdentifiers> = ServerEventFinder<GameEventIdentifiers>>(
+    content: T,
     stage?: AllStage,
-  ): void;
+  ): void | Promise<void>;
   //Server only
   public abstract loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean): Promise<void>;
   //Server only

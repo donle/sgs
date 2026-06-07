@@ -22,6 +22,39 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
       [K in PlayerId]: ((res?: any) => void) | undefined;
     };
   } = {} as any;
+  private syncId: number = 0;
+
+  private isCurrentAwaitingResponse(
+    identifier: GameEventIdentifiers,
+    playerId: PlayerId,
+    content: ClientEventFinder<GameEventIdentifiers>,
+  ): boolean {
+    const awaitingResponseEvent = this.room?.AwaitingResponseEvent[playerId];
+    if (!awaitingResponseEvent || awaitingResponseEvent.identifier !== identifier) {
+      return false;
+    }
+
+    const expectedRequestSyncId = EventPacker.getSyncId(
+      awaitingResponseEvent.content as ServerEventFinder<GameEventIdentifiers>,
+    );
+    const actualRequestSyncId = EventPacker.getRequestSyncId(content);
+
+    return expectedRequestSyncId === undefined || actualRequestSyncId === expectedRequestSyncId;
+  }
+
+  private resolveCurrentResponse(
+    identifier: GameEventIdentifiers,
+    playerId: PlayerId,
+    content: ClientEventFinder<GameEventIdentifiers>,
+  ) {
+    const asyncResolver = this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][playerId];
+    if (!asyncResolver || !this.isCurrentAwaitingResponse(identifier, playerId, content)) {
+      return;
+    }
+
+    asyncResolver(content);
+    delete this.asyncResponseResolver[identifier][playerId];
+  }
 
   constructor(private socket: EventEmitterProps, private logger: Logger) {
     this.socket = socket;
@@ -62,12 +95,7 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
 
     serverResponsiveListenerEvents.forEach(identifier => {
       socket.on('client-' + identifier.toString(), (content: ClientEventFinder<GameEventIdentifiers>) => {
-        const asyncResolver =
-          this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][this.playerId];
-        if (asyncResolver) {
-          asyncResolver(content);
-          delete this.asyncResponseResolver[identifier][this.playerId];
-        }
+        this.resolveCurrentResponse(identifier, this.playerId, content);
       });
     });
   }
@@ -191,22 +219,36 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
 
   public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
     const toPlayer = this.room!.getPlayerById(to);
+    EventPacker.setSyncId(content, ++this.syncId);
+    if (!EventPacker.getTimestamp(content)) {
+      EventPacker.setTimestamp(content);
+    }
+
+    const awaitsResponse = serverResponsiveListenerEvents.includes(type);
+    if (awaitsResponse) {
+      this.room?.setAwaitingResponseEvent(type, content, to);
+    }
     if (toPlayer.isSmartAI()) {
-      const result = toPlayer.AI.onAction(this.room!, type, content);
-      setTimeout(() => {
-        const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
-        if (asyncResolver) {
-          asyncResolver(result);
-          delete this.asyncResponseResolver[type][to];
-          this.room?.unsetAwaitingResponseEvent(to);
-        }
-      }, 1500);
+      if (awaitsResponse) {
+        const result = toPlayer.AI.onAction(this.room!, type, content);
+        setTimeout(() => {
+          const requestSyncId = EventPacker.getSyncId(content as ServerEventFinder<GameEventIdentifiers>);
+          if (requestSyncId !== undefined) {
+            EventPacker.setRequestSyncId(result, requestSyncId);
+          }
+          this.resolveCurrentResponse(type, to, result);
+        }, 1500);
+      }
     } else {
       this.socket.emit(to, 'server-' + type.toString(), content);
     }
   }
 
   broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
+    if (!EventPacker.getSyncId(content)) {
+      EventPacker.setSyncId(content, ++this.syncId);
+    }
+
     this.socket.send('server-' + type.toString(), EventPacker.minifyPayload(content));
   }
 

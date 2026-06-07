@@ -17,6 +17,16 @@ export class RealConnectionService extends ConnectionService {
   protected chatSocket: SocketIOClient.Socket;
   protected chatHistory: ChatPacketObject[] = [];
 
+  private readonly socketOptions: SocketIOClient.ConnectOpts = {
+    transports: ['websocket', 'polling'],
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 30000,
+    randomizationFactor: 0.5,
+    timeout: 20000,
+  };
+
   private lobbySockets: Map<ServerHostTag, SocketIOClient.Socket> = new Map<ServerHostTag, SocketIOClient.Socket>();
   private queryRoomListListener: (res: RoomListListenerResponse) => void;
   private versionCheckListener: (res: VersionCheckListenerResponse) => void;
@@ -29,12 +39,12 @@ export class RealConnectionService extends ConnectionService {
     super();
     const { protocol, host, port } = config.host[0];
     const mainConnectionUrl = `${protocol}://${host}:${port}/`;
-    this.chatSocket = SocketIOClient(mainConnectionUrl + 'chat');
+    this.chatSocket = SocketIOClient(mainConnectionUrl + 'chat', this.socketOptions);
 
     for (const hostInfo of config.host) {
       this.lobbySockets.set(
         hostInfo.hostTag,
-        SocketIOClient(`${hostInfo.protocol}://${hostInfo.host}:${hostInfo.port}/lobby`),
+        SocketIOClient(`${hostInfo.protocol}://${hostInfo.host}:${hostInfo.port}/lobby`, this.socketOptions),
       );
     }
 

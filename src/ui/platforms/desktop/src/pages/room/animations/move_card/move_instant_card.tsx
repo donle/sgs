@@ -80,17 +80,13 @@ export class MoveInstantCardAnimation extends UiAnimation {
       });
 
       const elements = this.createCards(cards);
-      const animationStyles: React.CSSProperties = {};
       const leftOffset = (this.cardWidth + (elements.length - 1) * 16) / 2;
-
-      if (fromId) {
-        const position = this.store.animationPosition.getPosition(fromId, fromId === this.store.clientPlayerId);
-        animationStyles.transform = `translate(${position.x - leftOffset}px, ${position.y - this.cardHeight / 2}px)`;
-      } else {
-        animationStyles.transform = `translate(${this.CentralPosition.x - leftOffset}px, ${
-          this.CentralPosition.y - this.cardHeight / 2
-        }px)`;
-      }
+      const fromPosition = fromId
+        ? this.store.animationPosition.getPosition(fromId, fromId === this.store.clientPlayerId)
+        : this.CentralPosition;
+      const animationStyles = {
+        transform: `translate(${fromPosition.x - leftOffset}px, ${fromPosition.y - this.cardHeight / 2}px)`,
+      };
 
       const container = document.createElement('div');
       document.getElementById('root')?.append(container);
@@ -149,11 +145,10 @@ export class MoveInstantCardAnimation extends UiAnimation {
         public: true,
       },
     ]);
-    const animationStyles: React.CSSProperties = {};
     const position = this.store.animationPosition.getPosition(fromId, fromId === this.store.clientPlayerId);
-    animationStyles.transform = `translate(${position.x - this.cardWidth / 2}px, ${
-      position.y - this.cardHeight / 2
-    }px)`;
+    const animationStyles = {
+      transform: `translate(${position.x - this.cardWidth / 2}px, ${position.y - this.cardHeight / 2}px)`,
+    };
 
     const container = document.createElement('div');
     document.getElementById('root')?.append(container);

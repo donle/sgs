@@ -15,18 +15,18 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [24.15.0]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -g yarn
-      - run: yarn
-      - run: yarn lint
-      - run: yarn transpile
-      - run: yarn transpile:client
-        env:
-          CI: true
+      - run: npm install -g pnpm
+      - run: pnpm install
+      - run: pnpm run lint
+      - run: pnpm run transpile
+      - run: pnpm run transpile:client
+    env:
+      CI: true

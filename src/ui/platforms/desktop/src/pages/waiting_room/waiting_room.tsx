@@ -54,8 +54,8 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
     this.props.electronLoader.getTemporaryData(ElectronData.PlayerId),
     'Unknown player id',
   );
-  private selfPlayerName =
-    this.props.electronLoader.getData<string>(ElectronData.PlayerName) || this.props.translator.tr('unknown');
+  private selfPlayerName: string =
+    this.props.electronLoader.getData(ElectronData.PlayerName) || this.props.translator.tr('unknown');
   private roomName: string;
 
   private presenter = new WaitingRoomPresenter();
@@ -153,10 +153,14 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
   private connectToServer(hostConfig: ServiceConfig) {
     const endpoint = `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/waiting-room-${this.roomIdString}`;
     this.socket = IOSocketClient(endpoint, {
+      transports: ['websocket', 'polling'],
       reconnection: true,
       autoConnect: true,
-      reconnectionAttempts: 3,
-      timeout: 180000,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 30000,
+      randomizationFactor: 0.5,
+      timeout: 20000,
     });
 
     this.gameHostedServer = hostConfig.hostTag;
@@ -198,7 +202,11 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       <div className={styles.waitingRoom}>
         <Background image={this.props.imageLoader.getWaitingRoomBackgroundImage()} />
         <HeaderBar
-          {...props}
+          electronLoader={this.props.electronLoader}
+          audioLoader={this.props.audioLoader}
+          imageLoader={this.props.imageLoader}
+          translator={this.props.translator}
+          getConnectionService={this.props.getConnectionService}
           isCampaignMode={false}
           audioService={this.services.audioService}
           roomName={this.roomName}

@@ -55,7 +55,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   skillSelected: boolean = false;
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
-  private onTooltipOpeningTimer: NodeJS.Timer;
+  private onTooltipOpeningTimer: ReturnType<typeof setTimeout>;
   @mobx.observable.ref
   PlayerRoleCard: () => JSX.Element;
   @mobx.observable.ref

@@ -63,12 +63,18 @@ export class RoomPage extends React.Component<
   private roomMode: RoomMode;
   private connectionService: ConnectionService;
 
-  private lastEventTimeStamp: number;
+  private lastEventTimeStamp: number | undefined;
+  private lastSyncId: number = 0;
+  private isRecovering: boolean = false;
+  private pendingEventsDuringRecovery: {
+    identifier: GameEventIdentifiers;
+    content: ServerEventFinder<GameEventIdentifiers>;
+  }[] = [];
 
   @mobx.observable.ref
   private roomPing: number = 999;
   @mobx.observable.ref
-  private gameHostedServer: ServerHostTag;
+  private gameHostedServer: ServerHostTag | undefined;
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
@@ -157,13 +163,50 @@ export class RoomPage extends React.Component<
     });
   };
 
+  private readonly shouldSkipRecoveredEvent = (content: ServerEventFinder<GameEventIdentifiers>) => {
+    const syncId = EventPacker.getSyncId(content);
+    return syncId !== undefined && syncId <= this.lastSyncId;
+  };
+
+  private readonly markEventHandled = (content: ServerEventFinder<GameEventIdentifiers>) => {
+    const timestamp = EventPacker.getTimestamp(content);
+    if (timestamp) {
+      this.lastEventTimeStamp = Math.max(this.lastEventTimeStamp || 0, timestamp);
+    }
+
+    const syncId = EventPacker.getSyncId(content);
+    if (syncId !== undefined) {
+      this.lastSyncId = Math.max(this.lastSyncId, syncId);
+    }
+  };
+
+  private readonly handleSingleEvent = async (
+    identifier: GameEventIdentifiers,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    animation: boolean = false,
+  ) => {
+    if (this.shouldSkipRecoveredEvent(content)) {
+      return;
+    }
+
+    await this.gameProcessor.onHandleIncomingEvent(identifier, content);
+    this.showMessageFromEvent(content);
+    animation && this.animation(identifier, content);
+    this.updateGameStatus(content);
+    this.markEventHandled(content);
+  };
+
   private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
     this.store.room.emitStatus('trusted', this.playerId!);
-    for (const content of events) {
+    const sortedEvents = [...events].sort((a, b) => {
+      const aSyncId = EventPacker.getSyncId(a) || 0;
+      const bSyncId = EventPacker.getSyncId(b) || 0;
+      return aSyncId - bSyncId;
+    });
+
+    for (const content of sortedEvents) {
       const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
-      await this.gameProcessor.onHandleIncomingEvent(identifier, content);
-      this.showMessageFromEvent(content);
-      this.updateGameStatus(content);
+      await this.handleSingleEvent(identifier, content);
     }
   };
 
@@ -187,20 +230,22 @@ export class RoomPage extends React.Component<
 
     clientActiveListenerEvents().forEach(identifier => {
       this.socket.on(identifier, async (content: ServerEventFinder<GameEventIdentifiers>) => {
-        const timestamp = EventPacker.getTimestamp(content);
-        if (timestamp) {
-          this.lastEventTimeStamp = timestamp;
-        }
-
         if (identifier === GameEventIdentifiers.PlayerBulkPacketEvent) {
+          this.isRecovering = true;
           await this.onHandleBulkEvents(
             (content as ServerEventFinder<GameEventIdentifiers.PlayerBulkPacketEvent>).stackedLostMessages,
           );
+          this.isRecovering = false;
+
+          const pendingEvents = this.pendingEventsDuringRecovery;
+          this.pendingEventsDuringRecovery = [];
+          for (const pendingEvent of pendingEvents) {
+            await this.handleSingleEvent(pendingEvent.identifier, pendingEvent.content, true);
+          }
+        } else if (this.isRecovering) {
+          this.pendingEventsDuringRecovery.push({ identifier, content });
         } else {
-          await this.gameProcessor.onHandleIncomingEvent(identifier, content);
-          this.showMessageFromEvent(content);
-          this.animation(identifier, content);
-          this.updateGameStatus(content);
+          await this.handleSingleEvent(identifier, content, true);
         }
       });
     });
@@ -221,7 +266,8 @@ export class RoomPage extends React.Component<
       this.socket.notify(
         GameEventIdentifiers.PlayerReenterEvent,
         EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerReenterEvent, {
-          timestamp: this.lastEventTimeStamp,
+          timestamp: this.lastEventTimeStamp || 0,
+          lastSyncId: this.lastSyncId,
           playerId,
           playerName: this.playerName,
         }),

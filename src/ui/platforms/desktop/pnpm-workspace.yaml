@@ -1,0 +1,5 @@
+allowBuilds:
+  core-js: true
+  ejs: true
+  electron: true
+  es5-ext: true

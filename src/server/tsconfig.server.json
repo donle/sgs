@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "es2017",
-    "outDir": "./build"
+    "outDir": "./build",
+    "importHelpers": false
   }
 }

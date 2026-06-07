@@ -47,7 +47,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
 
-  private onTooltipOpeningTimer: NodeJS.Timer;
+  private onTooltipOpeningTimer: ReturnType<typeof setTimeout>;
 
   private soundTracks: string[] = [];
 

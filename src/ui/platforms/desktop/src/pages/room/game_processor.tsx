@@ -47,7 +47,7 @@ import { getSkinName } from './ui/switch_avatar/switch_skin';
 
 export class GameClientProcessor {
   private isObserver: boolean = false;
-  protected onPlayTrustedActionTimer: NodeJS.Timer | undefined;
+  protected onPlayTrustedActionTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected excludedResponsiveEvents: GameEventIdentifiers[] = [
     GameEventIdentifiers.UserMessageEvent,
@@ -103,6 +103,7 @@ export class GameClientProcessor {
     }
     if (serverResponsiveListenerEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
+      this.store.room.setAwaitingResponseEvent(identifier, event, (event as any).toId || this.store.clientPlayerId);
       this.doTrustedAction();
     }
 
@@ -153,7 +154,7 @@ export class GameClientProcessor {
       console.warn(`unknown identifier event: ${JSON.stringify(event, null, 2)}`);
     } else {
       const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event!);
-      this.store.room.broadcast(identifier, result);
+      this.broadcastResponse(identifier, result);
     }
     this.presenter.closeDialog();
     this.presenter.closeIncomingConversation();
@@ -174,6 +175,7 @@ export class GameClientProcessor {
       clearTimeout(this.onPlayTrustedActionTimer);
       this.onPlayTrustedActionTimer = undefined;
     }
+    this.store.room.unsetAwaitingResponseEvent(this.store.clientPlayerId);
     this.presenter.endAction();
   }
 
@@ -182,6 +184,27 @@ export class GameClientProcessor {
       this.presenter.closeIncomingConversation();
       this.presenter.closeDialog();
     }
+  }
+
+  private attachRequestSyncId<T extends GameEventIdentifiers>(
+    type: T,
+    response: ClientEventFinder<T>,
+  ): ClientEventFinder<T> {
+    const awaitingEvent = this.store.awaitingResponseEvent;
+    if (awaitingEvent.identifier !== type || !awaitingEvent.event) {
+      return response;
+    }
+
+    const requestSyncId = EventPacker.getSyncId(awaitingEvent.event);
+    if (requestSyncId !== undefined && EventPacker.getRequestSyncId(response) === undefined) {
+      EventPacker.setRequestSyncId(response, requestSyncId);
+    }
+
+    return response;
+  }
+
+  private broadcastResponse<T extends GameEventIdentifiers>(type: T, response: ClientEventFinder<T>) {
+    this.store.room.broadcast(type, this.attachRequestSyncId(type, response));
   }
 
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
@@ -562,7 +585,7 @@ export class GameClientProcessor {
         fromId: content.toId,
         pindianCard: handcards[randomCardIndex],
       };
-      this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
+      this.broadcastResponse(type, EventPacker.createIdentifierEvent(type, event));
       return;
     }
 
@@ -584,7 +607,7 @@ export class GameClientProcessor {
       fromId: content.toId,
       pindianCard: selectedCards[0],
     };
-    this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
+    this.broadcastResponse(type, EventPacker.createIdentifierEvent(type, event));
   }
 
   protected async onHandleAskForCardDropEvent<T extends GameEventIdentifiers.AskForCardDropEvent>(
@@ -616,7 +639,7 @@ export class GameClientProcessor {
       fromId: content.toId,
       droppedCards: selectedCards,
     };
-    this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
+    this.broadcastResponse(type, EventPacker.createIdentifierEvent(type, event));
   }
 
   protected async onHandleAskForCardDisplayEvent<T extends GameEventIdentifiers.AskForCardDisplayEvent>(
@@ -645,7 +668,7 @@ export class GameClientProcessor {
       fromId: toId,
       selectedCards,
     };
-    this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, displayEvent));
+    this.broadcastResponse(type, EventPacker.createIdentifierEvent(type, displayEvent));
   }
 
   protected async onHandleAskForCardEvent<T extends GameEventIdentifiers.AskForCardEvent>(
@@ -673,7 +696,7 @@ export class GameClientProcessor {
       fromId: toId,
       selectedCards,
     };
-    this.store.room.broadcast(type, askForCardEvent);
+    this.broadcastResponse(type, askForCardEvent);
   }
 
   protected async onHandleAskForCardUseEvent<T extends GameEventIdentifiers.AskForCardUseEvent>(
@@ -1152,7 +1175,7 @@ export class GameClientProcessor {
         fromId: this.store.clientPlayerId,
       };
 
-      this.store.room.broadcast(type, response);
+      this.broadcastResponse(type, response);
     });
 
     if (content.conversation) {
@@ -1200,7 +1223,7 @@ export class GameClientProcessor {
         doChange: true,
         fromId: this.store.clientPlayerId,
       };
-      this.store.room.broadcast(type, response);
+      this.broadcastResponse(type, response);
       this.presenter.closeIncomingConversation();
       this.endAction();
     });
@@ -1209,7 +1232,7 @@ export class GameClientProcessor {
         doChange: false,
         fromId: this.store.clientPlayerId,
       };
-      this.store.room.broadcast(type, response);
+      this.broadcastResponse(type, response);
       this.presenter.closeIncomingConversation();
       this.endAction();
     });
@@ -1483,7 +1506,7 @@ export class GameClientProcessor {
         selectedCard: card instanceof Card ? card.Id : undefined,
         selectedCardIndex: card instanceof Card ? undefined : card,
       };
-      this.store.room.broadcast(type, event);
+      this.broadcastResponse(type, event);
     };
 
     this.presenter.createDialog(
@@ -1601,7 +1624,7 @@ export class GameClientProcessor {
         const event: ClientEventFinder<T> = {
           fromId: content.toId,
         };
-        this.store.room.broadcast(type, event);
+        this.broadcastResponse(type, event);
       });
     } else {
       this.presenter.disableActionButton('cancel');
@@ -1615,7 +1638,7 @@ export class GameClientProcessor {
         selectedCards,
         selectedCardsIndex,
       };
-      this.store.room.broadcast(type, event);
+      this.broadcastResponse(type, event);
     });
   }
 
@@ -1650,7 +1673,7 @@ export class GameClientProcessor {
           selectedCards,
           selectedCardsIndex,
         };
-        this.store.room.broadcast(type, event);
+        this.broadcastResponse(type, event);
       }
     };
 
@@ -1676,7 +1699,7 @@ export class GameClientProcessor {
         const event: ClientEventFinder<T> = {
           fromId: content.toId,
         };
-        this.store.room.broadcast(type, event);
+        this.broadcastResponse(type, event);
       });
     } else {
       this.presenter.disableActionButton('cancel');
@@ -1701,7 +1724,7 @@ export class GameClientProcessor {
           selectedOption: option,
         };
 
-        this.store.room.broadcast(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
+        this.broadcastResponse(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
         this.presenter.disableActionButton('cancel');
       };
     });
@@ -1720,7 +1743,7 @@ export class GameClientProcessor {
           fromId: toId,
         };
 
-        this.store.room.broadcast(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
+        this.broadcastResponse(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
         this.presenter.closeIncomingConversation();
       });
     } else {
@@ -1823,7 +1846,7 @@ export class GameClientProcessor {
       selectedPlayers,
     };
 
-    this.store.room.broadcast(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent);
+    this.broadcastResponse(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent);
     this.presenter.closeIncomingConversation();
   }
 
@@ -1843,7 +1866,7 @@ export class GameClientProcessor {
       selectedPlayers,
     };
 
-    this.store.room.broadcast(GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent, choosePlayerEvent);
+    this.broadcastResponse(GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent, choosePlayerEvent);
     this.presenter.closeIncomingConversation();
   }
 
@@ -1874,7 +1897,7 @@ export class GameClientProcessor {
       };
 
       this.presenter.closeDialog();
-      this.store.room.broadcast(GameEventIdentifiers.AskForPlaceCardsInDileEvent, responseEvent);
+      this.broadcastResponse(GameEventIdentifiers.AskForPlaceCardsInDileEvent, responseEvent);
     };
 
     this.presenter.createDialog(
@@ -1920,7 +1943,7 @@ export class GameClientProcessor {
         selectedCard: card.Id,
       };
 
-      this.store.room.broadcast(type, responseEvent);
+      this.broadcastResponse(type, responseEvent);
     };
 
     this.presenter.createDialog(
