@@ -28,5 +28,5 @@ jobs:
       - run: pnpm run lint
       - run: pnpm run transpile
       - run: pnpm run transpile:client
-        env:
-          CI: true
+    env:
+      CI: true
